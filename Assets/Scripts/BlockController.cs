@@ -46,7 +46,6 @@ public class BlockController : ITrialListener {
 
     void FinishBlockOfTrials() {
         blockMeasurements.finalTime = Time.realtimeSinceStartup;
-        var data = blockMeasurements.SerializeToDictionary();
         listener.OnBlockEnded(blockMeasurements);
     }      
 

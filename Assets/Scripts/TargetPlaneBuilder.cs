@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TargetPlaneBuilder : MonoBehaviour {
-	public static void Build (GameObject baseTarget, Transform targetPlane, uint numberOfTargets, float targetWidth, float targetDistance) {
+	public static void Build (GameObject baseTarget, Transform targetPlane, int numberOfTargets, float targetWidth, float targetDistance) {
         if (numberOfTargets % 2 == 0) // If even number
         { 
             numberOfTargets++; // number of targets must be an odd number
@@ -25,8 +25,8 @@ public class TargetPlaneBuilder : MonoBehaviour {
             GameObject newTarget = Instantiate(baseTarget, targetPlane);
             newTarget.name = "Target " + i;
             newTarget.GetComponent<TargetBehaviour>().targetId = targetPositionIndex;
-            newTarget.transform.localPosition = targetDistance * (new Vector3(Mathf.Sin(targetPositionIndex * thetaStep), 0, Mathf.Cos(targetPositionIndex * thetaStep)));
-            newTarget.transform.localScale = Vector3.one * targetWidth / 2;
+            newTarget.transform.localPosition = targetDistance/2 * (new Vector3(Mathf.Sin(targetPositionIndex * thetaStep), 0, Mathf.Cos(targetPositionIndex * thetaStep)));
+            newTarget.transform.localScale = Vector3.one * targetWidth;
             newTarget.SetActive(true);
         }
 	}

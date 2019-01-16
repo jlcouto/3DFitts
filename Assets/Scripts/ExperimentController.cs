@@ -19,11 +19,11 @@ public class ExperimentController : MonoBehaviour, ICursorListener, IBlockListen
     public GameObject baseTarget;
     public Transform targetPlane;
 
-    public uint numberOfTargets = 13;
-    public float targetWidth = 0.05f;
-    public float targetDistance = 0.3f;
+    public int numberOfTargets = 13;
+    public float targetWidth = 0.01f;
+    public float targetDistance = 0.15f;
 
-    public uint numOfBlocksPerExperiment = 3;
+    public int numOfBlocksPerExperiment = 3;
 
     TargetBehaviour[] targets;
     TargetBehaviour initialTarget;
@@ -34,6 +34,7 @@ public class ExperimentController : MonoBehaviour, ICursorListener, IBlockListen
     int currentBlockIndex = 0;
     BlockController currentBlock;
 
+    ExperimentConfiguration experimentConfiguration;
     ExperimentMeasurements experimentData;
 
     enum ExperimentStatus
@@ -64,7 +65,8 @@ public class ExperimentController : MonoBehaviour, ICursorListener, IBlockListen
         if (currentStatus != ExperimentStatus.Running) {   
             SetCurrentStatus(ExperimentStatus.Running);
             UISetNoteText("");
-            experimentData = new ExperimentMeasurements(numberOfTargets, targetWidth, targetDistance, numOfBlocksPerExperiment);
+            experimentConfiguration = new ExperimentConfiguration(targets, targetWidth, targetDistance, numOfBlocksPerExperiment);
+            experimentData = new ExperimentMeasurements(experimentConfiguration);
             experimentData.timestamp = System.DateTime.Now.ToString("s");
             experimentData.initialTime = Time.realtimeSinceStartup;
             RunNextBlock();
@@ -153,7 +155,7 @@ public class ExperimentController : MonoBehaviour, ICursorListener, IBlockListen
     string GetFilenameForExperiment(ExperimentMeasurements experiment)
     {
         var timestamp = experiment.timestamp.Replace(":", "_");
-        return experiment.experimentId + "_" + timestamp + ".json";
+        return experimentConfiguration.experimentId + "_" + timestamp + ".json";
     }
 
     string GetExperimentsFolder()
