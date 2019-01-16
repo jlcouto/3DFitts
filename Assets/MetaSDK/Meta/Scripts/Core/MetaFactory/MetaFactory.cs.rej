@@ -1,0 +1,17 @@
+diff a/Meta/Scripts/Core/MetaFactory/MetaFactory.cs b/Meta/Scripts/Core/MetaFactory/MetaFactory.cs	(rejected hunks)
+@@ -141,11 +141,11 @@
+         {
+             //todo: redundant and conflicting options possible. Needs to be refactored
+ 
+-            InteractionEngine interactionEngine = null;
+-            InteractionEngineFactory.Construct(out interactionEngine, _interactionRoot);
++            //InteractionEngine interactionEngine = null;
++            //InteractionEngineFactory.Construct(out interactionEngine, _interactionRoot);
+ 
+-            package.EventReceivers.Add(interactionEngine);
+-            package.MetaContext.Add(interactionEngine);
++            //package.EventReceivers.Add(interactionEngine);
++            //package.MetaContext.Add(interactionEngine);
+         }
+ 
+ 

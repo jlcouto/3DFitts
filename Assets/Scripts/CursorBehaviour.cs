@@ -8,32 +8,11 @@ public interface ICursorListener {
     void CursorAcquiredTarget(TargetBehaviour target);
 }
 
-public class CursorBehaviour : MonoBehaviour {
-    ICursorListener listener;
+public abstract class CursorBehaviour : MonoBehaviour {
+    protected ICursorListener listener;
 
     public AudioSource correctAudio;
     public AudioSource errorAudio;
-
-    public Vector3 position { get { return Input.mousePosition; } }
-
-	void Start () {
-		
-	}
-	
-	void Update () {
-        Vector3 mousePos = Input.mousePosition;
-        if (Input.GetMouseButtonDown(0))
-        {
-            TargetBehaviour aTarget = null;
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(mousePos);
-            if (Physics.Raycast(ray, out hit, 5.0f))
-            {
-                aTarget = hit.transform.GetComponent<TargetBehaviour>();
-            }
-            AcquireTarget(aTarget);
-        }
-    }
 
     public void RegisterNewListener(ICursorListener newListener)
     {
@@ -44,39 +23,11 @@ public class CursorBehaviour : MonoBehaviour {
         listener = null;
     }
 
-    public void EnterTarget(TargetBehaviour theTarget) {
-        theTarget.HighlightTarget();
-        if (listener != null)
-        {
-            listener.CursorEnteredTarget(theTarget);
-        }
-    }
+    public abstract void EnterTarget(TargetBehaviour theTarget);
+    public abstract void ExitTarget(TargetBehaviour theTarget);
+    public abstract void AcquireTarget(TargetBehaviour theTarget);
 
-    public void ExitTarget(TargetBehaviour theTarget) {
-        theTarget.UnhighlightTarget();
-        if (listener != null)
-        {
-            listener.CursorExitedTarget(theTarget);
-        }
-    }
-
-    public void AcquireTarget(TargetBehaviour theTarget) {
-        if (theTarget != null) {
-            EnterTarget(theTarget);
-            StartCoroutine(ExitTargetAfterTime(0.2f, theTarget));
-        }
-
-        if (listener != null)
-        {
-            listener.CursorAcquiredTarget(theTarget);
-        }
-    }
-
-    IEnumerator ExitTargetAfterTime(float time, TargetBehaviour theTarget)
-    {
-        yield return new WaitForSeconds(time);
-        ExitTarget(theTarget);
-    }
+    public abstract Vector3 GetCursorPosition();
 
     public void PlayCorrectAudio() {
         correctAudio.Play();

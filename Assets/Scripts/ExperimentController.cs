@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Newtonsoft.Json;
 using System.IO;
+using Leap.Unity.Interaction;
 
 public class ExperimentController : MonoBehaviour, ICursorListener, IBlockListener
 {
@@ -47,9 +48,15 @@ public class ExperimentController : MonoBehaviour, ICursorListener, IBlockListen
 
     void Start () {
         cursor.RegisterNewListener(this);
+
+        if (cursor is LeapMotionControllerCursorBehaviour)
+        {
+            ((LeapMotionControllerCursorBehaviour)cursor).AddInteractionBehaviourToObject(baseTarget);
+        }
         TargetPlaneBuilder.Build(baseTarget, targetPlane, numberOfTargets, targetWidth, targetDistance);
         targets = targetPlane.GetComponentsInChildren<TargetBehaviour>();
         initialTarget = targets[0];
+
         SetCurrentStatus(ExperimentStatus.Waiting);
         UISetNoteText("");
     }
