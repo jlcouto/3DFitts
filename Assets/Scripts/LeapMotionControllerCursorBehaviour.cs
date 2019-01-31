@@ -3,32 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 using Leap.Unity;
 using Leap.Unity.Interaction;
+using UnityEngine.Events;
 
 public class LeapMotionControllerCursorBehaviour : CursorBehaviour
 {
     public LeapServiceProvider leapService;
     public InteractionManager manager;
+    public GameObject cursorInteractor;
 
     public override Vector3 GetCursorPosition() { return Vector3.one; }
 
     public void AddInteractionBehaviourToObject(GameObject obj)
     {
-        var interaction = obj.AddComponent<InteractionBehaviour>();
-        interaction.manager = manager;
-        interaction.ignoreHoverMode = IgnoreHoverMode.Both;
-        interaction.ignoreGrasping = true;
-        interaction.OnPerControllerContactBegin += new System.Action<InteractionController>(OnContactBegin);
-        interaction.OnContactEnd += new System.Action(OnContactEnd);
+        //var mesh = obj.GetComponent<MeshRenderer>();
+        //var interaction = obj.GetComponent<InteractionBehaviour>();
+        //interaction.manager = manager;
+        //interaction.ignoreHoverMode = IgnoreHoverMode.Both;
+        //interaction.ignoreGrasping = true;
     }
 
-    public void OnContactBegin(InteractionController controller)
+    private void Update()
     {
-        
-    }
+        Leap.Frame frame = leapService.CurrentFrame;
+        if (frame.Hands.Count > 0)
+        {
+            cursorInteractor.transform.position = frame.Hands[0].GetIndex().TipPosition.ToVector3();
+        }
+        //if (input.getkeydown(keycode.space))
+        //{
 
-    public void OnContactEnd()
-    {
-
+        //    acquiretarget(atarget);
+        //}
     }
 
     public override void EnterTarget(TargetBehaviour theTarget)

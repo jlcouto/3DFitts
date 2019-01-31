@@ -13,8 +13,6 @@ GameObject:
   - component: {fileID: 23664006581400802}
   - component: {fileID: 135132370650510408}
   - component: {fileID: 114628266394818154}
-  - component: {fileID: 5893478688843271261}
-  - component: {fileID: 114915281834792038}
   m_Layer: 0
   m_Name: BaseTarget
   m_TagString: Untagged
@@ -113,49 +111,3 @@ MonoBehaviour:
     type: 2}
   nextTargetMaterial: {fileID: 2100000, guid: d9e01a7e1885c4499baf24bb43300c11, type: 2}
   type: 0
---- !u!54 &5893478688843271261
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1590297525248434}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 112
-  m_CollisionDetection: 0
---- !u!114 &114915281834792038
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1590297525248434}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f10fa40360571247a7ca806d6859557, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _manager: {fileID: 0}
-  _ignoreHoverMode: 3
-  _isIgnoringAllHoverState: 1
-  _ignorePrimaryHover: 1
-  _ignoreContact: 0
-  _ignoreGrasping: 0
-  _contactForceMode: 0
-  _allowMultiGrasp: 0
-  _moveObjectWhenGrasped: 1
-  graspedMovementType: 0
-  _overrideInteractionLayer: 0
-  _interactionLayer:
-    layerIndex: 0
-  _overrideNoContactLayer: 0
-  _noContactLayer:
-    layerIndex: 0
-  _eventTable:
-    _entries: []

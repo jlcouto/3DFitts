@@ -277,7 +277,7 @@ namespace Leap.Unity {
 
     void OnPreCull() {
       #if UNITY_EDITOR
-      if (!Application.isPlaying) {
+      if (!Application.isPlaying || _cachedCamera == null) {
         return;
       }
 #endif

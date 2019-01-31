@@ -49,10 +49,10 @@ public class ExperimentController : MonoBehaviour, ICursorListener, IBlockListen
     void Start () {
         cursor.RegisterNewListener(this);
 
-        if (cursor is LeapMotionControllerCursorBehaviour)
-        {
-            ((LeapMotionControllerCursorBehaviour)cursor).AddInteractionBehaviourToObject(baseTarget);
-        }
+        //if (cursor is LeapMotionControllerCursorBehaviour)
+        //{
+        //    ((LeapMotionControllerCursorBehaviour)cursor).AddInteractionBehaviourToObject(baseTarget);
+        //}
         TargetPlaneBuilder.Build(baseTarget, targetPlane, numberOfTargets, targetWidth, targetDistance);
         targets = targetPlane.GetComponentsInChildren<TargetBehaviour>();
         initialTarget = targets[0];
