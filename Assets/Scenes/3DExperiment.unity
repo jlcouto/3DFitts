@@ -174,7 +174,17 @@ PrefabInstance:
     - target: {fileID: 6176115386131445292, guid: e38f84e733a8dca42a9ff760c3facbd4,
         type: 3}
       propertyPath: _contactEnabled
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6176115386131445292, guid: e38f84e733a8dca42a9ff760c3facbd4,
+        type: 3}
+      propertyPath: _graspingEnabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7104936761064896249, guid: e38f84e733a8dca42a9ff760c3facbd4,
+        type: 3}
+      propertyPath: _graspingEnabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e38f84e733a8dca42a9ff760c3facbd4, type: 3}
@@ -194,7 +204,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &202445917
 Transform:
   m_ObjectHideFlags: 0
@@ -377,9 +387,10 @@ MonoBehaviour:
   noteText: {fileID: 1061006144}
   correctTargetAudio: {fileID: 1632592937}
   wrongTargetAudio: {fileID: 1294870371}
-  cursor: {fileID: 202445918}
+  cursor: {fileID: 511708673}
   baseTarget: {fileID: 1590297525248434, guid: ad3fdacf3a8e344f39a3da44003ec7df, type: 3}
   targetPlane: {fileID: 1488585436}
+  orientation: 0
   numberOfTargets: 13
   targetWidth: 0.04
   targetDistance: 0.2
@@ -530,6 +541,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4935531237737987653, guid: bb52225c045c848468f1cb4f4eccf793,
+        type: 3}
+      propertyPath: correctAudio
+      value: 
+      objectReference: {fileID: 1632592937}
+    - target: {fileID: 4935531237737987653, guid: bb52225c045c848468f1cb4f4eccf793,
+        type: 3}
+      propertyPath: errorAudio
+      value: 
+      objectReference: {fileID: 1294870371}
+    - target: {fileID: 4935531237737987653, guid: bb52225c045c848468f1cb4f4eccf793,
+        type: 3}
+      propertyPath: cursorPositionController
+      value: 
+      objectReference: {fileID: 670970905}
+    - target: {fileID: 4935531237737987653, guid: bb52225c045c848468f1cb4f4eccf793,
+        type: 3}
+      propertyPath: selectionMethod
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb52225c045c848468f1cb4f4eccf793, type: 3}
 --- !u!1 &511708671 stripped
@@ -544,6 +575,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 511708670}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &511708673 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4935531237737987653, guid: bb52225c045c848468f1cb4f4eccf793,
+    type: 3}
+  m_PrefabInstance: {fileID: 511708670}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 511708671}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03684d89ab77f2b41853f677abc27ba0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!54 &511708676
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -603,11 +646,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7adfca769d3df0543a7b803fafd0bb0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  correctAudio: {fileID: 1632592937}
-  errorAudio: {fileID: 1294870371}
   leapService: {fileID: 479886397}
   manager: {fileID: 1243110861}
-  cursorInteractor: {fileID: 511708671}
 --- !u!1 &984529646
 GameObject:
   m_ObjectHideFlags: 0
@@ -774,7 +814,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: dc4fa8fe17f1b4a8bbae2c2c95d3663d, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.368
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -881,7 +921,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1488585435}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -1010,7 +1050,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 007b45dee5fd747c3b0529d72bfbcbef, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.055
   m_Pitch: 1
   Loop: 0
   Mute: 0

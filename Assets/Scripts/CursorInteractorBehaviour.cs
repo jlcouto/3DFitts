@@ -9,27 +9,37 @@ public enum CursorSelectionMethod
     MOUSE_LEFTCLICK
 }
 
+public abstract class CursorPositioningController : MonoBehaviour
+{
+    public abstract Vector3 GetCurrentCursorPosition();
+}
+
 public class CursorInteractorBehaviour : CursorBehaviour
 {
-    public CursorSelectionMethod selectionMethod;
-
+    public CursorPositioningController cursorPositionController;
+    public CursorSelectionMethod selectionMethod = CursorSelectionMethod.AUTOMATIC_BYCONTACT;
+   
     TargetBehaviour currentHighlightedTarget;
-  
+
+    TargetBehaviour currentAcquiredTarget;
+
     void Update()
     {
+        this.transform.position = cursorPositionController.GetCurrentCursorPosition();
+
         switch (selectionMethod)
         {
             case CursorSelectionMethod.KEYBOARD_SPACEBAR:
                 CheckSpaceBarSelection();
                 break;
             case CursorSelectionMethod.MOUSE_LEFTCLICK:
+                CheckMouseLeftClickSelection();
                 break;
             case CursorSelectionMethod.AUTOMATIC_BYCONTACT:
             default:
+                CheckAutomaticByContactSelection();
                 break;
-        }
-
-        
+        }  
     }
 
     void CheckSpaceBarSelection()
@@ -37,7 +47,7 @@ public class CursorInteractorBehaviour : CursorBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             AcquireTarget(currentHighlightedTarget);
-        }
+        } 
     }
 
     void CheckMouseLeftClickSelection()
@@ -50,7 +60,33 @@ public class CursorInteractorBehaviour : CursorBehaviour
 
     void CheckAutomaticByContactSelection()
     {
-
+        if (currentHighlightedTarget != null)
+        {
+            if (currentAcquiredTarget == null)
+            {
+                AcquireTarget(currentHighlightedTarget);
+                currentAcquiredTarget = currentHighlightedTarget;
+                Debug.Log("AUTOMATIC SELECTION Acquired");
+            }
+            if (currentHighlightedTarget != currentAcquiredTarget)
+            {            
+                AcquireTarget(currentHighlightedTarget);
+                currentAcquiredTarget = currentHighlightedTarget;
+                Debug.Log("AUTOMATIC SELECTION Acquired");
+            }  
+        }
+        else
+        {
+            if (currentAcquiredTarget != null)
+            {
+                Vector3 cursorTargetDistance = currentAcquiredTarget.position - GetCursorPosition();
+                if (cursorTargetDistance.magnitude > currentAcquiredTarget.localScale.magnitude)
+                {
+                    currentAcquiredTarget = null;
+                    Debug.Log("AUTOMATIC SELECTION Released");
+                }
+            }
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -59,7 +95,7 @@ public class CursorInteractorBehaviour : CursorBehaviour
         if (targetBehaviour != null)
         {
             EnterTarget(targetBehaviour);
-        }
+        }      
     }
 
     private void OnTriggerExit(Collider other)
@@ -75,9 +111,10 @@ public class CursorInteractorBehaviour : CursorBehaviour
     {
         target.HighlightTarget();
         currentHighlightedTarget = target;
+        Debug.Log("TargetEnter");
         if (listener != null)
         {
-            listener.CursorEnteredTarget(target);
+            listener.CursorEnteredTarget(target);         
         }
     }
 
@@ -85,6 +122,7 @@ public class CursorInteractorBehaviour : CursorBehaviour
     {
         target.UnhighlightTarget();
         currentHighlightedTarget = null;
+        Debug.Log("TargetExit");
         if (listener != null)
         {
             listener.CursorExitedTarget(target);

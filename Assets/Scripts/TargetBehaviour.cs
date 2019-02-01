@@ -19,6 +19,7 @@ public class TargetBehaviour : MonoBehaviour
     public TargetType type = TargetType.NormalTarget;
 
     public Vector3 position { get { return transform.position; } }
+    public Vector3 localScale { get { return transform.localScale; } }
 
     MeshRenderer meshRenderer;
 

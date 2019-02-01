@@ -39,14 +39,14 @@ public class TrialController : ICursorListener {
         finalTarget.SetAsNextTarget();
         trialData = new TrialMeasurements(trialId, initialTarget, finalTarget);
         trialData.initialTime = Time.realtimeSinceStartup;
-        trialData.initialPosition = cursor.GetCursorPosition();
+        trialData.initialPosition = SimpleVector3.FromVector3(cursor.GetCursorPosition());
         cursor.RegisterNewListener(this);
     }
 
     void FinishTrial() {
         cursor.RemoveCurrentListener();
         trialData.finalTime = Time.realtimeSinceStartup;
-        trialData.finalPosition = cursor.GetCursorPosition();
+        trialData.finalPosition = SimpleVector3.FromVector3(cursor.GetCursorPosition());
         if (listener != null) {
             listener.OnTrialEnded(trialData);
         }

@@ -6,6 +6,15 @@ using Newtonsoft.Json;
 using System.IO;
 using Leap.Unity.Interaction;
 
+public enum PlaneOrientation {
+    PlaneXY = 0,
+    PlaneYZ,
+    PlaneZX,
+    Plane45XY,
+    Plane45YZ,
+    Plane45ZX
+}
+
 public class ExperimentController : MonoBehaviour, ICursorListener, IBlockListener
 {
     public Text statusText;
@@ -19,6 +28,7 @@ public class ExperimentController : MonoBehaviour, ICursorListener, IBlockListen
     public CursorBehaviour cursor;
     public GameObject baseTarget;
     public Transform targetPlane;
+    public PlaneOrientation orientation = PlaneOrientation.PlaneXY;
 
     public int numberOfTargets = 13;
     public float targetWidth = 0.01f;
@@ -48,14 +58,33 @@ public class ExperimentController : MonoBehaviour, ICursorListener, IBlockListen
 
     void Start () {
         cursor.RegisterNewListener(this);
-
-        //if (cursor is LeapMotionControllerCursorBehaviour)
-        //{
-        //    ((LeapMotionControllerCursorBehaviour)cursor).AddInteractionBehaviourToObject(baseTarget);
-        //}
         TargetPlaneBuilder.Build(baseTarget, targetPlane, numberOfTargets, targetWidth, targetDistance);
         targets = targetPlane.GetComponentsInChildren<TargetBehaviour>();
         initialTarget = targets[0];
+
+        Vector3 planeRotation;
+        switch (orientation)
+        {
+            case PlaneOrientation.PlaneYZ:
+                planeRotation = new Vector3(90, 0, 0);
+                break;
+            case PlaneOrientation.PlaneZX:
+                planeRotation = new Vector3(0, 0, 90);
+                break;
+            case PlaneOrientation.Plane45XY:
+                planeRotation = new Vector3(-45, 0, 0);
+                break;
+            case PlaneOrientation.Plane45YZ:
+                planeRotation = new Vector3(90, -45, 0);
+                break;
+            case PlaneOrientation.Plane45ZX:
+                planeRotation = new Vector3(0, 0, 45);
+                break;
+            default:
+                planeRotation = new Vector3(0, 0, 0);
+                break;
+        }
+        targetPlane.transform.localRotation = Quaternion.Euler(planeRotation);
 
         SetCurrentStatus(ExperimentStatus.Waiting);
         UISetNoteText("");
@@ -69,7 +98,8 @@ public class ExperimentController : MonoBehaviour, ICursorListener, IBlockListen
     }
 
     void StartExperiment() {
-        if (currentStatus != ExperimentStatus.Running) {   
+        if (currentStatus != ExperimentStatus.Running) {
+            
             SetCurrentStatus(ExperimentStatus.Running);
             UISetNoteText("");
             experimentConfiguration = new ExperimentConfiguration(targets, targetWidth, targetDistance, numOfBlocksPerExperiment);
@@ -152,7 +182,11 @@ public class ExperimentController : MonoBehaviour, ICursorListener, IBlockListen
 
     void ExportResultsToFile(ExperimentMeasurements results) {
         var output = results.SerializeToDictionary();
-        string jsonData = JsonConvert.SerializeObject(output);
+        string jsonData = JsonConvert.SerializeObject(output, new JsonSerializerSettings()
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            Formatting = Formatting.Indented
+        });
         string filename = GetFilenameForExperiment(results);
         string path = GetExperimentsFolder() + filename;
         File.WriteAllText(path, jsonData);

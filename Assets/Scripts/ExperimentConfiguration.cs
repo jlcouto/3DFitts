@@ -8,7 +8,7 @@ public class ExperimentConfiguration
     public float targetWidth;
     public float targetDistance;
     public int numberOfTargets;
-    public List<Vector3> targetsPositions;
+    public List<SimpleVector3> targetsPositions;
     public int numOfBlocksPerExperiment;
 
     public ExperimentConfiguration(TargetBehaviour[] targets, float targetWidth, float targetDistance, int numOfBlocksPerExperiment) {
@@ -16,10 +16,10 @@ public class ExperimentConfiguration
         this.targetDistance = targetDistance;
         this.numberOfTargets = targets.Length;
 
-        this.targetsPositions = new List<Vector3>(this.numberOfTargets);
+        this.targetsPositions = new List<SimpleVector3>(this.numberOfTargets);
         for (int i = 0; i < targets.Length; i++)
         {
-            this.targetsPositions.Add(targets[i].position);
+            this.targetsPositions.Add(SimpleVector3.FromVector3(targets[i].position));
         }
 
         this.experimentId = GetExperimentId();

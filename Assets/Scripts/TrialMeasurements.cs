@@ -12,8 +12,8 @@ public class TrialMeasurements {
     public float finalTime;
     public float trialDuration { get { return finalTime - initialTime; } }
 
-    public Vector3 initialPosition;
-    public Vector3 finalPosition;
+    public SimpleVector3 initialPosition;
+    public SimpleVector3 finalPosition;
 
     public bool missedTarget = false;
 
