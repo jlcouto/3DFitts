@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿//#define DEBUG_CURSOR
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,10 +20,16 @@ public class CursorInteractorBehaviour : CursorBehaviour
 {
     public CursorPositioningController cursorPositionController;
     public CursorSelectionMethod selectionMethod = CursorSelectionMethod.AUTOMATIC_BYCONTACT;
-   
+
+    HashSet<TargetBehaviour> currentTargetsCollidingWithCursor;
     TargetBehaviour currentHighlightedTarget;
 
     TargetBehaviour currentAcquiredTarget;
+
+    private void Start()
+    {
+        currentTargetsCollidingWithCursor = new HashSet<TargetBehaviour>();
+    }
 
     void Update()
     {
@@ -110,8 +118,14 @@ public class CursorInteractorBehaviour : CursorBehaviour
     public override void EnterTarget(TargetBehaviour target)
     {
         target.HighlightTarget();
+
+        currentTargetsCollidingWithCursor.Add(target);
         currentHighlightedTarget = target;
-        Debug.Log("TargetEnter");
+
+#if DEBUG_CURSOR
+        Debug.Log("TargetEnter: " + target.name + " pos= " + target.transform.position);
+#endif
+
         if (listener != null)
         {
             listener.CursorEnteredTarget(target);         
@@ -121,8 +135,26 @@ public class CursorInteractorBehaviour : CursorBehaviour
     public override void ExitTarget(TargetBehaviour target)
     {
         target.UnhighlightTarget();
-        currentHighlightedTarget = null;
-        Debug.Log("TargetExit");
+
+        currentTargetsCollidingWithCursor.Remove(target);
+
+        if (currentTargetsCollidingWithCursor.Count > 0)
+        {
+            foreach (TargetBehaviour t in currentTargetsCollidingWithCursor)
+            {
+                currentHighlightedTarget = t;
+                break;
+            }
+        }
+        else
+        {
+            currentHighlightedTarget = null;
+        }
+       
+#if DEBUG_CURSOR
+        Debug.Log("TargetExit: " + target.name + " pos= " + target.transform.position);
+#endif
+
         if (listener != null)
         {
             listener.CursorExitedTarget(target);
@@ -136,14 +168,14 @@ public class CursorInteractorBehaviour : CursorBehaviour
             listener.CursorAcquiredTarget(target);
         }
 
-#if DEBUG
+#if DEBUG_CURSOR
         if (target != null)
         {
             Debug.Log("Acquired target: " + target.name);
         }
         else
         {
-            Debug.Log("Acquired target: none");
+            Debug.Log("Acquired target: none, cursor pos = " + cursorPositionController.GetCurrentCursorPosition());
         }
 #endif
     }

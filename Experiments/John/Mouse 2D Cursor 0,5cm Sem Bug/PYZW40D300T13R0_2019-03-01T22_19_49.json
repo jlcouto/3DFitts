@@ -1,0 +1,858 @@
+{
+  "test": {
+    "configuration": {
+      "testId": "PYZW40D300T13R0",
+      "numberOfTargets": 13,
+      "targetWidth": 0.04,
+      "targetDistance": 0.3,
+      "numOfBlocksPerTest": 3,
+      "targetsPositions": [
+        {
+          "x": 0.0,
+          "y": -0.149999991,
+          "z": 0.5
+        },
+        {
+          "x": -0.0358973779,
+          "y": -0.445641279,
+          "z": 0.5
+        },
+        {
+          "x": 0.06970848,
+          "y": -0.167181581,
+          "z": 0.5
+        },
+        {
+          "x": -0.09946842,
+          "y": -0.412276626,
+          "z": 0.5
+        },
+        {
+          "x": 0.123447582,
+          "y": -0.2147903,
+          "z": 0.5
+        },
+        {
+          "x": -0.140252456,
+          "y": -0.35319072,
+          "z": 0.5
+        },
+        {
+          "x": 0.148906335,
+          "y": -0.281919539,
+          "z": 0.5
+        },
+        {
+          "x": -0.148906335,
+          "y": -0.2819195,
+          "z": 0.5
+        },
+        {
+          "x": 0.140252441,
+          "y": -0.35319078,
+          "z": 0.5
+        },
+        {
+          "x": -0.123447567,
+          "y": -0.214790255,
+          "z": 0.5
+        },
+        {
+          "x": 0.0994684,
+          "y": -0.412276655,
+          "z": 0.5
+        },
+        {
+          "x": -0.06970842,
+          "y": -0.167181551,
+          "z": 0.5
+        },
+        {
+          "x": 0.03589732,
+          "y": -0.445641339,
+          "z": 0.5
+        }
+      ]
+    },
+    "data": {
+      "timestamp": "2019-03-01T22:19:49",
+      "testId": "PYZW40D300T13R0",
+      "initialTime": 82.01947,
+      "finalTime": 111.118118,
+      "testDuration": 29.0986481,
+      "blocksData": [
+        {
+          "blockId": 0,
+          "initialTargetId": 0,
+          "initialTime": 82.01948,
+          "finalTime": 91.026,
+          "blockDuration": 9.006523,
+          "trialsData": [
+            {
+              "trialId": 0,
+              "initialTargetId": 0,
+              "finalTargetId": 7,
+              "initialTime": 82.0194855,
+              "finalTime": 82.66798,
+              "trialDuration": 0.6484909,
+              "initialPosition": {
+                "x": -0.00374999759,
+                "y": -0.156875014,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.049999997,
+                "y": -0.448750019,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 1,
+              "initialTargetId": 7,
+              "finalTargetId": 1,
+              "initialTime": 82.66799,
+              "finalTime": 83.31438,
+              "trialDuration": 0.6463852,
+              "initialPosition": {
+                "x": -0.049999997,
+                "y": -0.448750019,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.0643750057,
+                "y": -0.170625016,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 2,
+              "initialTargetId": 1,
+              "finalTargetId": 8,
+              "initialTime": 83.31439,
+              "finalTime": 83.86188,
+              "trialDuration": 0.547485352,
+              "initialPosition": {
+                "x": 0.0643750057,
+                "y": -0.170625016,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.104375,
+                "y": -0.446250021,
+                "z": 0.5
+              },
+              "missedTarget": true
+            },
+            {
+              "trialId": 3,
+              "initialTargetId": 8,
+              "finalTargetId": 2,
+              "initialTime": 83.8619,
+              "finalTime": 84.60667,
+              "trialDuration": 0.744766235,
+              "initialPosition": {
+                "x": -0.104375,
+                "y": -0.446250021,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.119375005,
+                "y": -0.201250017,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 4,
+              "initialTargetId": 2,
+              "finalTargetId": 9,
+              "initialTime": 84.60668,
+              "finalTime": 85.22127,
+              "trialDuration": 0.6145859,
+              "initialPosition": {
+                "x": 0.119375005,
+                "y": -0.201250017,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.14375,
+                "y": -0.353125,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 5,
+              "initialTargetId": 9,
+              "finalTargetId": 3,
+              "initialTime": 85.22129,
+              "finalTime": 85.82791,
+              "trialDuration": 0.6066208,
+              "initialPosition": {
+                "x": -0.14375,
+                "y": -0.353125,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.156875,
+                "y": -0.285625,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 6,
+              "initialTargetId": 3,
+              "finalTargetId": 10,
+              "initialTime": 85.82792,
+              "finalTime": 86.44142,
+              "trialDuration": 0.6135025,
+              "initialPosition": {
+                "x": 0.156875,
+                "y": -0.285625,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.14625,
+                "y": -0.268125,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 7,
+              "initialTargetId": 10,
+              "finalTargetId": 4,
+              "initialTime": 86.44144,
+              "finalTime": 87.2526855,
+              "trialDuration": 0.8112488,
+              "initialPosition": {
+                "x": -0.14625,
+                "y": -0.268125,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.139375,
+                "y": -0.359375,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 8,
+              "initialTargetId": 4,
+              "finalTargetId": 11,
+              "initialTime": 87.2527,
+              "finalTime": 87.89875,
+              "trialDuration": 0.6460495,
+              "initialPosition": {
+                "x": 0.139375,
+                "y": -0.359375,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.10875,
+                "y": -0.20812501,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 9,
+              "initialTargetId": 11,
+              "finalTargetId": 5,
+              "initialTime": 87.89876,
+              "finalTime": 88.71113,
+              "trialDuration": 0.8123703,
+              "initialPosition": {
+                "x": -0.10875,
+                "y": -0.20812501,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.10625,
+                "y": -0.415000021,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 10,
+              "initialTargetId": 5,
+              "finalTargetId": 12,
+              "initialTime": 88.71114,
+              "finalTime": 89.35687,
+              "trialDuration": 0.645729065,
+              "initialPosition": {
+                "x": 0.10625,
+                "y": -0.415000021,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.07875,
+                "y": -0.153750017,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 11,
+              "initialTargetId": 12,
+              "finalTargetId": 6,
+              "initialTime": 89.35689,
+              "finalTime": 90.1482544,
+              "trialDuration": 0.7913666,
+              "initialPosition": {
+                "x": -0.07875,
+                "y": -0.153750017,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.04625,
+                "y": -0.46125,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 12,
+              "initialTargetId": 6,
+              "finalTargetId": 0,
+              "initialTime": 90.14827,
+              "finalTime": 91.02599,
+              "trialDuration": 0.8777237,
+              "initialPosition": {
+                "x": 0.04625,
+                "y": -0.46125,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.00687499763,
+                "y": -0.143125013,
+                "z": 0.5
+              },
+              "missedTarget": false
+            }
+          ]
+        },
+        {
+          "blockId": 1,
+          "initialTargetId": 0,
+          "initialTime": 91.026,
+          "finalTime": 100.681076,
+          "blockDuration": 9.655075,
+          "trialsData": [
+            {
+              "trialId": 0,
+              "initialTargetId": 0,
+              "finalTargetId": 7,
+              "initialTime": 91.02601,
+              "finalTime": 91.6892,
+              "trialDuration": 0.663192749,
+              "initialPosition": {
+                "x": -0.00687499763,
+                "y": -0.143125013,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.0306249969,
+                "y": -0.448750019,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 1,
+              "initialTargetId": 7,
+              "finalTargetId": 1,
+              "initialTime": 91.68922,
+              "finalTime": 92.45128,
+              "trialDuration": 0.7620621,
+              "initialPosition": {
+                "x": -0.0306249969,
+                "y": -0.448750019,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.07,
+                "y": -0.165625,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 2,
+              "initialTargetId": 1,
+              "finalTargetId": 8,
+              "initialTime": 92.4512939,
+              "finalTime": 93.1465454,
+              "trialDuration": 0.695251465,
+              "initialPosition": {
+                "x": 0.07,
+                "y": -0.165625,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.093125,
+                "y": -0.404375017,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 3,
+              "initialTargetId": 8,
+              "finalTargetId": 2,
+              "initialTime": 93.14656,
+              "finalTime": 94.07475,
+              "trialDuration": 0.928192139,
+              "initialPosition": {
+                "x": -0.093125,
+                "y": -0.404375017,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.12875,
+                "y": -0.215625018,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 4,
+              "initialTargetId": 2,
+              "finalTargetId": 9,
+              "initialTime": 94.07477,
+              "finalTime": 94.6171646,
+              "trialDuration": 0.542396545,
+              "initialPosition": {
+                "x": 0.12875,
+                "y": -0.215625018,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.15875,
+                "y": -0.370625019,
+                "z": 0.5
+              },
+              "missedTarget": true
+            },
+            {
+              "trialId": 5,
+              "initialTargetId": 9,
+              "finalTargetId": 3,
+              "initialTime": 94.61718,
+              "finalTime": 95.56269,
+              "trialDuration": 0.945510864,
+              "initialPosition": {
+                "x": -0.15875,
+                "y": -0.370625019,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.155625,
+                "y": -0.27625,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 6,
+              "initialTargetId": 3,
+              "finalTargetId": 10,
+              "initialTime": 95.562706,
+              "finalTime": 96.27448,
+              "trialDuration": 0.711776733,
+              "initialPosition": {
+                "x": 0.155625,
+                "y": -0.27625,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.138125,
+                "y": -0.278125018,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 7,
+              "initialTargetId": 10,
+              "finalTargetId": 4,
+              "initialTime": 96.27449,
+              "finalTime": 96.9204,
+              "trialDuration": 0.6459122,
+              "initialPosition": {
+                "x": -0.138125,
+                "y": -0.278125018,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.1375,
+                "y": -0.354375,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 8,
+              "initialTargetId": 4,
+              "finalTargetId": 11,
+              "initialTime": 96.92042,
+              "finalTime": 97.68301,
+              "trialDuration": 0.7625885,
+              "initialPosition": {
+                "x": 0.1375,
+                "y": -0.354375,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.122499995,
+                "y": -0.218750015,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 9,
+              "initialTargetId": 11,
+              "finalTargetId": 5,
+              "initialTime": 97.68302,
+              "finalTime": 98.3134842,
+              "trialDuration": 0.630462646,
+              "initialPosition": {
+                "x": -0.122499995,
+                "y": -0.218750015,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.095,
+                "y": -0.413750023,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 10,
+              "initialTargetId": 5,
+              "finalTargetId": 12,
+              "initialTime": 98.31349,
+              "finalTime": 99.1237946,
+              "trialDuration": 0.810302734,
+              "initialPosition": {
+                "x": 0.095,
+                "y": -0.413750023,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.0756249949,
+                "y": -0.150625,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 11,
+              "initialTargetId": 12,
+              "finalTargetId": 6,
+              "initialTime": 99.1238,
+              "finalTime": 99.96868,
+              "trialDuration": 0.84487915,
+              "initialPosition": {
+                "x": -0.0756249949,
+                "y": -0.150625,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.0425000042,
+                "y": -0.445625,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 12,
+              "initialTargetId": 6,
+              "finalTargetId": 0,
+              "initialTime": 99.9687,
+              "finalTime": 100.681061,
+              "trialDuration": 0.7123642,
+              "initialPosition": {
+                "x": 0.0425000042,
+                "y": -0.445625,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.00625000242,
+                "y": -0.151875019,
+                "z": 0.5
+              },
+              "missedTarget": false
+            }
+          ]
+        },
+        {
+          "blockId": 2,
+          "initialTargetId": 0,
+          "initialTime": 100.681076,
+          "finalTime": 111.118118,
+          "blockDuration": 10.4370422,
+          "trialsData": [
+            {
+              "trialId": 0,
+              "initialTargetId": 0,
+              "finalTargetId": 7,
+              "initialTime": 100.681084,
+              "finalTime": 101.476608,
+              "trialDuration": 0.7955246,
+              "initialPosition": {
+                "x": 0.00625000242,
+                "y": -0.151875019,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.039374996,
+                "y": -0.4575,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 1,
+              "initialTargetId": 7,
+              "finalTargetId": 1,
+              "initialTime": 101.476616,
+              "finalTime": 102.205048,
+              "trialDuration": 0.7284317,
+              "initialPosition": {
+                "x": -0.039374996,
+                "y": -0.4575,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.056875,
+                "y": -0.153125018,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 2,
+              "initialTargetId": 1,
+              "finalTargetId": 8,
+              "initialTime": 102.205063,
+              "finalTime": 103.265785,
+              "trialDuration": 1.06072235,
+              "initialPosition": {
+                "x": 0.056875,
+                "y": -0.153125018,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.0906249955,
+                "y": -0.40875,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 3,
+              "initialTargetId": 8,
+              "finalTargetId": 2,
+              "initialTime": 103.265793,
+              "finalTime": 104.209641,
+              "trialDuration": 0.943847656,
+              "initialPosition": {
+                "x": -0.0906249955,
+                "y": -0.40875,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.1075,
+                "y": -0.218125015,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 4,
+              "initialTargetId": 2,
+              "finalTargetId": 9,
+              "initialTime": 104.209648,
+              "finalTime": 104.955368,
+              "trialDuration": 0.7457199,
+              "initialPosition": {
+                "x": 0.1075,
+                "y": -0.218125015,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.130625,
+                "y": -0.347500026,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 5,
+              "initialTargetId": 9,
+              "finalTargetId": 3,
+              "initialTime": 104.955383,
+              "finalTime": 105.66774,
+              "trialDuration": 0.712356567,
+              "initialPosition": {
+                "x": -0.130625,
+                "y": -0.347500026,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.144375,
+                "y": -0.2825,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 6,
+              "initialTargetId": 3,
+              "finalTargetId": 10,
+              "initialTime": 105.667763,
+              "finalTime": 106.480896,
+              "trialDuration": 0.81313324,
+              "initialPosition": {
+                "x": 0.144375,
+                "y": -0.2825,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.139375,
+                "y": -0.2825,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 7,
+              "initialTargetId": 10,
+              "finalTargetId": 4,
+              "initialTime": 106.480911,
+              "finalTime": 107.341972,
+              "trialDuration": 0.8610611,
+              "initialPosition": {
+                "x": -0.139375,
+                "y": -0.2825,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.13,
+                "y": -0.349375,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 8,
+              "initialTargetId": 4,
+              "finalTargetId": 11,
+              "initialTime": 107.341988,
+              "finalTime": 108.20134,
+              "trialDuration": 0.8593521,
+              "initialPosition": {
+                "x": 0.13,
+                "y": -0.349375,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.1275,
+                "y": -0.222500011,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 9,
+              "initialTargetId": 11,
+              "finalTargetId": 5,
+              "initialTime": 108.201355,
+              "finalTime": 108.898247,
+              "trialDuration": 0.6968918,
+              "initialPosition": {
+                "x": -0.1275,
+                "y": -0.222500011,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.10875,
+                "y": -0.398125023,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 10,
+              "initialTargetId": 5,
+              "finalTargetId": 12,
+              "initialTime": 108.898254,
+              "finalTime": 109.627274,
+              "trialDuration": 0.729019165,
+              "initialPosition": {
+                "x": 0.10875,
+                "y": -0.398125023,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.0775,
+                "y": -0.160625011,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 11,
+              "initialTargetId": 12,
+              "finalTargetId": 6,
+              "initialTime": 109.627281,
+              "finalTime": 110.422432,
+              "trialDuration": 0.795150757,
+              "initialPosition": {
+                "x": -0.0775,
+                "y": -0.160625011,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": 0.0356250033,
+                "y": -0.43875,
+                "z": 0.5
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 12,
+              "initialTargetId": 6,
+              "finalTargetId": 0,
+              "initialTime": 110.42244,
+              "finalTime": 111.118111,
+              "trialDuration": 0.6956711,
+              "initialPosition": {
+                "x": 0.0356250033,
+                "y": -0.43875,
+                "z": 0.5
+              },
+              "finalPosition": {
+                "x": -0.00499999756,
+                "y": -0.148125008,
+                "z": 0.5
+              },
+              "missedTarget": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "participantName": "John",
+  "participantAge": 29,
+  "testDescription": "Teste preliminar cursor 1cm"
+}

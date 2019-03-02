@@ -21,30 +21,18 @@ public class TargetBehaviour : MonoBehaviour
     public Vector3 position { get { return transform.position; } }
     public Vector3 localScale { get { return transform.localScale; } }
 
-    MeshRenderer meshRenderer;
-
-	// Use this for initialization
-	void Start () {
-        meshRenderer = GetComponent<MeshRenderer>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
     public void SetAsNextTarget() {
         type = TargetType.NextTarget;
-        meshRenderer.material = nextTargetMaterial;
+        GetComponent<MeshRenderer>().material = nextTargetMaterial;
     }
 
     public void SetAsNormalTarget() {
         type = TargetType.NormalTarget;
-        meshRenderer.material = normalTargetMaterial;
+        GetComponent<MeshRenderer>().material = normalTargetMaterial;
     }
 
     public void HighlightTarget() {
-        meshRenderer.material = highlightedTargetMaterial;
+        GetComponent<MeshRenderer>().material = highlightedTargetMaterial;
     }
 
     public void UnhighlightTarget() {
