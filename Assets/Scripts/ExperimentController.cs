@@ -70,7 +70,8 @@ public class ExperimentController : MonoBehaviour, ITestListener
     {
         UISetNoteText("");
 
-        experimentConfig = new TappingMouseExperimentConfiguration();
+       // experimentConfig = new TappingMouseExperimentConfiguration();
+        experimentConfig = new DragMouseExperimentConfiguration();
     }
 
     public void RunExperiment()
