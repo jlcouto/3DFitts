@@ -5,6 +5,7 @@ using UnityEngine;
 public class TestConfiguration
 {
     public string testId;
+    public ExperimentTask task;
     public float targetWidth;
     public float targetDistance;
     public PlaneOrientation planeOrientation;
@@ -12,7 +13,8 @@ public class TestConfiguration
     public List<SimpleVector3> targetsPositions;
     public int numOfBlocksPerTest;
 
-    public TestConfiguration(TargetBehaviour[] targets, PlaneOrientation orientation, float targetWidth, float targetDistance, int numOfBlocksPerTest) {
+    public TestConfiguration(TargetBehaviour[] targets, ExperimentTask task, PlaneOrientation orientation, float targetWidth, float targetDistance, int numOfBlocksPerTest) {
+        this.task = task;
         this.planeOrientation = orientation;
         this.targetWidth = targetWidth;
         this.targetDistance = targetDistance;
@@ -44,10 +46,21 @@ public class TestConfiguration
         }
     }
 
+    string GetTaskName(ExperimentTask task)
+    {
+        switch (task)
+        {
+            case ExperimentTask.ReciprocalTapping: return "ReciprocalTapping";
+            case ExperimentTask.Dragging: return "Dragging";
+            default: return "undefined";
+        }
+    }
+
     public Dictionary<string, object> SerializeToDictionary()
     {
         Dictionary<string, object> output = new Dictionary<string, object>(9);
         output["testId"] = testId;
+        output["task"] = GetTaskName(task);
         output["numberOfTargets"] = numberOfTargets;
         output["targetWidth"] = targetWidth;
         output["targetDistance"] = targetDistance;

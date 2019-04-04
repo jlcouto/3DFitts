@@ -6,15 +6,7 @@ public interface ITrialListener {
     void OnTrialEnded(TrialMeasurements measurements);
 }
 
-public class TrialController : ICursorListener {
-    /*
-     * This class is responsible for controlling one trial, which consists of the following tasks:
-     * 1. Capture the time the trials begins and the cursor position at that time
-     * 2. Register the trajectory of the cursor while the trial is active
-     * 3. Register itself in the controller that checks if a trial ended and responds to the end of the trial
-     * 4. Identify if user missed the final target
-     * 5. Capture the time the trials ends and the cursor position at that time
-     */
+public abstract class TrialController : ICursorListener {
 
     public TargetBehaviour initialTarget;
     public TargetBehaviour finalTarget;
@@ -22,12 +14,12 @@ public class TrialController : ICursorListener {
 
     public ITrialListener listener;
 
-    int trialId;
+    public int trialId;
 
-    TrialMeasurements trialData;
+    public TrialMeasurements trialData;
 
-    public TrialController(int trialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget, ITrialListener theListener, CursorBehaviour theCursor) {
-        this.trialId = trialId;
+    public TrialController(int theTrialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget, ITrialListener theListener, CursorBehaviour theCursor) {
+        this.trialId = theTrialId;
         this.initialTarget = initialTarget;
         this.finalTarget = finalTarget;
         this.listener = theListener;
@@ -43,7 +35,7 @@ public class TrialController : ICursorListener {
         cursor.RegisterNewListener(this);
     }
 
-    void FinishTrial() {
+    public void FinishTrial() {
         cursor.RemoveCurrentListener();
         trialData.finalTime = Time.realtimeSinceStartup;
         trialData.finalPosition = SimpleVector3.FromVector3(cursor.GetCursorPosition());
@@ -52,23 +44,9 @@ public class TrialController : ICursorListener {
         }
     }
 
-    public void CursorEnteredTarget(TargetBehaviour target) {
-
-    }
-
-    public void CursorExitedTarget(TargetBehaviour target) {
-
-    }
-
-    public void CursorAcquiredTarget(TargetBehaviour target) {
-        if (target != null && target.targetId == finalTarget.targetId) {
-            trialData.missedTarget = false;
-            cursor.PlayCorrectAudio();
-        }
-        else {
-            trialData.missedTarget = true;
-            cursor.PlayErrorAudio();
-        }
-        FinishTrial();
-    }
+    public abstract void CursorEnteredTarget(TargetBehaviour target);
+    public abstract void CursorExitedTarget(TargetBehaviour target);
+    public abstract void CursorAcquiredTarget(TargetBehaviour target);
+    public abstract void CursorDragTargetStarted(TargetBehaviour target);
+    public abstract void CursorDragTargetEnded(TargetBehaviour draggedTarget, TargetBehaviour receivingTarget);
 }

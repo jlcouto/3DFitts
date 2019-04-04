@@ -12,11 +12,13 @@ public class BlockController : ITrialListener {
     TargetBehaviour[] targets;
     CursorBehaviour cursor;
     int blockId;
+    ExperimentTask task;
 
     int currentInitialTargetId = 0;
     IBlockListener listener;
 
-    public BlockController(int blockId, TargetBehaviour[] targets, IBlockListener listener, CursorBehaviour theCursor) {
+    public BlockController(ExperimentTask task, int blockId, TargetBehaviour[] targets, IBlockListener listener, CursorBehaviour theCursor) {
+        this.task = task;
         this.blockId = blockId;
         this.targets = targets;
         this.listener = listener;
@@ -35,7 +37,14 @@ public class BlockController : ITrialListener {
         int currentFinalIndex = (currentInitialTargetId + 1) % targets.Length;
         if (currentInitialTargetId < targets.Length)
         {
-            currentTrial = new TrialController(currentInitialTargetId, targets[currentInitialTargetId], targets[currentFinalIndex], this, cursor);
+            if (task == ExperimentTask.Dragging)
+            {
+                currentTrial = new DragTestController(currentInitialTargetId, targets[currentInitialTargetId], targets[currentFinalIndex], this, cursor);
+            }
+            else
+            {
+                currentTrial = new TappingTrialController(currentInitialTargetId, targets[currentInitialTargetId], targets[currentFinalIndex], this, cursor);
+            }            
             currentTrial.StartTrial();
         }
         else

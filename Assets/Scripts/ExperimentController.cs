@@ -6,8 +6,16 @@ using UnityEditor;
 using Newtonsoft.Json;
 using System.IO;
 
+
+public enum ExperimentTask
+{
+    ReciprocalTapping,
+    Dragging
+}
+
 public abstract class ExperimentConfiguration
 {
+    public abstract ExperimentTask GetExperimentTask();
     public abstract int GetNumBlocksPerTest();
     public abstract int GetNumTargetsPerTest();
     public abstract PlaneOrientation[] GetPlaneOrientationsToTest();
@@ -119,6 +127,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
                         currentTestController = new TestController(this, statusText, testText, repetitionText, correctTargetAudio, wrongTargetAudio,
                             cursor, baseTarget, targetPlane,
+                            experimentConfig.GetExperimentTask(),
                             experimentConfig.GetPlaneOrientationsToTest()[currentPlaneOrientation],
                             experimentConfig.GetNumTargetsPerTest(),
                             experimentConfig.GetTargetConfigurationsToTest()[currentTestConfiguration].targetWidth,

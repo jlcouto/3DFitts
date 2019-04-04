@@ -17,6 +17,11 @@ public class TappingMouseExperimentConfiguration : ExperimentConfiguration
         new IndexOfDifficultyConfiguration(0.005f, 0.4f)
     };
 
+    public override ExperimentTask GetExperimentTask()
+    {
+        return ExperimentTask.ReciprocalTapping;
+    }
+
     public override int GetNumBlocksPerTest()
     {
         return 3;
@@ -53,6 +58,11 @@ public class DragMouseExperimentConfiguration : ExperimentConfiguration
         new IndexOfDifficultyConfiguration(0.01f, 0.3f),
         new IndexOfDifficultyConfiguration(0.01f, 0.4f)
     };
+
+    public override ExperimentTask GetExperimentTask()
+    {
+        return ExperimentTask.Dragging;
+    }
 
     public override int GetNumBlocksPerTest()
     {

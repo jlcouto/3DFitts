@@ -33,6 +33,7 @@ public class TestController : ICursorListener, IBlockListener
     public Transform targetPlane;
     public PlaneOrientation orientation = PlaneOrientation.PlaneXY;
 
+    public ExperimentTask task = ExperimentTask.ReciprocalTapping;
     public int numberOfTargets = 13;
     public float targetWidth = 0.01f;
     public float targetDistance = 0.15f;
@@ -60,9 +61,10 @@ public class TestController : ICursorListener, IBlockListener
     }
     TestStatus currentStatus;
 
-    public TestController(ITestListener listener, Text statusText, Text testText, Text repetitionText, AudioSource correctTargetAudio, AudioSource wrongTargetAudio,
-        CursorBehaviour cursor, GameObject baseTarget, Transform targetPlane, PlaneOrientation orientation,
-        int numberOfTargets, float targetWidth, float targetDistance, int numOfBlocksPerTest)
+    public TestController(ITestListener listener, Text statusText, Text testText, Text repetitionText,
+        AudioSource correctTargetAudio, AudioSource wrongTargetAudio,
+        CursorBehaviour cursor, GameObject baseTarget, Transform targetPlane, ExperimentTask task,
+        PlaneOrientation orientation, int numberOfTargets, float targetWidth, float targetDistance, int numOfBlocksPerTest)
     {
         this.testListener = listener;
 
@@ -78,6 +80,7 @@ public class TestController : ICursorListener, IBlockListener
         this.targetPlane = targetPlane;
         this.orientation = orientation;
 
+        this.task = task;
         this.numberOfTargets = numberOfTargets;
         this.targetWidth = targetWidth;
         this.targetDistance = targetDistance;
@@ -123,7 +126,7 @@ public class TestController : ICursorListener, IBlockListener
     void StartTest() {
         if (currentStatus != TestStatus.Running) {        
             SetCurrentStatus(TestStatus.Running);
-            testConfiguration = new TestConfiguration(targets, orientation, targetWidth, targetDistance, numOfBlocksPerTest);
+            testConfiguration = new TestConfiguration(targets, task, orientation, targetWidth, targetDistance, numOfBlocksPerTest);
             testData = new TestMeasurements(testConfiguration);
             testData.timestamp = System.DateTime.Now.ToString("s");
             testData.initialTime = Time.realtimeSinceStartup;
@@ -133,7 +136,7 @@ public class TestController : ICursorListener, IBlockListener
 
     void RunNextBlock() {
         if (currentBlockIndex < numOfBlocksPerTest) {
-            currentBlock = new BlockController(currentBlockIndex, targets, this, cursor);
+            currentBlock = new BlockController(task, currentBlockIndex, targets, this, cursor);
             currentBlock.StartBlockOfTrials();
             currentBlockIndex++;
         }
@@ -157,13 +160,15 @@ public class TestController : ICursorListener, IBlockListener
         }
     }
 
+    public void CursorEnteredTarget(TargetBehaviour target) { }
+    public void CursorExitedTarget(TargetBehaviour target) { }
+    public void CursorDragTargetStarted(TargetBehaviour target) { }
+    public void CursorDragTargetEnded(TargetBehaviour draggedTarget, TargetBehaviour receivingTarget) { }
+
     public void OnBlockEnded(BlockMeasurements measurements) {
         testData.blocksData.Add(measurements);
         RunNextBlock();
     }
-
-    public void CursorEnteredTarget(TargetBehaviour target) { }
-    public void CursorExitedTarget(TargetBehaviour target) { }
 
     void SetCurrentStatus(TestStatus status)
     {
