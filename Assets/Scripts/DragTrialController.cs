@@ -9,7 +9,7 @@ public class DragTestController : TrialController
     {
     }
 
-    public new void StartTrial()
+    public override void StartTrial()
     {
         base.StartTrial();
         initialTarget.SetAsNextTarget();
@@ -19,21 +19,22 @@ public class DragTestController : TrialController
 
     public override void CursorEnteredTarget(TargetBehaviour target)
     {
-
+        Debug.Log("Drag CursorEnteredTarget");
     }
 
     public override void CursorExitedTarget(TargetBehaviour target)
     {
-
+        Debug.Log("Drag CursorExitedTarget");
     }
 
     public override void CursorAcquiredTarget(TargetBehaviour target)
     {
-        
+        Debug.Log("Drag CursorAcquiredTarget");
     }
 
     public override void CursorDragTargetStarted(TargetBehaviour target)
     {
+        Debug.Log("Drag CursorDragTargetStarted");
         if (target != null && target.targetId == initialTarget.targetId)
         {
             initialTarget.SetAsNormalTarget();
@@ -49,6 +50,7 @@ public class DragTestController : TrialController
 
     public override void CursorDragTargetEnded(TargetBehaviour draggedTarget, TargetBehaviour receivingTarget)
     {
+        Debug.Log("Drag CursorDragTargetExited");
         if (draggedTarget != null && draggedTarget.targetId == initialTarget.targetId &&
             finalTarget != null && receivingTarget.targetId == finalTarget.targetId)
         {

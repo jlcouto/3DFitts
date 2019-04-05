@@ -153,6 +153,7 @@ public class TestController : ICursorListener, IBlockListener
     }
 
     public void CursorAcquiredTarget(TargetBehaviour target) {
+        Debug.Log("TestController CursorAcquiredTarget");
         if (target != null && target.targetId == initialTarget.targetId) {
             cursor.PlayCorrectAudio();
             cursor.RemoveCurrentListener();

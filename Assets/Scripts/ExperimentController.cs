@@ -54,6 +54,8 @@ public class ExperimentController : MonoBehaviour, ITestListener
     public int participantAge;
     public string testDescription;
 
+    public ExperimentTask task;
+
     public ExperimentConfiguration experimentConfig;
 
     public Text statusText;
@@ -77,13 +79,19 @@ public class ExperimentController : MonoBehaviour, ITestListener
     void Start()
     {
         UISetNoteText("");
-
-       // experimentConfig = new TappingMouseExperimentConfiguration();
-        experimentConfig = new DragMouseExperimentConfiguration();
     }
 
     public void RunExperiment()
     {
+        if (task == ExperimentTask.Dragging)
+        {
+            experimentConfig = new DragMouseExperimentConfiguration();
+        }
+        else
+        {
+            experimentConfig = new TappingMouseExperimentConfiguration();
+        }
+
         if (status == ExperimentStatus.Stopped)
         {
             Debug.Log("Starting experiment...");

@@ -26,7 +26,7 @@ public abstract class TrialController : ICursorListener {
         this.cursor = theCursor;
     }
 	
-    public void StartTrial() {
+    public virtual void StartTrial() {
         initialTarget.SetAsNormalTarget();
         finalTarget.SetAsNextTarget();
         trialData = new TrialMeasurements(trialId, initialTarget, finalTarget);

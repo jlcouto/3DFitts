@@ -28,7 +28,8 @@ public class CursorInteractorBehaviour : CursorBehaviour
     TargetBehaviour currentAcquiredTarget;
 
     int numFramesSelectionIsActive = 0;
-    const int numFramesToStartDragInteraction = 5;
+    const int numFramesToStartDragInteraction = 8;
+    bool isDragging = false;
      
     private void Start()
     {
@@ -58,22 +59,35 @@ public class CursorInteractorBehaviour : CursorBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            numFramesSelectionIsActive = 0;
             AcquireTarget(currentHighlightedTarget);
         }
-        else if (Input.GetKeyUp(KeyCode.Space))
+
+        if (isDragging && Input.GetKeyUp(KeyCode.Space))
         {
+            if (numFramesSelectionIsActive > numFramesToStartDragInteraction)
+            {
+                CursorDragTargetEnded(currentDraggedTarget, currentHighlightedTarget);               
+            }
             numFramesSelectionIsActive = 0;
-            CursorDragTargetEnded(currentDraggedTarget, currentHighlightedTarget);
+            currentDraggedTarget = null;
+            isDragging = false;
         }
         else if (Input.GetKey(KeyCode.Space))
         {
             numFramesSelectionIsActive++;
 
-            if (numFramesSelectionIsActive > numFramesToStartDragInteraction)
+            if (!isDragging && numFramesSelectionIsActive > numFramesToStartDragInteraction)
             {
+                isDragging = true;
                 currentDraggedTarget = currentHighlightedTarget;
                 CursorDragTargetStarted(currentDraggedTarget);
             }
+        }
+        else
+        {
+            isDragging = false;
+            numFramesSelectionIsActive = 0;
         }
     }
 
@@ -81,22 +95,35 @@ public class CursorInteractorBehaviour : CursorBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
+            numFramesSelectionIsActive = 0;
             AcquireTarget(currentHighlightedTarget);
         }
-        else if (Input.GetMouseButtonUp(0))
-        {
+
+        if (isDragging && Input.GetMouseButtonUp(0))
+        {            
+            if (numFramesSelectionIsActive > numFramesToStartDragInteraction)          
+            {
+                CursorDragTargetEnded(currentDraggedTarget, currentHighlightedTarget);                
+            }
             numFramesSelectionIsActive = 0;
-            CursorDragTargetEnded(currentDraggedTarget, currentHighlightedTarget);
+            currentDraggedTarget = null;
+            isDragging = false;
         }
         else if (Input.GetMouseButton(0))
         {
             numFramesSelectionIsActive++;
 
-            if (numFramesSelectionIsActive > numFramesToStartDragInteraction)
+            if (!isDragging && numFramesSelectionIsActive > numFramesToStartDragInteraction)
             {
+                isDragging = true;
                 currentDraggedTarget = currentHighlightedTarget;
                 CursorDragTargetStarted(currentDraggedTarget);
             }
+        }
+        else
+        {
+            isDragging = false;
+            numFramesSelectionIsActive = 0;
         }
     }
 
