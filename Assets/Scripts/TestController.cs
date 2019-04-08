@@ -120,7 +120,7 @@ public class TestController : ICursorListener, IBlockListener
 
         SetCurrentStatus(TestStatus.Waiting);
 
-        initialTarget.SetAsNextTarget();
+        initialTarget.SetAsStartingTestTarget();
     }
 
     void StartTest() {
@@ -154,7 +154,7 @@ public class TestController : ICursorListener, IBlockListener
 
     public void CursorAcquiredTarget(TargetBehaviour target) {
         Debug.Log("TestController CursorAcquiredTarget");
-        if (target != null && target.targetId == initialTarget.targetId) {
+        if (target != null && target.type == TargetType.StartingTestTarget) {
             cursor.PlayCorrectAudio();
             cursor.RemoveCurrentListener();
             StartTest();

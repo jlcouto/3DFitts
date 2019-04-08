@@ -9,6 +9,13 @@ public class TappingTrialController : TrialController
     {
     }
 
+    public override void InitializeTrial()
+    {
+        base.InitializeTrial();
+        initialTarget.SetAsNormalTarget();
+        finalTarget.SetAsNextTarget();
+    }
+
     public override void CursorEnteredTarget(TargetBehaviour target)
     {
         Debug.Log("Tapping CursorEnteredTarget");

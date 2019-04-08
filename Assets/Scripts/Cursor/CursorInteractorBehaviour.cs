@@ -28,7 +28,9 @@ public class CursorInteractorBehaviour : CursorBehaviour
     TargetBehaviour currentAcquiredTarget;
 
     int numFramesSelectionIsActive = 0;
-    const int numFramesToStartDragInteraction = 8;
+    const int numFramesToStartDragInteraction = 5;
+    Vector3 acquiredPosition;
+    float distanceToInitiateDrag = 0.005f;
     bool isDragging = false;
      
     private void Start()
@@ -43,10 +45,18 @@ public class CursorInteractorBehaviour : CursorBehaviour
         switch (selectionMethod)
         {
             case CursorSelectionMethod.KEYBOARD_SPACEBAR:
-                CheckSpaceBarSelection();
+                ManageSelectionInteraction(
+                    input => { return Input.GetKeyDown(KeyCode.Space); },
+                    input => { return Input.GetKey(KeyCode.Space); },
+                    input => { return Input.GetKeyUp(KeyCode.Space); }
+                );
                 break;
             case CursorSelectionMethod.MOUSE_LEFTCLICK:
-                CheckMouseLeftClickSelection();
+                ManageSelectionInteraction(
+                    input => { return Input.GetMouseButtonDown(0); },
+                    input => { return Input.GetMouseButton(0); },
+                    input => { return Input.GetMouseButtonUp(0); }
+                );
                 break;
             case CursorSelectionMethod.AUTOMATIC_BYCONTACT:
             default:
@@ -55,65 +65,31 @@ public class CursorInteractorBehaviour : CursorBehaviour
         }  
     }
 
-    void CheckSpaceBarSelection()
+    void ManageSelectionInteraction(
+        System.Predicate<bool> SelectionInteractionStared,
+        System.Predicate<bool> SelectionInteractionMantained,
+        System.Predicate<bool> SelectionInteractionEnded)
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (SelectionInteractionStared(true))
         {
             numFramesSelectionIsActive = 0;
             AcquireTarget(currentHighlightedTarget);
+            acquiredPosition = GetCursorPosition();
         }
 
-        if (isDragging && Input.GetKeyUp(KeyCode.Space))
+        if (isDragging && SelectionInteractionEnded(true))
         {
-            if (numFramesSelectionIsActive > numFramesToStartDragInteraction)
-            {
-                CursorDragTargetEnded(currentDraggedTarget, currentHighlightedTarget);               
-            }
+            CursorDragTargetEnded(currentDraggedTarget, currentHighlightedTarget);
             numFramesSelectionIsActive = 0;
             currentDraggedTarget = null;
             isDragging = false;
         }
-        else if (Input.GetKey(KeyCode.Space))
+        else if (SelectionInteractionMantained(true))
         {
             numFramesSelectionIsActive++;
-
-            if (!isDragging && numFramesSelectionIsActive > numFramesToStartDragInteraction)
-            {
-                isDragging = true;
-                currentDraggedTarget = currentHighlightedTarget;
-                CursorDragTargetStarted(currentDraggedTarget);
-            }
-        }
-        else
-        {
-            isDragging = false;
-            numFramesSelectionIsActive = 0;
-        }
-    }
-
-    void CheckMouseLeftClickSelection()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            numFramesSelectionIsActive = 0;
-            AcquireTarget(currentHighlightedTarget);
-        }
-
-        if (isDragging && Input.GetMouseButtonUp(0))
-        {            
-            if (numFramesSelectionIsActive > numFramesToStartDragInteraction)          
-            {
-                CursorDragTargetEnded(currentDraggedTarget, currentHighlightedTarget);                
-            }
-            numFramesSelectionIsActive = 0;
-            currentDraggedTarget = null;
-            isDragging = false;
-        }
-        else if (Input.GetMouseButton(0))
-        {
-            numFramesSelectionIsActive++;
-
-            if (!isDragging && numFramesSelectionIsActive > numFramesToStartDragInteraction)
+            float distanceMoved = Vector3.Distance(acquiredPosition, GetCursorPosition());
+            //if (!isDragging && numFramesSelectionIsActive > numFramesToStartDragInteraction)
+            if (!isDragging && distanceMoved > distanceToInitiateDrag)
             {
                 isDragging = true;
                 currentDraggedTarget = currentHighlightedTarget;

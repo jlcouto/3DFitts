@@ -24,7 +24,11 @@ public class TargetPlaneBuilder : MonoBehaviour {
             }
             GameObject newTarget = Instantiate(baseTarget, targetPlane);
             newTarget.name = "Target " + i;
-            newTarget.GetComponent<TargetBehaviour>().targetId = targetPositionIndex;
+
+            var targetBehaviour = newTarget.GetComponent<TargetBehaviour>();
+            targetBehaviour.targetId = targetPositionIndex;
+            targetBehaviour.SetAsNormalTarget();
+
             newTarget.transform.localPosition = targetDistance/2 * (new Vector3(Mathf.Sin(targetPositionIndex * thetaStep), 0, Mathf.Cos(targetPositionIndex * thetaStep)));
             newTarget.transform.localScale = Vector3.one * targetWidth;
             newTarget.SetActive(true);

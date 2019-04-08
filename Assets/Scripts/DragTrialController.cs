@@ -4,17 +4,37 @@ using UnityEngine;
 
 public class DragTestController : TrialController
 {
+    GameObject draggableObject;
+    bool isDraggingTarget = false;
+
     public DragTestController(int theTrialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget, ITrialListener theListener, CursorBehaviour theCursor)
         : base(theTrialId, initialTarget, finalTarget, theListener, theCursor)
     {
+        draggableObject = GameObject.Instantiate(initialTarget.gameObject);
+        draggableObject.GetComponent<TargetBehaviour>().SetAsDraggableTarget();
+        Destroy(draggableObject.GetComponent<TargetBehaviour>());
+        draggableObject.transform.SetParent(cursor.transform);
+        draggableObject.transform.localPosition = Vector3.zero;
+        draggableObject.SetActive(false);
+    }
+
+    public override void InitializeTrial()
+    {
+        base.InitializeTrial();
+        initialTarget.SetAsDraggableTarget();
+        finalTarget.SetAsNormalTarget();
     }
 
     public override void StartTrial()
     {
         base.StartTrial();
-        initialTarget.SetAsNextTarget();
-        finalTarget.SetAsNormalTarget();
         trialData.initialTime = -1;
+    }
+
+    public override void FinishTrial()
+    {
+        finalTarget.SetAsNormalTarget();
+        base.FinishTrial();
     }
 
     public override void CursorEnteredTarget(TargetBehaviour target)
@@ -35,8 +55,11 @@ public class DragTestController : TrialController
     public override void CursorDragTargetStarted(TargetBehaviour target)
     {
         Debug.Log("Drag CursorDragTargetStarted");
-        if (target != null && target.targetId == initialTarget.targetId)
+        if (!isDraggingTarget &&
+            target != null && target.targetId == initialTarget.targetId && target.type == TargetType.DraggableTarget)
         {
+            isDraggingTarget = true;
+            draggableObject.SetActive(true);
             initialTarget.SetAsNormalTarget();
             finalTarget.SetAsNextTarget();
             trialData.initialTime = Time.realtimeSinceStartup;
@@ -51,17 +74,29 @@ public class DragTestController : TrialController
     public override void CursorDragTargetEnded(TargetBehaviour draggedTarget, TargetBehaviour receivingTarget)
     {
         Debug.Log("Drag CursorDragTargetExited");
-        if (draggedTarget != null && draggedTarget.targetId == initialTarget.targetId &&
-            finalTarget != null && receivingTarget.targetId == finalTarget.targetId)
+        if (isDraggingTarget)
         {
-            trialData.missedTarget = false;
-            cursor.PlayCorrectAudio();
+            if (draggedTarget != null && draggedTarget.targetId == initialTarget.targetId &&
+                (receivingTarget != null && receivingTarget.targetId == finalTarget.targetId))// || IsDraggableObjectTouchingFinalTarget()))
+            {
+                trialData.missedTarget = false;
+                cursor.PlayCorrectAudio();
+            }
+            else
+            {
+                trialData.missedTarget = true;
+                cursor.PlayErrorAudio();
+            }
+            Destroy(draggableObject);
+            isDraggingTarget = false;
+            FinishTrial();
         }
-        else
-        {
-            trialData.missedTarget = true;
-            cursor.PlayErrorAudio();
-        }
-        FinishTrial();
+    }
+
+    bool IsDraggableObjectTouchingFinalTarget()
+    {
+        float centersDistance = Vector3.Distance(finalTarget.gameObject.transform.position, draggableObject.gameObject.transform.position);
+        float maxDistanceToIntersect = finalTarget.gameObject.transform.localScale.x;
+        return centersDistance <= maxDistanceToIntersect;
     }
 }

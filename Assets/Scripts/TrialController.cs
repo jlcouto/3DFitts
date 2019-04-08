@@ -6,7 +6,7 @@ public interface ITrialListener {
     void OnTrialEnded(TrialMeasurements measurements);
 }
 
-public abstract class TrialController : ICursorListener {
+public abstract class TrialController : MonoBehaviour, ICursorListener {
 
     public TargetBehaviour initialTarget;
     public TargetBehaviour finalTarget;
@@ -24,18 +24,24 @@ public abstract class TrialController : ICursorListener {
         this.finalTarget = finalTarget;
         this.listener = theListener;
         this.cursor = theCursor;
-    }
-	
-    public virtual void StartTrial() {
-        initialTarget.SetAsNormalTarget();
-        finalTarget.SetAsNextTarget();
-        trialData = new TrialMeasurements(trialId, initialTarget, finalTarget);
-        trialData.initialTime = Time.realtimeSinceStartup;
-        trialData.initialPosition = SimpleVector3.FromVector3(cursor.GetCursorPosition());
-        cursor.RegisterNewListener(this);
+        InitializeTrial();
     }
 
-    public void FinishTrial() {
+    public virtual void InitializeTrial()
+    {
+        trialData = new TrialMeasurements(trialId, initialTarget, finalTarget);      
+        initialTarget.SetAsNormalTarget();
+        finalTarget.SetAsNextTarget();
+    }
+	
+    public virtual void StartTrial()
+    {
+        cursor.RegisterNewListener(this);
+        trialData.initialTime = Time.realtimeSinceStartup;
+        trialData.initialPosition = SimpleVector3.FromVector3(cursor.GetCursorPosition());  
+    }
+
+    public virtual void FinishTrial() {
         cursor.RemoveCurrentListener();
         trialData.finalTime = Time.realtimeSinceStartup;
         trialData.finalPosition = SimpleVector3.FromVector3(cursor.GetCursorPosition());
