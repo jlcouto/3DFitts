@@ -1,4 +1,6 @@
 ﻿//#define DEBUG_CURSOR
+#define DRAG_START_WITH_CURSOR_MOVEMENT
+//#define DRAG_START_WITH_CONTINUOUS_SELECTION
 
 using System.Collections;
 using System.Collections.Generic;
@@ -27,12 +29,16 @@ public class CursorInteractorBehaviour : CursorBehaviour
 
     TargetBehaviour currentAcquiredTarget;
 
-    int numFramesSelectionIsActive = 0;
-    const int numFramesToStartDragInteraction = 5;
+    bool isDragging = false;
+
+#if DRAG_START_WITH_CURSOR_MOVEMENT
     Vector3 acquiredPosition;
     float distanceToInitiateDrag = 0.005f;
-    bool isDragging = false;
-     
+#elif DRAG_START_WITH_CONTINUOUS_SELECTION
+    int numFramesSelectionIsActive = 0;
+    const int numFramesToStartDragInteraction = 5;
+#endif
+
     private void Start()
     {
         currentTargetsCollidingWithCursor = new HashSet<TargetBehaviour>();
@@ -72,7 +78,9 @@ public class CursorInteractorBehaviour : CursorBehaviour
     {
         if (SelectionInteractionStared(true))
         {
+#if DRAG_START_WITH_CONTINUOUS_SELECTION
             numFramesSelectionIsActive = 0;
+#endif
             AcquireTarget(currentHighlightedTarget);
             acquiredPosition = GetCursorPosition();
         }
@@ -80,17 +88,23 @@ public class CursorInteractorBehaviour : CursorBehaviour
         if (isDragging && SelectionInteractionEnded(true))
         {
             CursorDragTargetEnded(currentDraggedTarget, currentHighlightedTarget);
+#if DRAG_START_WITH_CONTINUOUS_SELECTION
             numFramesSelectionIsActive = 0;
+#endif
             currentDraggedTarget = null;
             isDragging = false;
         }
         else if (SelectionInteractionMantained(true))
         {
+#if DRAG_START_WITH_CONTINUOUS_SELECTION
             numFramesSelectionIsActive++;
+            if (!isDragging && numFramesSelectionIsActive > numFramesToStartDragInteraction)
+            {
+#elif DRAG_START_WITH_CURSOR_MOVEMENT
             float distanceMoved = Vector3.Distance(acquiredPosition, GetCursorPosition());
-            //if (!isDragging && numFramesSelectionIsActive > numFramesToStartDragInteraction)
             if (!isDragging && distanceMoved > distanceToInitiateDrag)
             {
+#endif
                 isDragging = true;
                 currentDraggedTarget = currentHighlightedTarget;
                 CursorDragTargetStarted(currentDraggedTarget);
@@ -99,7 +113,9 @@ public class CursorInteractorBehaviour : CursorBehaviour
         else
         {
             isDragging = false;
+#if DRAG_START_WITH_CONTINUOUS_SELECTION
             numFramesSelectionIsActive = 0;
+#endif
         }
     }
 
@@ -111,13 +127,17 @@ public class CursorInteractorBehaviour : CursorBehaviour
             {
                 AcquireTarget(currentHighlightedTarget);
                 currentAcquiredTarget = currentHighlightedTarget;
+#if DEBUG_CURSOR
                 Debug.Log("AUTOMATIC SELECTION Acquired");
+#endif
             }
             if (currentHighlightedTarget != currentAcquiredTarget)
             {            
                 AcquireTarget(currentHighlightedTarget);
                 currentAcquiredTarget = currentHighlightedTarget;
+#if DEBUG_CURSOR
                 Debug.Log("AUTOMATIC SELECTION Acquired");
+#endif
             }  
         }
         else
@@ -128,7 +148,9 @@ public class CursorInteractorBehaviour : CursorBehaviour
                 if (cursorTargetDistance.magnitude > currentAcquiredTarget.localScale.magnitude)
                 {
                     currentAcquiredTarget = null;
+#if DEBUG_CURSOR
                     Debug.Log("AUTOMATIC SELECTION Released");
+#endif
                 }
             }
         }

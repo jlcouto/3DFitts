@@ -13,16 +13,6 @@ public enum ExperimentTask
     Dragging
 }
 
-public abstract class ExperimentConfiguration
-{
-    public abstract ExperimentTask GetExperimentTask();
-    public abstract int GetNumBlocksPerTest();
-    public abstract int GetNumTargetsPerTest();
-    public abstract PlaneOrientation[] GetPlaneOrientationsToTest();
-    public abstract IndexOfDifficultyConfiguration[] GetTargetConfigurationsToTest();
-}
-
-
 public class IndexOfDifficultyConfiguration
 {
     public float targetWidth;
@@ -91,6 +81,8 @@ public class ExperimentController : MonoBehaviour, ITestListener
         {
             experimentConfig = new TappingMouseExperimentConfiguration();
         }
+
+        cursor.transform.localScale = experimentConfig.GetCursorDiameter() * Vector3.one;
 
         if (status == ExperimentStatus.Stopped)
         {
@@ -212,6 +204,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
         output["participantName"] = participantName;
         output["participantAge"] = participantAge;
         output["testDescription"] = testDescription;
+        output["cursorDiameter"] = experimentConfig.GetCursorDiameter();
 
         string jsonData = JsonConvert.SerializeObject(output, new JsonSerializerSettings()
         {

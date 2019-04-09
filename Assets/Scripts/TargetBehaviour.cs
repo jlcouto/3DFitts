@@ -25,44 +25,63 @@ public class TargetBehaviour : MonoBehaviour
     public Vector3 position { get { return transform.position; } }
     public Vector3 localScale { get { return transform.localScale; } }
 
+    public bool isHighlighted = false;
+
+    void UpdateTargetMaterial()
+    {
+        Material material = normalTargetMaterial;
+        if (isHighlighted)
+        {
+            material = highlightedTargetMaterial;
+        }
+        else
+        {
+            switch (type)
+            {
+                case TargetType.StartingTestTarget: { material = startingTestTargetMaterial; break; }
+                case TargetType.NextTarget: { material = nextTargetMaterial; break; }
+                case TargetType.DraggableTarget: { material = draggableTargetMaterial; break; }
+                default:
+                case TargetType.NormalTarget: { material = normalTargetMaterial; break; }
+            }
+        }
+
+        GetComponent<MeshRenderer>().material = material;
+    }
+
     public void SetAsStartingTestTarget()
     {
         type = TargetType.StartingTestTarget;
-        GetComponent<MeshRenderer>().material = startingTestTargetMaterial;
+        UpdateTargetMaterial();
     }
 
     public void SetAsNextTarget()
     {
         type = TargetType.NextTarget;
-        GetComponent<MeshRenderer>().material = nextTargetMaterial;
+        UpdateTargetMaterial();
     }
 
     public void SetAsNormalTarget()
     {
         type = TargetType.NormalTarget;
-        GetComponent<MeshRenderer>().material = normalTargetMaterial;
+        UpdateTargetMaterial();
     }
 
     public void SetAsDraggableTarget()
     {
         type = TargetType.DraggableTarget;
-        GetComponent<MeshRenderer>().material = draggableTargetMaterial;
+        UpdateTargetMaterial();
     }
 
     public void HighlightTarget()
     {
-        GetComponent<MeshRenderer>().material = highlightedTargetMaterial;
+        isHighlighted = true;
+        UpdateTargetMaterial();
     }
 
     public void UnhighlightTarget()
-    {
-        switch (type)
-        {
-            case TargetType.NextTarget: SetAsNextTarget(); return;   
-            case TargetType.DraggableTarget: SetAsDraggableTarget(); return;
-            default:
-            case TargetType.NormalTarget: SetAsNormalTarget(); return;
-        }
-    }
-
+    { 
+        isHighlighted = false;
+        UpdateTargetMaterial();
+    } 
 }
