@@ -19,12 +19,12 @@ public class TappingMouseExperimentConfiguration : ExperimentConfiguration
         new IndexOfDifficultyConfiguration(0.04f, 0.2f),
         new IndexOfDifficultyConfiguration(0.04f, 0.3f),
         new IndexOfDifficultyConfiguration(0.04f, 0.4f),
-        new IndexOfDifficultyConfiguration(0.015f, 0.2f),
-        new IndexOfDifficultyConfiguration(0.015f, 0.3f),
-        new IndexOfDifficultyConfiguration(0.015f, 0.4f),
-        new IndexOfDifficultyConfiguration(0.005f, 0.2f),
-        new IndexOfDifficultyConfiguration(0.005f, 0.3f),
-        new IndexOfDifficultyConfiguration(0.005f, 0.4f)
+        new IndexOfDifficultyConfiguration(0.02f, 0.2f),
+        new IndexOfDifficultyConfiguration(0.02f, 0.3f),
+        new IndexOfDifficultyConfiguration(0.02f, 0.4f),
+        new IndexOfDifficultyConfiguration(0.01f, 0.2f),
+        new IndexOfDifficultyConfiguration(0.01f, 0.3f),
+        new IndexOfDifficultyConfiguration(0.01f, 0.4f)
     };
 
     public override float GetCursorDiameter()
@@ -68,10 +68,7 @@ public class DragMouseExperimentConfiguration : ExperimentConfiguration
         new IndexOfDifficultyConfiguration(0.04f, 0.4f),
         new IndexOfDifficultyConfiguration(0.02f, 0.2f),
         new IndexOfDifficultyConfiguration(0.02f, 0.3f),
-        new IndexOfDifficultyConfiguration(0.02f, 0.4f),
-        new IndexOfDifficultyConfiguration(0.01f, 0.2f),
-        new IndexOfDifficultyConfiguration(0.01f, 0.3f),
-        new IndexOfDifficultyConfiguration(0.01f, 0.4f)
+        new IndexOfDifficultyConfiguration(0.02f, 0.4f)
     };
 
     public override float GetCursorDiameter()

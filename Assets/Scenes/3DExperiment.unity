@@ -265,7 +265,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &308976757
 Transform:
   m_ObjectHideFlags: 0
@@ -631,12 +631,22 @@ PrefabInstance:
         type: 3}
       propertyPath: cursorPositionController
       value: 
-      objectReference: {fileID: 308976758}
+      objectReference: {fileID: 702515709}
     - target: {fileID: 4935531237737987653, guid: bb52225c045c848468f1cb4f4eccf793,
         type: 3}
       propertyPath: selectionMethod
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 4935531237737987653, guid: bb52225c045c848468f1cb4f4eccf793,
+        type: 3}
+      propertyPath: metaHandsProvider
+      value: 
+      objectReference: {fileID: 278262280}
+    - target: {fileID: 4935531237737987653, guid: bb52225c045c848468f1cb4f4eccf793,
+        type: 3}
+      propertyPath: leapMotionServiceProvider
+      value: 
+      objectReference: {fileID: 479886397}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb52225c045c848468f1cb4f4eccf793, type: 3}
 --- !u!1 &511708671 stripped
@@ -690,7 +700,7 @@ GameObject:
   - component: {fileID: 670970904}
   - component: {fileID: 670970905}
   m_Layer: 0
-  m_Name: LeapMotion_SelectionBySpaceKey
+  m_Name: LeapMotionPosition
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -723,7 +733,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leapService: {fileID: 479886397}
-  manager: {fileID: 1243110861}
+  handPosition: 1
 --- !u!1 &702515707
 GameObject:
   m_ObjectHideFlags: 0
@@ -735,12 +745,12 @@ GameObject:
   - component: {fileID: 702515708}
   - component: {fileID: 702515709}
   m_Layer: 0
-  m_Name: Meta2Interaction
+  m_Name: Meta2Position
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &702515708
 Transform:
   m_ObjectHideFlags: 0
@@ -768,6 +778,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   provider: {fileID: 278262280}
+  cursorPosition: 1
 --- !u!1 &984529646
 GameObject:
   m_ObjectHideFlags: 0
@@ -879,18 +890,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1061006142}
   m_CullTransparentMesh: 0
---- !u!114 &1243110861 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2391886493964886551, guid: e38f84e733a8dca42a9ff760c3facbd4,
-    type: 3}
-  m_PrefabInstance: {fileID: 111412803}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0625e574c0d47a241b7dfc7a8c67ca2b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1271503004
 PrefabInstance:
   m_ObjectHideFlags: 0

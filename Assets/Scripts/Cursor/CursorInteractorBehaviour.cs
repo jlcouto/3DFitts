@@ -8,20 +8,32 @@ using UnityEngine;
 
 public enum CursorSelectionMethod
 {
-    AUTOMATIC_BYCONTACT = 0,
     KEYBOARD_SPACEBAR,
-    MOUSE_LEFTCLICK
+    MOUSE_LEFTCLICK,
+    AUTOMATIC_BYCONTACT,
+    META2_GRAB,
+    LMC_GRAB
 }
 
 public abstract class CursorPositioningController : MonoBehaviour
 {
+    public enum CursorHandPosition
+    {
+        HandTop,
+        HandPalm
+    }
+
     public abstract Vector3 GetCurrentCursorPosition();
 }
 
 public class CursorInteractorBehaviour : CursorBehaviour
 {
     public CursorPositioningController cursorPositionController;
-    public CursorSelectionMethod selectionMethod = CursorSelectionMethod.AUTOMATIC_BYCONTACT;
+    public CursorSelectionMethod selectionMethod;
+    public Meta.HandsProvider metaHandsProvider;
+    public Leap.Unity.LeapServiceProvider leapMotionServiceProvider;
+
+    CursorSelectionTechnique selectionTechnique;
 
     HashSet<TargetBehaviour> currentTargetsCollidingWithCursor;
     TargetBehaviour currentHighlightedTarget;
@@ -42,41 +54,43 @@ public class CursorInteractorBehaviour : CursorBehaviour
     private void Start()
     {
         currentTargetsCollidingWithCursor = new HashSet<TargetBehaviour>();
+
+        switch (selectionMethod)
+        {
+            case CursorSelectionMethod.KEYBOARD_SPACEBAR:
+                selectionTechnique = new CursorSelectionTechniqueKeyboard();
+                break;
+            case CursorSelectionMethod.MOUSE_LEFTCLICK:
+                selectionTechnique = new CursorSelectionTechniqueMouse();
+                break;
+            case CursorSelectionMethod.META2_GRAB:
+                selectionTechnique = new CursorSelectionTechniqueMeta2Grab(metaHandsProvider);
+                break;
+            case CursorSelectionMethod.LMC_GRAB:
+                selectionTechnique = new CursorSelectionTechniqueLeapMotionGrab(leapMotionServiceProvider);
+                break;
+            default:
+            break;
+        }
     }
 
     void Update()
     {
         this.transform.position = cursorPositionController.GetCurrentCursorPosition();
 
-        switch (selectionMethod)
+        if (selectionMethod == CursorSelectionMethod.AUTOMATIC_BYCONTACT)
         {
-            case CursorSelectionMethod.KEYBOARD_SPACEBAR:
-                ManageSelectionInteraction(
-                    input => { return Input.GetKeyDown(KeyCode.Space); },
-                    input => { return Input.GetKey(KeyCode.Space); },
-                    input => { return Input.GetKeyUp(KeyCode.Space); }
-                );
-                break;
-            case CursorSelectionMethod.MOUSE_LEFTCLICK:
-                ManageSelectionInteraction(
-                    input => { return Input.GetMouseButtonDown(0); },
-                    input => { return Input.GetMouseButton(0); },
-                    input => { return Input.GetMouseButtonUp(0); }
-                );
-                break;
-            case CursorSelectionMethod.AUTOMATIC_BYCONTACT:
-            default:
-                CheckAutomaticByContactSelection();
-                break;
-        }  
+            CheckAutomaticByContactSelection();
+        }
+        else
+        {
+            ManageSelectionInteraction(selectionTechnique);
+        }
     }
 
-    void ManageSelectionInteraction(
-        System.Predicate<bool> SelectionInteractionStared,
-        System.Predicate<bool> SelectionInteractionMantained,
-        System.Predicate<bool> SelectionInteractionEnded)
+    void ManageSelectionInteraction(CursorSelectionTechnique selectionInteraction)
     {
-        if (SelectionInteractionStared(true))
+        if (selectionInteraction.SelectionInteractionStarted())
         {
 #if DRAG_START_WITH_CONTINUOUS_SELECTION
             numFramesSelectionIsActive = 0;
@@ -85,7 +99,7 @@ public class CursorInteractorBehaviour : CursorBehaviour
             acquiredPosition = GetCursorPosition();
         }
 
-        if (isDragging && SelectionInteractionEnded(true))
+        if (isDragging && selectionInteraction.SelectionInteractionEnded())
         {
             CursorDragTargetEnded(currentDraggedTarget, currentHighlightedTarget);
 #if DRAG_START_WITH_CONTINUOUS_SELECTION
@@ -94,7 +108,7 @@ public class CursorInteractorBehaviour : CursorBehaviour
             currentDraggedTarget = null;
             isDragging = false;
         }
-        else if (SelectionInteractionMantained(true))
+        else if (selectionInteraction.SelectionInteractionMantained())
         {
 #if DRAG_START_WITH_CONTINUOUS_SELECTION
             numFramesSelectionIsActive++;

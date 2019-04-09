@@ -11,8 +11,12 @@ public class DragTestController : TrialController
         : base(theTrialId, initialTarget, finalTarget, theListener, theCursor)
     {
         draggableObject = GameObject.Instantiate(initialTarget.gameObject);
-        draggableObject.GetComponent<TargetBehaviour>().SetAsDraggableTarget();
-        Destroy(draggableObject.GetComponent<TargetBehaviour>());
+
+        var targetBehaviour = draggableObject.GetComponent<TargetBehaviour>();
+        targetBehaviour.UnhighlightTarget();
+        targetBehaviour.SetAsDraggableTarget();
+        Destroy(targetBehaviour);
+
         draggableObject.transform.SetParent(cursor.transform);
         draggableObject.transform.localPosition = Vector3.zero;
         draggableObject.SetActive(false);
