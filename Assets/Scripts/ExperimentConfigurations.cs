@@ -72,12 +72,12 @@ public class Drag3DMouseExperimentConfiguration : ExperimentConfiguration
 {
     protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneYZ, PlaneOrientation.PlaneXY, PlaneOrientation.PlaneZX };
     static readonly IndexOfDifficultyConfiguration[] configurations = {
-        new IndexOfDifficultyConfiguration(0.05f, 0.25f),
-        new IndexOfDifficultyConfiguration(0.05f, 0.4f),
-        new IndexOfDifficultyConfiguration(0.035f, 0.25f),
-        new IndexOfDifficultyConfiguration(0.035f, 0.4f),
-        new IndexOfDifficultyConfiguration(0.02f, 0.25f),
-        new IndexOfDifficultyConfiguration(0.02f, 0.4f)
+        new IndexOfDifficultyConfiguration(0.04f, 0.2f),
+        new IndexOfDifficultyConfiguration(0.04f, 0.3f),
+        new IndexOfDifficultyConfiguration(0.02f, 0.2f),
+        new IndexOfDifficultyConfiguration(0.02f, 0.4f),
+        new IndexOfDifficultyConfiguration(0.01f, 0.3f),
+        new IndexOfDifficultyConfiguration(0.01f, 0.4f)
     };
 
     public override float GetCursorDiameter()
@@ -92,12 +92,12 @@ public class Drag3DMouseExperimentConfiguration : ExperimentConfiguration
 
     public override int GetNumBlocksPerTest()
     {
-        return 1;
+        return 2;
     }
 
     public override int GetNumTargetsPerTest()
     {
-        return 3;
+        return 9;
     }
 
     public override PlaneOrientation[] GetPlaneOrientationsToTest()

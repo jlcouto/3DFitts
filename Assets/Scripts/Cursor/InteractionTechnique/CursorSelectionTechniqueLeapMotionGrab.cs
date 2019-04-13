@@ -21,7 +21,7 @@ public class CursorSelectionTechniqueLeapMotionGrab : CursorSelectionTechnique
             Leap.Frame frame = leapService.CurrentFrame;
             if (frame.Hands.Count > 0)
             {
-                return frame.Hands[0].GrabStrength > 0.9;
+                return frame.Hands[0].GrabStrength == 1;
             }
         }
         return false;

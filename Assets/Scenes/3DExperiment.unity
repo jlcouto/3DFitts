@@ -188,7 +188,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1009706879569456, guid: e38f84e733a8dca42a9ff760c3facbd4, type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114027796001092686, guid: e38f84e733a8dca42a9ff760c3facbd4,
+        type: 3}
+      propertyPath: _enableDepthOcclusion
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114207710384042862, guid: e38f84e733a8dca42a9ff760c3facbd4,
+        type: 3}
+      propertyPath: ModelPool.Array.data[0].IsEnabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6061221726779729058, guid: e38f84e733a8dca42a9ff760c3facbd4,
+        type: 3}
+      propertyPath: _palmRadius
+      value: 0.0025
+      objectReference: {fileID: 0}
+    - target: {fileID: 8061425954037759632, guid: e38f84e733a8dca42a9ff760c3facbd4,
+        type: 3}
+      propertyPath: _palmRadius
+      value: 0.0025
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e38f84e733a8dca42a9ff760c3facbd4, type: 3}
@@ -298,7 +318,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &308976757
 Transform:
   m_ObjectHideFlags: 0
@@ -329,6 +349,8 @@ MonoBehaviour:
   plane: 1
   screenSize: {x: 1920, y: 1080}
   spaceSize: {x: 0.5, y: 0.5, z: 0.5}
+  manualOffset: 0
+  offset: {x: 0, y: 0, z: 0}
 --- !u!1 &312115917
 GameObject:
   m_ObjectHideFlags: 0
@@ -480,8 +502,8 @@ MonoBehaviour:
   participantAge: 29
   testDescription: Teste preliminar Mouse Arrastar
   task: 1
-  cursorPositionController: {fileID: 308976758}
-  cursorSelectionMethod: 1
+  cursorPositionController: {fileID: 670970905}
+  cursorSelectionMethod: 4
   statusText: {fileID: 1539674069}
   testText: {fileID: 392024047}
   repetitionText: {fileID: 1899641583}
@@ -491,6 +513,7 @@ MonoBehaviour:
   cursor: {fileID: 511708673}
   baseTarget: {fileID: 1590297525248434, guid: ad3fdacf3a8e344f39a3da44003ec7df, type: 3}
   targetPlane: {fileID: 1488585436}
+  centerOfTestPlanesObject: {fileID: 1738141952}
   centerOfTestPlanes: {fileID: 290812183}
   metaHandsProvider: {fileID: 278262280}
   calibrationPositioningCursor: {fileID: 702515709}
@@ -740,7 +763,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &670970904
 Transform:
   m_ObjectHideFlags: 0

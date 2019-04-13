@@ -64,11 +64,13 @@ public class ExperimentController : MonoBehaviour, ITestListener
     public GameObject baseTarget;
     public Transform targetPlane;
 
+    public GameObject centerOfTestPlanesObject;
     public Transform centerOfTestPlanes;
     public Meta.HandsProvider metaHandsProvider;
     public Meta2CursorBehaviour calibrationPositioningCursor;
 
     bool isMetaHandsActive;
+    CursorPositioningController.CursorHandPosition originalCursorPosition;
 
     ExperimentStatus status = ExperimentStatus.Stopped;
 
@@ -86,8 +88,12 @@ public class ExperimentController : MonoBehaviour, ITestListener
         if (status == ExperimentStatus.Stopped)
         {
             status = ExperimentStatus.CalibrationRunning;
+               
             isMetaHandsActive = metaHandsProvider.gameObject.activeInHierarchy;
             metaHandsProvider.gameObject.SetActive(true);
+
+            originalCursorPosition = calibrationPositioningCursor.cursorPosition;
+            calibrationPositioningCursor.cursorPosition = CursorPositioningController.CursorHandPosition.HandTop;
 
             cursor.cursorPositionController = calibrationPositioningCursor;
             calibrationPositioningCursor.gameObject.SetActive(true);
@@ -110,8 +116,9 @@ public class ExperimentController : MonoBehaviour, ITestListener
         if (status == ExperimentStatus.CalibrationRunning)
         {
             status = ExperimentStatus.Stopped;
+            calibrationPositioningCursor.cursorPosition = originalCursorPosition;
             metaHandsProvider.gameObject.SetActive(isMetaHandsActive);
-            calibrationPositioningCursor.gameObject.SetActive(false);
+            calibrationPositioningCursor.gameObject.SetActive(isMetaHandsActive);
         }
     }
 
@@ -149,6 +156,8 @@ public class ExperimentController : MonoBehaviour, ITestListener
         if (status == ExperimentStatus.Stopped)
         {
             Debug.Log("Starting experiment...");
+
+            centerOfTestPlanesObject.SetActive(false);
 
             if (task == ExperimentTask.Dragging)
             {
@@ -208,11 +217,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
                 {
                     if (currentTestConfiguration < experimentConfig.GetTargetConfigurationsToTest().Length)
                     {
-                        foreach (Transform child in targetPlane)
-                        {
-                            GameObject.Destroy(child.gameObject);
-                        }
-                        targetPlane.DetachChildren();
+                        CleanTargetPlane();
 
                         currentTestController = new TestController(this, statusText, testText, repetitionText, correctTargetAudio, wrongTargetAudio,
                             cursor, baseTarget, targetPlane,
@@ -266,12 +271,23 @@ public class ExperimentController : MonoBehaviour, ITestListener
         if (status == ExperimentStatus.Running || status == ExperimentStatus.Paused)
         {
             status = ExperimentStatus.Stopped;
+            centerOfTestPlanesObject.SetActive(true);
+            CleanTargetPlane();
             Debug.Log("Stopping experiment...");
         }
         else
         {
             Debug.Log("No experiment running!");
         }
+    }
+
+    void CleanTargetPlane()
+    {
+        foreach (Transform child in targetPlane)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
+        targetPlane.DetachChildren();
     }
 
     public void OnTestStarted()

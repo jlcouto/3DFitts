@@ -29,7 +29,32 @@ public abstract class CursorPositioningController : MonoBehaviour
 public class CursorInteractorBehaviour : CursorBehaviour
 {
     public CursorPositioningController cursorPositionController;
-    public CursorSelectionMethod selectionMethod;
+
+    CursorSelectionMethod _selectionMethod;
+    public CursorSelectionMethod selectionMethod
+    {
+        set {
+            _selectionMethod = value;
+            switch (_selectionMethod)
+            {
+                case CursorSelectionMethod.KEYBOARD_SPACEBAR:
+                    selectionTechnique = new CursorSelectionTechniqueKeyboard();
+                    break;
+                case CursorSelectionMethod.MOUSE_LEFTCLICK:
+                    selectionTechnique = new CursorSelectionTechniqueMouse();
+                    break;
+                case CursorSelectionMethod.META2_GRAB:
+                    selectionTechnique = new CursorSelectionTechniqueMeta2Grab(metaHandsProvider);
+                    break;
+                case CursorSelectionMethod.LMC_GRAB:
+                    selectionTechnique = new CursorSelectionTechniqueLeapMotionGrab(leapMotionServiceProvider);
+                    break;
+                default:
+                    break;
+            }
+        }
+        get { return _selectionMethod; }
+    }
     public Meta.HandsProvider metaHandsProvider;
     public Leap.Unity.LeapServiceProvider leapMotionServiceProvider;
 
@@ -54,24 +79,7 @@ public class CursorInteractorBehaviour : CursorBehaviour
     private void Start()
     {
         currentTargetsCollidingWithCursor = new HashSet<TargetBehaviour>();
-
-        switch (selectionMethod)
-        {
-            case CursorSelectionMethod.KEYBOARD_SPACEBAR:
-                selectionTechnique = new CursorSelectionTechniqueKeyboard();
-                break;
-            case CursorSelectionMethod.MOUSE_LEFTCLICK:
-                selectionTechnique = new CursorSelectionTechniqueMouse();
-                break;
-            case CursorSelectionMethod.META2_GRAB:
-                selectionTechnique = new CursorSelectionTechniqueMeta2Grab(metaHandsProvider);
-                break;
-            case CursorSelectionMethod.LMC_GRAB:
-                selectionTechnique = new CursorSelectionTechniqueLeapMotionGrab(leapMotionServiceProvider);
-                break;
-            default:
-            break;
-        }
+        selectionMethod = CursorSelectionMethod.KEYBOARD_SPACEBAR;
     }
 
     void Update()
