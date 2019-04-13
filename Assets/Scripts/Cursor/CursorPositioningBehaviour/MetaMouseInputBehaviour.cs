@@ -9,36 +9,47 @@ public class MetaMouseInputBehaviour : CursorPositioningController
 
     public Transform targetPlane;
     public PlaneOrientation plane = PlaneOrientation.PlaneXY;
-    public Vector2 screenSize = new Vector2(1024, 768);
+    public Vector2 screenSize = new Vector2(1920, 1080);
     public Vector3 spaceSize = new Vector3(1, 1, 1);
+    public bool manualOffset = false;
     public Vector3 offset = new Vector3(0, 0, 0);
 
     private void Update()
     {
         Vector3 screenPos = Input.mousePosition;
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (!manualOffset)
         {
-            mousePosition = new Vector3(0, 0, 0);
+            offset = targetPlane.transform.position;
+        }
+
+        Debug.Log("Screen:" + Screen.width + ", " + Screen.height);
+
+        if (Input.GetKey(KeyCode.F7))
+        {
+            mousePosition = offset;
         }
         else
         {
+            float xCoord = (Mathf.Clamp01(screenPos.x / Screen.width) - 0.5f) * spaceSize.x;
+            float yCoord = (Mathf.Clamp01(screenPos.y / Screen.height) - 0.5f) * spaceSize.y;
+
             switch (plane)
             {
                 case PlaneOrientation.PlaneXY:
-                    mousePosition.x = screenPos.x / screenSize.x * spaceSize.x + offset.x;
+                    mousePosition.x = xCoord + offset.x;
                     mousePosition.y = offset.y;
-                    mousePosition.z = screenPos.y / screenSize.y * spaceSize.y + offset.z;
+                    mousePosition.z = yCoord + offset.z;
                     break;
                 case PlaneOrientation.PlaneYZ:
-                    mousePosition.x = screenPos.x / screenSize.x * spaceSize.x + offset.x;
-                    mousePosition.y = screenPos.y / screenSize.y * spaceSize.y + offset.y;
-                    mousePosition.z = offset.z;
+                    mousePosition.x = Mathf.Cos(-Mathf.PI*targetPlane.rotation.eulerAngles.y/180) * xCoord + offset.x;
+                    mousePosition.y = yCoord + offset.y;
+                    mousePosition.z = Mathf.Sin(-Mathf.PI*targetPlane.rotation.eulerAngles.y/180) * xCoord + offset.z;
                     break;
                 case PlaneOrientation.PlaneZX:
                     mousePosition.x = offset.x;
-                    mousePosition.y = screenPos.x / screenSize.x * spaceSize.x + offset.y;
-                    mousePosition.z = screenPos.y / screenSize.y * spaceSize.y + offset.z;
+                    mousePosition.y = xCoord + offset.y;
+                    mousePosition.z = yCoord + offset.z;
                     break;
             }
         }

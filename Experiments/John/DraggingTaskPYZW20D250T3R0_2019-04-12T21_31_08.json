@@ -1,0 +1,109 @@
+{
+  "test": {
+    "configuration": {
+      "testId": "PYZW20D250T3R0",
+      "task": "Dragging",
+      "numberOfTargets": 3,
+      "targetWidth": 0.02,
+      "targetDistance": 0.25,
+      "numOfBlocksPerTest": 1,
+      "targetsPositions": [
+        {
+          "x": -0.375072956,
+          "y": -0.102637872,
+          "z": 0.0317358971
+        },
+        {
+          "x": -0.4085246,
+          "y": -0.2901379,
+          "z": -0.0712191463
+        },
+        {
+          "x": -0.3416213,
+          "y": -0.2901379,
+          "z": 0.134690911
+        }
+      ]
+    },
+    "data": {
+      "timestamp": "2019-04-12T21:31:08",
+      "testId": "PYZW20D250T3R0",
+      "initialTime": 89.4336,
+      "finalTime": 91.831955,
+      "testDuration": 2.39835358,
+      "blocksData": [
+        {
+          "blockId": 0,
+          "initialTargetId": 0,
+          "initialTime": 89.43361,
+          "finalTime": 91.83195,
+          "blockDuration": 2.39833832,
+          "trialsData": [
+            {
+              "trialId": 0,
+              "initialTargetId": 0,
+              "finalTargetId": 2,
+              "initialTime": 89.4880447,
+              "finalTime": 90.2589645,
+              "trialDuration": 0.7709198,
+              "initialPosition": {
+                "x": -0.37617135,
+                "y": -0.103058755,
+                "z": 0.02835536
+              },
+              "finalPosition": {
+                "x": -0.407512,
+                "y": -0.2941362,
+                "z": -0.0681026
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 1,
+              "initialTargetId": 2,
+              "finalTargetId": 1,
+              "initialTime": 90.46315,
+              "finalTime": 91.00122,
+              "trialDuration": 0.5380707,
+              "initialPosition": {
+                "x": -0.407512,
+                "y": -0.2941362,
+                "z": -0.0681026
+              },
+              "finalPosition": {
+                "x": -0.343512625,
+                "y": -0.2874022,
+                "z": 0.12887001
+              },
+              "missedTarget": false
+            },
+            {
+              "trialId": 2,
+              "initialTargetId": 1,
+              "finalTargetId": 0,
+              "initialTime": 91.25304,
+              "finalTime": 91.83194,
+              "trialDuration": 0.5789032,
+              "initialPosition": {
+                "x": -0.343512625,
+                "y": -0.2874022,
+                "z": 0.12887001
+              },
+              "finalPosition": {
+                "x": -0.373974562,
+                "y": -0.09969175,
+                "z": 0.0351164341
+              },
+              "missedTarget": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "participantName": "John",
+  "participantAge": 29,
+  "testDescription": "Teste preliminar Mouse Arrastar",
+  "testTask": "DraggingTask",
+  "cursorDiameter": 0.01
+}

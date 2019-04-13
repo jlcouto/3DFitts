@@ -35,6 +35,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
 {
     enum ExperimentStatus
     {
+        CalibrationRunning,
         Stopped,
         Running,
         Paused
@@ -46,6 +47,9 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
     public ExperimentTask task;
 
+    public CursorPositioningController cursorPositionController;
+    public CursorSelectionMethod cursorSelectionMethod;
+
     public ExperimentConfiguration experimentConfig;
 
     public Text statusText;
@@ -56,9 +60,15 @@ public class ExperimentController : MonoBehaviour, ITestListener
     public AudioSource correctTargetAudio;
     public AudioSource wrongTargetAudio;
 
-    public CursorBehaviour cursor;
+    public CursorInteractorBehaviour cursor;
     public GameObject baseTarget;
     public Transform targetPlane;
+
+    public Transform centerOfTestPlanes;
+    public Meta.HandsProvider metaHandsProvider;
+    public Meta2CursorBehaviour calibrationPositioningCursor;
+
+    bool isMetaHandsActive;
 
     ExperimentStatus status = ExperimentStatus.Stopped;
 
@@ -71,22 +81,101 @@ public class ExperimentController : MonoBehaviour, ITestListener
         UISetNoteText("");
     }
 
-    public void RunExperiment()
+    public void StartCalibrationOfExperimentPosition()
     {
-        if (task == ExperimentTask.Dragging)
+        if (status == ExperimentStatus.Stopped)
         {
-            experimentConfig = new DragMouseExperimentConfiguration();
+            status = ExperimentStatus.CalibrationRunning;
+            isMetaHandsActive = metaHandsProvider.gameObject.activeInHierarchy;
+            metaHandsProvider.gameObject.SetActive(true);
+
+            cursor.cursorPositionController = calibrationPositioningCursor;
+            calibrationPositioningCursor.gameObject.SetActive(true);
+
+            cursor.selectionMethod = CursorSelectionMethod.KEYBOARD_SPACEBAR;
+            cursor.transform.localScale = 0.01f * Vector3.one;
+        }
+        else if (status == ExperimentStatus.CalibrationRunning)
+        {
+            Debug.Log("Calibration is already running!");
         }
         else
         {
-            experimentConfig = new TappingMouseExperimentConfiguration();
+            Debug.Log("Calibration can only run when experiment is stopped!");
         }
+    }
 
-        cursor.transform.localScale = experimentConfig.GetCursorDiameter() * Vector3.one;
+    public void FinishCalibrationOfExperimentPosition()
+    {
+        if (status == ExperimentStatus.CalibrationRunning)
+        {
+            status = ExperimentStatus.Stopped;
+            metaHandsProvider.gameObject.SetActive(isMetaHandsActive);
+            calibrationPositioningCursor.gameObject.SetActive(false);
+        }
+    }
 
+    private void Update()
+    {
+        if (status == ExperimentStatus.CalibrationRunning)
+        {
+            centerOfTestPlanes.position = cursor.GetCursorPosition();
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                FinishCalibrationOfExperimentPosition();
+            }
+            else if (Input.GetKey(KeyCode.RightArrow))
+            {
+                Vector3 currentRotation = centerOfTestPlanes.rotation.eulerAngles;
+                centerOfTestPlanes.rotation =  Quaternion.Euler(new Vector3(currentRotation.x, currentRotation.y - 0.5f, currentRotation.z));
+            }
+            else if (Input.GetKey(KeyCode.LeftArrow))
+            {
+                Vector3 currentRotation = centerOfTestPlanes.rotation.eulerAngles;
+                centerOfTestPlanes.rotation = Quaternion.Euler(new Vector3(currentRotation.x, currentRotation.y + 0.5f, currentRotation.z));
+            }
+        }
+    }
+
+    public void RunExperiment()
+    {
+        if (status == ExperimentStatus.CalibrationRunning)
+        {
+            Debug.Log("Calibration is running. Finish Calibration process first.");
+            return;
+        }
+        
         if (status == ExperimentStatus.Stopped)
         {
             Debug.Log("Starting experiment...");
+
+            if (task == ExperimentTask.Dragging)
+            {
+                if (cursorPositionController.GetType() == typeof(MetaMouseInputBehaviour))
+                {
+                    experimentConfig = new Drag2DMouseExperimentConfiguration();
+                }
+                else
+                {
+                    experimentConfig = new Drag3DMouseExperimentConfiguration();
+                }
+            }
+            else
+            {
+                if (cursorPositionController.GetType() == typeof(MetaMouseInputBehaviour))
+                {
+                    experimentConfig = new Tapping2DMouseExperimentConfiguration();
+                }
+                else
+                {
+                    experimentConfig = new Tapping3DMouseExperimentConfiguration();
+                }
+            }
+
+            cursor.cursorPositionController = cursorPositionController;
+            cursor.selectionMethod = cursorSelectionMethod;
+            cursor.transform.localScale = experimentConfig.GetCursorDiameter() * Vector3.one;
 
             currentTestConfiguration = 0;
             currentPlaneOrientation = 0;
@@ -204,6 +293,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
         output["participantName"] = participantName;
         output["participantAge"] = participantAge;
         output["testDescription"] = testDescription;
+        output["testTask"] = GetTaskString(results.testConfiguration.task);
         output["cursorDiameter"] = experimentConfig.GetCursorDiameter();
 
         string jsonData = JsonConvert.SerializeObject(output, new JsonSerializerSettings()
@@ -229,12 +319,24 @@ public class ExperimentController : MonoBehaviour, ITestListener
     string GetFilenameForTest(TestMeasurements test)
     {
         var timestamp = test.timestamp.Replace(":", "_");
-        return test.testConfiguration.testId + "_" + timestamp + ".json";
+        return GetTaskString(test.testConfiguration.task) + test.testConfiguration.testId + "_" + timestamp + ".json";
     }
 
     string GetResultsFolder()
     {
         return "./Experiments/" + participantName +"/";
+    }
+
+    string GetTaskString(ExperimentTask task)
+    {
+        switch (task)
+        {
+            case ExperimentTask.Dragging:
+                return "DraggingTask";
+            case ExperimentTask.ReciprocalTapping:
+                return "ReciprocalTappingTest";
+        }
+        return "undefined";
     }
 
     void UISetNoteText(string text)
@@ -254,6 +356,11 @@ public class ObjectBuilderEditor : Editor
         DrawDefaultInspector();
 
         ExperimentController myScript = (ExperimentController)target;
+
+        if (GUILayout.Button("Start Calibration"))
+        {
+            myScript.StartCalibrationOfExperimentPosition();
+        }
 
         if (GUILayout.Button("Run Experiment"))
         {

@@ -12,9 +12,9 @@ public abstract class ExperimentConfiguration
     public abstract IndexOfDifficultyConfiguration[] GetTargetConfigurationsToTest();
 }
 
-public class TappingMouseExperimentConfiguration : ExperimentConfiguration
+public class Tapping3DMouseExperimentConfiguration : ExperimentConfiguration
 {
-    static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneYZ };
+    protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneYZ, PlaneOrientation.PlaneXY, PlaneOrientation.PlaneZX };
     static readonly IndexOfDifficultyConfiguration[] configurations = {
         new IndexOfDifficultyConfiguration(0.04f, 0.2f),
         new IndexOfDifficultyConfiguration(0.04f, 0.3f),
@@ -39,7 +39,7 @@ public class TappingMouseExperimentConfiguration : ExperimentConfiguration
 
     public override int GetNumBlocksPerTest()
     {
-        return 1;
+        return 2;
     }
 
     public override int GetNumTargetsPerTest()
@@ -58,16 +58,25 @@ public class TappingMouseExperimentConfiguration : ExperimentConfiguration
     }
 }
 
-
-public class DragMouseExperimentConfiguration : ExperimentConfiguration
+public class Tapping2DMouseExperimentConfiguration : Tapping3DMouseExperimentConfiguration
 {
-    static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneYZ, PlaneOrientation.PlaneXY, PlaneOrientation.PlaneZX };
+    new protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneYZ };
+
+    public override PlaneOrientation[] GetPlaneOrientationsToTest()
+    {
+        return planeOrientations;
+    }
+}
+
+public class Drag3DMouseExperimentConfiguration : ExperimentConfiguration
+{
+    protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneYZ, PlaneOrientation.PlaneXY, PlaneOrientation.PlaneZX };
     static readonly IndexOfDifficultyConfiguration[] configurations = {
-        new IndexOfDifficultyConfiguration(0.04f, 0.2f),
-        new IndexOfDifficultyConfiguration(0.04f, 0.3f),
-        new IndexOfDifficultyConfiguration(0.04f, 0.4f),
-        new IndexOfDifficultyConfiguration(0.02f, 0.2f),
-        new IndexOfDifficultyConfiguration(0.02f, 0.3f),
+        new IndexOfDifficultyConfiguration(0.05f, 0.25f),
+        new IndexOfDifficultyConfiguration(0.05f, 0.4f),
+        new IndexOfDifficultyConfiguration(0.035f, 0.25f),
+        new IndexOfDifficultyConfiguration(0.035f, 0.4f),
+        new IndexOfDifficultyConfiguration(0.02f, 0.25f),
         new IndexOfDifficultyConfiguration(0.02f, 0.4f)
     };
 
@@ -88,7 +97,7 @@ public class DragMouseExperimentConfiguration : ExperimentConfiguration
 
     public override int GetNumTargetsPerTest()
     {
-        return 9;
+        return 3;
     }
 
     public override PlaneOrientation[] GetPlaneOrientationsToTest()
@@ -99,5 +108,15 @@ public class DragMouseExperimentConfiguration : ExperimentConfiguration
     public override IndexOfDifficultyConfiguration[] GetTargetConfigurationsToTest()
     {
         return configurations;
+    }
+}
+
+public class Drag2DMouseExperimentConfiguration : Drag3DMouseExperimentConfiguration
+{
+    new protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneYZ };
+
+    public override PlaneOrientation[] GetPlaneOrientationsToTest()
+    {
+        return planeOrientations;
     }
 }
