@@ -23,8 +23,6 @@ public class MetaMouseInputBehaviour : CursorPositioningController
             offset = targetPlane.transform.position;
         }
 
-        Debug.Log("Screen:" + Screen.width + ", " + Screen.height);
-
         if (Input.GetKey(KeyCode.F7))
         {
             mousePosition = offset;
