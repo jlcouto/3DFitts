@@ -8,6 +8,8 @@ using UnityEditor;
 public class ViveControllerPositionBehaviour : CursorPositioningController
 {
     public Vector3 positionOffset = Vector3.zero;
+    public Vector3 scale = Vector3.one;
+    public Quaternion rotation;
 
     public GameObject XAxisFirstObject;
     public GameObject XAxisSecondObject;
@@ -19,85 +21,116 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
     public GameObject finalFirstCube;
     public GameObject finalSecondCube;
 
-    public Vector3 rotation;
-
     Vector3 finalFirst;
     Vector3 finalSecond;
 
     bool isCalibrating = false;
-    bool isGettingCalibrationData = false;
+    bool gotFirstPoint = false;
     bool isXAxisCalibrated = false;
     bool isYAxisCalibrated = false;
     bool isZAxisCalibrated = false;
 
-    bool firstCalibrationTrigger = false;
-    Vector3[] positionHistory;
-    Vector3 firstPoint;
-    Vector3 secondPoint;
-    int currentCalibratingIndex = 0;
-
+    Vector3[] firstPoint;
+    Vector3[] secondPoint;
+    Vector3[] offsetByAxis;
+    float[] scaleByAxis;
+    Quaternion[] rotationByAxis;
+    int currentCalibrationAxis = 0; // 0 = x, 1 = y, 2 = z
+    
     Vector3 lastCursorPosition;
     Quaternion lastCursorRotation;
+    
+    Matrix4x4 translationMatrix;
+    Matrix4x4 scalingMatrix;
+    Matrix4x4 rotationMatrix;
 
+    /* UDP communication to read controller data */
     Thread receiveThread;
     UdpClient client;
+    private int port = 8051;
     private bool _lastProcessedTriggerState;
     private bool _isTriggerDown;
-
-    private Double[] float_array;
-    private int port = 8051;
+    private Double[] float_array; 
 
     public override Vector3 GetCurrentCursorPosition()
     {
         return lastCursorPosition;
     }
 
-    // Use this for initialization
     void Start()
     {
         float_array = new Double[7];
         receiveThread = new Thread(new ThreadStart(ReceiveData));
         receiveThread.IsBackground = true;
         receiveThread.Start();
-    }
 
-    // Update is called once per frame
+        firstPoint = new Vector3[3];
+        secondPoint = new Vector3[3];
+        offsetByAxis = new Vector3[3];
+        scaleByAxis = new float[3];
+        rotationByAxis = new Quaternion[3];
+
+        translationMatrix = Matrix4x4.identity;
+        scalingMatrix = Matrix4x4.identity;
+        rotationMatrix = Matrix4x4.identity;
+    }
+    
     void Update()
     {
-        lastCursorPosition = new Vector3((float)float_array[2] - positionOffset.x, (float)float_array[1] - positionOffset.y, (float)float_array[0] - positionOffset.z);
-        lastCursorRotation = new Quaternion((float)float_array[3], (float)float_array[4], (float)float_array[5], (float)float_array[6]);
+        Vector3 pos = new Vector3((float)float_array[0], (float)float_array[1], (float)float_array[2]);
+        Quaternion rot = new Quaternion((float)float_array[3], (float)float_array[4], (float)float_array[5], (float)float_array[6]);
+        ConvertVIVEToUnity(ref pos, ref rot);
 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Quaternion rot = Quaternion.Euler(rotation);
-            finalFirstCube.transform.position = rot * (finalFirst - positionOffset) + positionOffset;
-            finalSecondCube.transform.position = rot * (finalSecond - positionOffset) + positionOffset;
-        }
+        translationMatrix = Matrix4x4.Translate(-positionOffset);
+        scalingMatrix = Matrix4x4.Scale(scale);
+        rotationMatrix = Matrix4x4.Rotate(rotation);
 
-        if (isCalibrating)
+        lastCursorPosition = rotationMatrix.MultiplyPoint(scalingMatrix.MultiplyPoint(translationMatrix.MultiplyPoint(pos)));
+        lastCursorRotation = rot;
+        
+        if (isCalibrating && _isTriggerDown)
         {
-            if (_isTriggerDown)
+            if (gotFirstPoint)
             {
-                if (isGettingCalibrationData)
-                {
-                    secondPoint = lastCursorPosition;
-                    isGettingCalibrationData = false;
-                    FinishAxisCalibration();
-                }
-                else {
-                    firstPoint = lastCursorPosition;
-                    isGettingCalibrationData = true;
-                }                
+                secondPoint[currentCalibrationAxis] = lastCursorPosition;                    
+                FinishAxisCalibration();
+                gotFirstPoint = false;                    
             }
+            else
+            {
+                firstPoint[currentCalibrationAxis] = lastCursorPosition;
+                gotFirstPoint = true;
 
-            //if (isGettingCalibrationData)
-            //{
-                //positionHistory[currentCalibratingIndex] = lastCursorPosition;
-                //currentCalibratingIndex++;
-            //}            
+                if (currentCalibrationAxis == 0)
+                {
+                    XAxisFirstObject.SetActive(false);
+                    XAxisSecondObject.SetActive(true);
+                }
+                else if (currentCalibrationAxis == 1)
+                {
+                    YAxisFirstObject.SetActive(false);
+                    YAxisSecondObject.SetActive(true);
+                }
+                else
+                {
+                    ZAxisFirstObject.SetActive(false);
+                    ZAxisSecondObject.SetActive(true);
+                }
+            }          
         }
 
         _isTriggerDown = false;
+    }
+
+    public static void ConvertVIVEToUnity(ref Vector3 pos, ref Quaternion rot)
+    {
+        pos = new Vector3(pos[0], pos[1], -pos[2]);
+
+        rot = new Quaternion(-rot[2], -rot[1], rot[0], rot[3]);
+        Quaternion rot180 = Quaternion.AngleAxis(180.0f, Vector3.up);
+        Quaternion rot90 = Quaternion.AngleAxis(90.0f, Vector3.forward);
+
+        rot = rot * rot90 * rot180;
     }
 
     void OnApplicationQuit()
@@ -120,7 +153,7 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
                 byte[] data = client.Receive(ref anyIP);
                 for (int i = 0; i < float_array.Length; i++)
                 {
-                    float_array[i] = BitConverter.ToDouble(data, i * sizeof(double));                    
+                    float_array[i] = BitConverter.ToDouble(data, i * sizeof(double));
                 }
                 UpdateTriggerState(BitConverter.ToDouble(data, float_array.Length * sizeof(double)) != 0);
             }
@@ -131,29 +164,8 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
         }
     }
 
-    public void StartVIVEControllerCalibration()
-    {
-        positionHistory = new Vector3[100];
-        currentCalibratingIndex = 0;
-
-        isCalibrating = true;
-        isXAxisCalibrated = false;
-        isYAxisCalibrated = false;
-        isZAxisCalibrated = false;
-
-        XAxisFirstObject.SetActive(true);
-    }
-
     public void FinishAxisCalibration()
     {
-
-        //Vector3 sumAll = Vector3.zero;
-        //for (int i = 0; i < currentCalibratingIndex; i++)
-        //{
-        //    sumAll += positionHistory[i];
-        //}
-        //positionOffset = sumAll / 100;       
-
         Vector3 desiredFirstPoint;
         Vector3 desiredSecondPoint;
         if (isXAxisCalibrated)
@@ -162,11 +174,12 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
             {
                 isZAxisCalibrated = true;
                 ZAxisFirstObject.SetActive(false);
-                ZAxisSecondObject.SetActive(false);
-                isCalibrating = false;
+                ZAxisSecondObject.SetActive(false);                
 
                 desiredFirstPoint = ZAxisFirstObject.transform.position;
                 desiredSecondPoint = ZAxisSecondObject.transform.position;
+
+                FinishCalibration();
             }
             else
             {
@@ -174,7 +187,7 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
                 YAxisFirstObject.SetActive(false);
                 YAxisSecondObject.SetActive(false);
                 ZAxisFirstObject.SetActive(true);
-                ZAxisSecondObject.SetActive(true);
+                ZAxisSecondObject.SetActive(false);
 
                 desiredFirstPoint = YAxisFirstObject.transform.position;
                 desiredSecondPoint = YAxisSecondObject.transform.position;
@@ -186,63 +199,109 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
             XAxisFirstObject.SetActive(false);
             XAxisSecondObject.SetActive(false);
             YAxisFirstObject.SetActive(true);
-            YAxisSecondObject.SetActive(true);
+            YAxisSecondObject.SetActive(false);
 
             desiredFirstPoint = XAxisFirstObject.transform.position;
-            desiredSecondPoint = XAxisSecondObject.transform.position;        
+            desiredSecondPoint = XAxisSecondObject.transform.position;
         }
 
-        Vector3 sizeVive = (secondPoint - firstPoint);
+        Vector3 sizeVive = (secondPoint[currentCalibrationAxis] - firstPoint[currentCalibrationAxis]);
         Vector3 sizeMeta = (desiredSecondPoint - desiredFirstPoint);
 
         // scale
-        float scaling = sizeMeta.magnitude / sizeVive.magnitude;
-        Vector3 scaledFirstVive = firstPoint * scaling;
-        Vector3 scaledSecondVive = secondPoint * scaling;
+        scaleByAxis[currentCalibrationAxis] = sizeMeta.magnitude / sizeVive.magnitude;
 
         // offset
-        Vector3 centerVive = scaling * (firstPoint + sizeVive / 2);
+        Vector3 centerVive = firstPoint[currentCalibrationAxis] + sizeVive / 2;
         Vector3 centerMeta = desiredFirstPoint + sizeMeta / 2;
-        Vector3 offset = centerVive - centerMeta;
+        offsetByAxis[currentCalibrationAxis] = centerVive - centerMeta;
 
         // rotation
-        Vector3 centerV = firstPoint + sizeVive / 2;
-        Vector3 centerM = desiredFirstPoint + sizeMeta / 2;
+        Vector3 realDataAxis = secondPoint[currentCalibrationAxis] - firstPoint[currentCalibrationAxis];
+        
+        // Apply rotations so far
+        //for (int i = 0; i < currentCalibrationAxis; i++)
+        //{
+        //    realDataAxis = rotationByAxis[i] * realDataAxis;
+        //}
 
-        Quaternion rot = Quaternion.FromToRotation(firstPoint - centerV, desiredFirstPoint - centerM);
-        Quaternion rot1 = Quaternion.FromToRotation(scaledFirstVive - offset, desiredFirstPoint);
-        Quaternion rot2 = Quaternion.FromToRotation(scaledSecondVive - offset, desiredSecondPoint);
-        Quaternion rot3 = Quaternion.FromToRotation(scaledFirstVive, desiredFirstPoint);
-        Quaternion rot4 = Quaternion.FromToRotation(scaledSecondVive, desiredSecondPoint);
-        Quaternion rot5 = Quaternion.FromToRotation(scaledFirstVive - offset - centerMeta, desiredFirstPoint - centerMeta);
-        Quaternion rot6 = Quaternion.FromToRotation(scaledSecondVive - offset - centerMeta, desiredSecondPoint - centerMeta);
+        // Find next rotation
+        rotationByAxis[currentCalibrationAxis] = Quaternion.FromToRotation(realDataAxis, desiredSecondPoint - desiredFirstPoint);
 
-        if (isXAxisCalibrated)
-        {            
-            finalFirstCube.transform.position = (rot * (firstPoint - centerV)) * scaling + centerV;
-            finalSecondCube.transform.position = (rot * (secondPoint - centerV)) * scaling + centerV;
-        }
-        else if (isYAxisCalibrated)
+        //positionOffset = Vector3.zero;
+        //for (int i = 0; i <= currentCalibrationAxis; i++)
+        //{
+        //    positionOffset += offsetByAxis[i];
+        //    if (i == 0)
+        //    {
+        //        scale.x = scaleByAxis[0];
+        //    }
+        //    else if (i == 1)
+        //    {
+        //        scale.y = scaleByAxis[1];
+        //    }
+        //    else
+        //    {
+        //        scale.z = scaleByAxis[2];
+        //    }
+        //    rotation *= rotationByAxis[i];
+        //}
+        //positionOffset /= (currentCalibrationAxis + 1);
+        positionOffset = offsetByAxis[currentCalibrationAxis];
+
+        scale.x = 1;
+        scale.y = 1;
+        scale.z = 1;
+        if (currentCalibrationAxis == 0)
         {
-            finalFirstCube.transform.position = (rot * (firstPoint - centerV)) * scaling + centerV + offset;
-            finalSecondCube.transform.position = (rot * (secondPoint - centerV)) * scaling + centerV + offset;
+            scale.x = scaleByAxis[0];
+        }
+        else if (currentCalibrationAxis == 1)
+        {
+            scale.y = scaleByAxis[1];
         }
         else
-        {
-            finalFirstCube.transform.position = (rot * (firstPoint - centerV)) * scaling;
-            finalSecondCube.transform.position = (rot * (secondPoint - centerV)) * scaling;
+        {            
+            scale.z = scaleByAxis[2];
         }
 
-        finalFirst = scaledFirstVive - offset;
-        finalSecond = scaledSecondVive - offset;
+        translationMatrix = Matrix4x4.Translate(-positionOffset);
+        scalingMatrix = Matrix4x4.Scale(scale);
+        rotationMatrix = Matrix4x4.Rotate(rotation);
 
+        finalFirstCube.transform.position = rotationMatrix.MultiplyPoint(scalingMatrix.MultiplyPoint(translationMatrix.MultiplyPoint(firstPoint[currentCalibrationAxis])));
+        finalSecondCube.transform.position = rotationMatrix.MultiplyPoint(scalingMatrix.MultiplyPoint(translationMatrix.MultiplyPoint(secondPoint[currentCalibrationAxis])));
         
-        
-        Debug.Log("Calibration result: First = " + firstPoint + " | Second = " + secondPoint + " | Offset = " + offset + " | scaling = " + scaling + " | rot1 = " + rot1 + " | rot2 = " + rot2 + " | rot3 = " + rot3 + " | rot4 = " + rot4 + " | rot5 = " + rot5 + " | rot6 = " + rot6);        
+        Debug.Log("Calibration result: First = " + firstPoint + " | Second = " + secondPoint + " | Offset = " + offsetByAxis[currentCalibrationAxis] + " | scaling = " + scaleByAxis[currentCalibrationAxis] + " | rot = " + rotationByAxis[currentCalibrationAxis]);
+
+        currentCalibrationAxis++;
+    }
+
+    void FinishCalibration()
+    {
+        // Computes final offset
+        positionOffset = Vector3.zero;
+        for (int i = 0; i < 3; i++)
+        {
+            positionOffset += offsetByAxis[i];
+        }
+        positionOffset /= 3;
+
+        scale.x = scaleByAxis[0];
+        scale.y = scaleByAxis[1];
+        scale.z = scaleByAxis[2];
+
+        rotation = rotationByAxis[0];
+
+        translationMatrix = Matrix4x4.Translate(-positionOffset);
+        scalingMatrix = Matrix4x4.Scale(scale);
+        rotationMatrix = Matrix4x4.Rotate(rotation);
+
+        isCalibrating = false;
     }
 
     void UpdateTriggerState(bool isTriggerActive)
-    {        
+    {
         if (_lastProcessedTriggerState && isTriggerActive)
         {
             OnTriggerEvent();
@@ -274,6 +333,25 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
 
     }
 
+    public void StartVIVEControllerCalibration()
+    {
+        Debug.Log("Calibrating...");
+        
+        isCalibrating = true;
+        isXAxisCalibrated = false;
+        isYAxisCalibrated = false;
+        isZAxisCalibrated = false;
+        gotFirstPoint = false;
+
+        currentCalibrationAxis = 0;
+
+        XAxisFirstObject.SetActive(true);
+        XAxisSecondObject.SetActive(false);
+        YAxisFirstObject.SetActive(false);
+        YAxisSecondObject.SetActive(false);
+        ZAxisFirstObject.SetActive(false);
+        ZAxisSecondObject.SetActive(false);
+    }
 }
 
 
@@ -289,6 +367,6 @@ public class VIVEEditorBuilder : Editor
         if (GUILayout.Button("Start Calibration of Controller"))
         {
             myScript.StartVIVEControllerCalibration();
-        }        
+        }
     }
 }
