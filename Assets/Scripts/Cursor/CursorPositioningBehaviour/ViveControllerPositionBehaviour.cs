@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using UnityEditor;
+using UnityEngine.Events;
 
 public class ViveControllerPositionBehaviour : CursorPositioningController
 {
@@ -23,8 +24,9 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
     public GameObject finalSecondCube;
     public GameObject finalOffsetCube;
 
-    Vector3 finalFirst;
-    Vector3 finalSecond;
+    public UnityAction OnTriggerDown;
+    public UnityAction OnTrigger;
+    public UnityAction OnTriggerUp;
 
     bool isCalibrating = false;
     bool gotFirstPoint = false;
@@ -41,8 +43,11 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
     float[] scaleByAxis;
     Quaternion[] rotationByAxis;
     int currentCalibrationAxis = 0; // 0 = x, 1 = y, 2 = z
-    
+
+    Vector3 lastRawCursorPosition;    
     Vector3 lastCursorPosition;
+
+    Quaternion lastRawCursorRotation;
     Quaternion lastCursorRotation;
     
     Matrix4x4 translationMatrix;
@@ -54,8 +59,10 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
     UdpClient client;
     private int port = 8051;
     private bool _lastProcessedTriggerState;
-    private bool _isTriggerDown;
-    private Double[] float_array; 
+    private int frameTriggerDown = -1;
+    private int frameTriggerUp = -1;
+    private int currentFrame = 0;
+    private Double[] float_array;
 
     public override Vector3 GetCurrentCursorPosition()
     {
@@ -81,25 +88,74 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
         translationMatrix = Matrix4x4.identity;
         scalingMatrix = Matrix4x4.identity;
         rotationMatrix = Matrix4x4.identity;
+
+        OnTriggerDown += OnTriggerDownEvent;
     }
     
     void Update()
     {
-        Vector3 rawPosition = new Vector3((float)float_array[0], (float)float_array[1], (float)float_array[2]);
-        Quaternion rawRotation = new Quaternion((float)float_array[3], (float)float_array[4], (float)float_array[5], (float)float_array[6]);
-        ConvertVIVEToUnity(ref rawPosition, ref rawRotation);
+        lastRawCursorPosition = new Vector3((float)float_array[0], (float)float_array[1], (float)float_array[2]);
+        lastRawCursorRotation = new Quaternion((float)float_array[3], (float)float_array[4], (float)float_array[5], (float)float_array[6]);
+        ConvertVIVEToUnity(ref lastRawCursorPosition, ref lastRawCursorRotation);
         
-        if (isCalibrating && _isTriggerDown)
+        //translationMatrix = Matrix4x4.Translate(-positionOffset);
+        //scalingMatrix = Matrix4x4.Scale(scale);
+        //rotationMatrix = Matrix4x4.Rotate(Quaternion.Euler(rotation.x, rotation.y, rotation.z));
+
+        lastCursorPosition = offset + scalingMatrix.MultiplyPoint(rotationMatrix.MultiplyPoint(translationMatrix.MultiplyPoint(lastRawCursorPosition)));
+        lastCursorRotation = lastRawCursorRotation;
+
+        currentFrame++;
+        if (currentFrame < 0)
+        {
+            currentFrame = 0;
+        }
+    }
+
+    public static void ConvertVIVEToUnity(ref Vector3 pos, ref Quaternion rot)
+    {
+        pos = new Vector3(pos[0], pos[1], -pos[2]);
+
+        rot = new Quaternion(-rot[2], -rot[1], rot[0], rot[3]);
+        Quaternion rot180 = Quaternion.AngleAxis(180.0f, Vector3.up);
+        Quaternion rot90 = Quaternion.AngleAxis(90.0f, Vector3.forward);
+
+        rot = rot * rot90 * rot180;
+    }
+
+    public void StartVIVEControllerCalibration()
+    {
+        Debug.Log("Calibrating...");
+
+        translationMatrix = Matrix4x4.identity;
+        scalingMatrix = Matrix4x4.identity;
+        rotationMatrix = Matrix4x4.identity;
+
+        isCalibrating = true;
+        isXAxisCalibrated = false;
+        isYAxisCalibrated = false;
+        isZAxisCalibrated = false;
+        gotFirstPoint = false;
+
+        currentCalibrationAxis = 0;
+
+        SetCalibrationObjectsActive(false);
+        XAxisFirstObject.SetActive(true);
+    }
+
+    void OnTriggerDownEvent()
+    {
+        if (isCalibrating)
         {
             if (gotFirstPoint)
             {
-                secondPoint[currentCalibrationAxis] = rawPosition;                    
+                secondPoint[currentCalibrationAxis] = lastRawCursorPosition;
                 FinishAxisCalibration();
-                gotFirstPoint = false;                    
+                gotFirstPoint = false;
             }
             else
             {
-                firstPoint[currentCalibrationAxis] = rawPosition;
+                firstPoint[currentCalibrationAxis] = lastRawCursorPosition;
                 gotFirstPoint = true;
 
                 if (currentCalibrationAxis == 0)
@@ -117,61 +173,10 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
                     ZAxisFirstObject.SetActive(false);
                     ZAxisSecondObject.SetActive(true);
                 }
-            }          
-        }
-
-        //translationMatrix = Matrix4x4.Translate(-positionOffset);
-        //scalingMatrix = Matrix4x4.Scale(scale);
-        //rotationMatrix = Matrix4x4.Rotate(Quaternion.Euler(rotation.x, rotation.y, rotation.z));
-
-        lastCursorPosition = offset + scalingMatrix.MultiplyPoint(rotationMatrix.MultiplyPoint(translationMatrix.MultiplyPoint(rawPosition)));
-        lastCursorRotation = rawRotation;
-
-        _isTriggerDown = false;
-    }
-
-    public static void ConvertVIVEToUnity(ref Vector3 pos, ref Quaternion rot)
-    {
-        pos = new Vector3(pos[0], pos[1], -pos[2]);
-
-        rot = new Quaternion(-rot[2], -rot[1], rot[0], rot[3]);
-        Quaternion rot180 = Quaternion.AngleAxis(180.0f, Vector3.up);
-        Quaternion rot90 = Quaternion.AngleAxis(90.0f, Vector3.forward);
-
-        rot = rot * rot90 * rot180;
-    }
-
-    void OnApplicationQuit()
-    {
-        if (receiveThread != null)
-            receiveThread.Abort();
-        client.Close();
-    }
-
-    private void ReceiveData()
-    {
-        port = 8051;
-        client = new UdpClient(port);
-        print("Starting UDP Server to get the HTC VIVE information");
-        while (true)
-        {
-            try
-            {
-                IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
-                byte[] data = client.Receive(ref anyIP);
-                for (int i = 0; i < float_array.Length; i++)
-                {
-                    float_array[i] = BitConverter.ToDouble(data, i * sizeof(double));
-                }
-                UpdateTriggerState(BitConverter.ToDouble(data, float_array.Length * sizeof(double)) != 0);
-            }
-            catch (Exception err)
-            {
-                print(err.ToString());
             }
         }
     }
-
+    
     public void FinishAxisCalibration()
     {
         if (isXAxisCalibrated)
@@ -211,25 +216,29 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
 
         Vector3 sizeVive = (secondPoint[currentCalibrationAxis] - firstPoint[currentCalibrationAxis]);
         Vector3 sizeMeta = (desiredSecondPoint[currentCalibrationAxis] - desiredFirstPoint[currentCalibrationAxis]);
-
-        // scale
-        scaleByAxis[currentCalibrationAxis] = sizeMeta.magnitude / sizeVive.magnitude;
-
-        // offset
+        
+        // Offset
         Vector3 centerVive = firstPoint[currentCalibrationAxis] + sizeVive / 2;
         Vector3 centerMeta = desiredFirstPoint[currentCalibrationAxis] + sizeMeta / 2;
 
         offsetByAxis[currentCalibrationAxis] = centerVive;
         metaOffsetByAxis[currentCalibrationAxis] = centerMeta;
-
-        // rotation
-        Vector3 realDataAxis = secondPoint[currentCalibrationAxis] - firstPoint[currentCalibrationAxis];
         
-        // Find next rotation
+        // Scale
+        scaleByAxis[currentCalibrationAxis] = sizeMeta.magnitude / sizeVive.magnitude;
+
+        // Rotation
+        Vector3 realDataAxis = secondPoint[currentCalibrationAxis] - firstPoint[currentCalibrationAxis];        
         rotationByAxis[currentCalibrationAxis] = Quaternion.FromToRotation(realDataAxis, desiredSecondPoint[currentCalibrationAxis] - desiredFirstPoint[currentCalibrationAxis]);
 
-        positionOffset = offsetByAxis[currentCalibrationAxis];
 
+
+        // Apply transformations to measured axis (just for visual feedback while calibrating)
+        // offset
+        positionOffset = offsetByAxis[currentCalibrationAxis];
+        translationMatrix = Matrix4x4.Translate(-positionOffset);
+
+        // scale
         scale.x = 1;
         scale.y = 1;
         scale.z = 1;
@@ -244,30 +253,14 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
         else
         {            
             scale.z = scaleByAxis[2];
-        }
-
-        translationMatrix = Matrix4x4.Translate(-positionOffset);
+        }        
         scalingMatrix = Matrix4x4.Scale(scale);
 
-        Vector3 axis = Vector3.zero;        
-        for (int i = 0; i <= currentCalibrationAxis; i++)
-        {
-            axis += (secondPoint[i] - firstPoint[i]).normalized;            
-        }
-
-        Vector3 reference = Vector3.right;
-        if (currentCalibrationAxis >= 1)
-        {
-            reference += Vector3.up;
-        }
-        if (currentCalibrationAxis >= 2);
-        {
-            reference += Vector3.forward;
-        }
-        //rotation = Quaternion.FromToRotation(axis, reference);
+        // rotation
         rotation = rotationByAxis[currentCalibrationAxis].eulerAngles;
         rotationMatrix = Matrix4x4.Rotate(Quaternion.Euler(rotation.x, rotation.y, rotation.z));
         
+        // visual feedback
         finalOffsetCube.transform.position = metaOffsetByAxis[currentCalibrationAxis] + translationMatrix.MultiplyPoint(centerVive);
         finalFirstCube.transform.position = metaOffsetByAxis[currentCalibrationAxis] + rotationMatrix.MultiplyPoint(scalingMatrix.MultiplyPoint(translationMatrix.MultiplyPoint(firstPoint[currentCalibrationAxis])));
         finalSecondCube.transform.position = metaOffsetByAxis[currentCalibrationAxis] + rotationMatrix.MultiplyPoint(scalingMatrix.MultiplyPoint(translationMatrix.MultiplyPoint(secondPoint[currentCalibrationAxis])));
@@ -284,18 +277,7 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
 
     void FinishCalibration()
     {
-        //Vector3 measuredXAxis = (secondPoint[0] - firstPoint[0]).normalized;
-        //Vector3 measuredYAxis = (secondPoint[1] - firstPoint[1]).normalized;
-        //Vector3 measuredZAxis = (secondPoint[2] - firstPoint[2]).normalized;
-        //Vector3 measuredSystemCoordinatesOrientation = (measuredXAxis + measuredYAxis + measuredZAxis).normalized;
-
-        //Vector3 systemCoordinatesOrientation = Vector3.one;
-
-        //rotation = Quaternion.FromToRotation(measuredSystemCoordinatesOrientation, systemCoordinatesOrientation).eulerAngles;
-        rotation = rotationByAxis[2].eulerAngles;
-        rotationMatrix = Matrix4x4.Rotate(Quaternion.Euler(rotation.x, rotation.y, rotation.z));
-
-        // Computes final offset
+        // Computes final offset by averaging the offsets obtained for each axis measurement
         positionOffset = Vector3.zero;
         for (int i = 0; i < 3; i++)
         {
@@ -304,68 +286,38 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
         positionOffset /= 3;
         translationMatrix = Matrix4x4.Translate(-positionOffset);
 
+        // Get the scaling values for each axis
         scale.x = scaleByAxis[0];
         scale.y = scaleByAxis[1];
         scale.z = scaleByAxis[2];
         scalingMatrix = Matrix4x4.Scale(scale);
 
-        Debug.Log("Calibration final results: Offset = " + positionOffset + " | Scale = " + scale + " | Rotation = " + rotation);
+
+        // Get the rotation needed to align both system coordinates
+
+        /*************
+        // This is not working properly. I guess it is because the three measured axis usually won't be orthogonal.
+
+        //Vector3 measuredXAxis = (secondPoint[0] - firstPoint[0]).normalized;
+        //Vector3 measuredYAxis = (secondPoint[1] - firstPoint[1]).normalized;
+        //Vector3 measuredZAxis = (secondPoint[2] - firstPoint[2]).normalized;
+        //Vector3 measuredSystemCoordinatesOrientation = (measuredXAxis + measuredYAxis + measuredZAxis).normalized;
+
+        //Vector3 systemCoordinatesOrientation = Vector3.one;
+
+        //rotation = Quaternion.FromToRotation(measuredSystemCoordinatesOrientation, systemCoordinatesOrientation).eulerAngles;
+        **************/
+
+        // Empirically, the Y axis of both coordinate systems are always facing up.
+        // So we just need to rotate around it so the Z axis are aligned to align all three axis. 
+        rotation = rotationByAxis[2].eulerAngles;
+        rotationMatrix = Matrix4x4.Rotate(Quaternion.Euler(rotation.x, rotation.y, rotation.z));
         
         isCalibrating = false;
         SetCalibrationObjectsActive(false);
-    }
 
-    void UpdateTriggerState(bool isTriggerActive)
-    {
-        if (_lastProcessedTriggerState && isTriggerActive)
-        {
-            OnTriggerEvent();
-        }
-        else if (!_lastProcessedTriggerState && isTriggerActive)
-        {
-            _isTriggerDown = true;
-            OnTriggerDownEvent();
-        }
-        else if (_lastProcessedTriggerState && !isTriggerActive)
-        {
-            OnTriggerUpEvent();
-        }
-        _lastProcessedTriggerState = isTriggerActive;
-    }
+        Debug.Log("Calibration final results: Offset = " + positionOffset + " | Scale = " + scale + " | Rotation = " + rotation);
 
-    void OnTriggerDownEvent()
-    {
-
-    }
-
-    void OnTriggerEvent()
-    {
-
-    }
-
-    void OnTriggerUpEvent()
-    {
-
-    }
-
-    public void StartVIVEControllerCalibration()
-    {
-        Debug.Log("Calibrating...");
-
-        translationMatrix = Matrix4x4.identity;
-        scalingMatrix = Matrix4x4.identity;
-        rotationMatrix = Matrix4x4.identity;
-
-        isCalibrating = true;
-        isXAxisCalibrated = false;
-        isYAxisCalibrated = false;
-        isZAxisCalibrated = false;
-        gotFirstPoint = false;
-
-        currentCalibrationAxis = 0;
-
-        SetCalibrationObjectsActive(false);
-        XAxisFirstObject.SetActive(true);        
     }
 
     void SetCalibrationObjectsActive(bool isActive)
@@ -379,6 +331,73 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
         finalFirstCube.SetActive(isActive);
         finalSecondCube.SetActive(isActive);
         finalOffsetCube.SetActive(isActive);
+    }
+    
+    private void ReceiveData()
+    {
+        port = 8051;
+        client = new UdpClient(port);
+        print("Starting UDP Server to get the HTC VIVE information");
+        while (true)
+        {
+            try
+            {
+                IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
+                byte[] data = client.Receive(ref anyIP);
+                for (int i = 0; i < float_array.Length; i++)
+                {
+                    float_array[i] = BitConverter.ToDouble(data, i * sizeof(double));
+                }
+                UpdateTriggerState(BitConverter.ToDouble(data, float_array.Length * sizeof(double)) != 0);
+            }
+            catch (Exception err)
+            {
+                print(err.ToString());
+            }
+        }
+    }
+
+    void UpdateTriggerState(bool isTriggerActive)
+    {
+        if (_lastProcessedTriggerState && isTriggerActive)
+        {
+            frameTriggerDown = currentFrame;
+            OnTrigger();
+        }
+        else if (!_lastProcessedTriggerState && isTriggerActive)
+        {
+            OnTriggerDown();
+        }
+        else if (_lastProcessedTriggerState && !isTriggerActive)
+        {
+            frameTriggerUp = currentFrame;
+            OnTriggerUp();
+        }
+        _lastProcessedTriggerState = isTriggerActive;
+    }
+
+    public bool GetTriggerDown()
+    {
+        return frameTriggerDown == currentFrame;
+    }
+
+    public bool GetTrigger()
+    {
+        return _lastProcessedTriggerState;
+    }
+
+    public bool GetTriggerUp()
+    {
+        return frameTriggerUp == currentFrame;
+    }
+
+    void OnApplicationQuit()
+    {
+        if (receiveThread != null)
+        {
+            receiveThread.Abort();
+        }
+        client.Close();
     }
 }
 

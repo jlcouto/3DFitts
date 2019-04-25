@@ -25,6 +25,7 @@ public class TestMeasurements {
         Dictionary<string, object> data = new Dictionary<string, object>();
         data["timestamp"] = timestamp;
         data["testId"] = testConfiguration.testId;
+        data["planeOrientation"] = Enum2String.GetPlaneOrientationString(testConfiguration.planeOrientation);
         data["initialTime"] = initialTime;
         data["finalTime"] = finalTime;
         data["testDuration"] = testDuration;

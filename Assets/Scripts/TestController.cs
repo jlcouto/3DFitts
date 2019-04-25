@@ -4,15 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Leap.Unity.Interaction;
 
-public enum PlaneOrientation {
-    PlaneXY = 0,
-    PlaneYZ,
-    PlaneZX,
-    Plane45XY,
-    Plane45YZ,
-    Plane45ZX
-}
-
 public interface ITestListener
 {
     void OnTestStarted();
@@ -103,15 +94,7 @@ public class TestController : ICursorListener, IBlockListener
             case PlaneOrientation.PlaneZX:
                 planeRotation = new Vector3(0, 0, 90);
                 break;
-            case PlaneOrientation.Plane45XY:
-                planeRotation = new Vector3(-45, 0, 0);
-                break;
-            case PlaneOrientation.Plane45YZ:
-                planeRotation = new Vector3(90, -45, 0);
-                break;
-            case PlaneOrientation.Plane45ZX:
-                planeRotation = new Vector3(0, 0, 45);
-                break;
+            case PlaneOrientation.PlaneXY:
             default:
                 planeRotation = new Vector3(0, 0, 0);
                 break;

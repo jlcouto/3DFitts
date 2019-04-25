@@ -32,35 +32,14 @@ public class TestConfiguration
 
     string GetTestId()
     {
-        return "P" + GetPlaneName(planeOrientation) + "W" + Mathf.RoundToInt(targetWidth * 1000) + "D" + Mathf.RoundToInt(targetDistance * 1000) + "T" + numberOfTargets + "R" + numOfBlocksPerTest;
+        return "P" + Enum2String.GetPlaneOrientationString(planeOrientation) + "W" + Mathf.RoundToInt(targetWidth * 1000) + "D" + Mathf.RoundToInt(targetDistance * 1000) + "T" + numberOfTargets + "R" + numOfBlocksPerTest;
     }
-
-    string GetPlaneName(PlaneOrientation orientation)
-    {
-        switch (orientation)
-        {
-            case PlaneOrientation.PlaneXY: return "XY";
-            case PlaneOrientation.PlaneYZ: return "YZ";
-            case PlaneOrientation.PlaneZX: return "ZX";
-            default: return "?";
-        }
-    }
-
-    string GetTaskName(ExperimentTask task)
-    {
-        switch (task)
-        {
-            case ExperimentTask.ReciprocalTapping: return "ReciprocalTapping";
-            case ExperimentTask.Dragging: return "Dragging";
-            default: return "undefined";
-        }
-    }
-
+    
     public Dictionary<string, object> SerializeToDictionary()
     {
         Dictionary<string, object> output = new Dictionary<string, object>(9);
         output["testId"] = testId;
-        output["task"] = GetTaskName(task);
+        output["task"] = Enum2String.GetTaskString(task);
         output["numberOfTargets"] = numberOfTargets;
         output["targetWidth"] = targetWidth;
         output["targetDistance"] = targetDistance;

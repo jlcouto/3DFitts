@@ -12,7 +12,8 @@ public enum CursorSelectionMethod
     MOUSE_LEFTCLICK,
     AUTOMATIC_BYCONTACT,
     META2_GRAB,
-    LMC_GRAB
+    LMC_GRAB,
+    VIVE_TRIGGER
 }
 
 public abstract class CursorPositioningController : MonoBehaviour
@@ -49,14 +50,19 @@ public class CursorInteractorBehaviour : CursorBehaviour
                 case CursorSelectionMethod.LMC_GRAB:
                     selectionTechnique = new CursorSelectionTechniqueLeapMotionGrab(leapMotionServiceProvider);
                     break;
+                case CursorSelectionMethod.VIVE_TRIGGER:
+                    selectionTechnique = new CursorSelectionTechniqueVive(viveController);
+                    break;
                 default:
                     break;
             }
         }
         get { return _selectionMethod; }
     }
+
     public Meta.HandsProvider metaHandsProvider;
     public Leap.Unity.LeapServiceProvider leapMotionServiceProvider;
+    public ViveControllerPositionBehaviour viveController;
 
     CursorSelectionTechnique selectionTechnique;
 

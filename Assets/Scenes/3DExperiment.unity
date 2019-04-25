@@ -188,7 +188,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1009706879569456, guid: e38f84e733a8dca42a9ff760c3facbd4, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114027796001092686, guid: e38f84e733a8dca42a9ff760c3facbd4,
         type: 3}
@@ -213,7 +213,7 @@ PrefabInstance:
     - target: {fileID: 114789181702591220, guid: e38f84e733a8dca42a9ff760c3facbd4,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e38f84e733a8dca42a9ff760c3facbd4, type: 3}
@@ -689,8 +689,8 @@ MonoBehaviour:
   participantAge: 29
   testDescription: Teste preliminar Mouse Arrastar
   task: 0
-  cursorPositionController: {fileID: 1710729023}
-  cursorSelectionMethod: 0
+  cursorPositionController: {fileID: 670970905}
+  cursorSelectionMethod: 4
   statusText: {fileID: 1539674069}
   testText: {fileID: 392024047}
   repetitionText: {fileID: 1899641583}
@@ -883,7 +883,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 111412803}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: abb0e8dd6c809854f8fea5e0976884f8, type: 3}
   m_Name: 
@@ -1043,7 +1043,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &670970904
 Transform:
   m_ObjectHideFlags: 0
@@ -2419,7 +2419,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1710729022
 Transform:
   m_ObjectHideFlags: 0

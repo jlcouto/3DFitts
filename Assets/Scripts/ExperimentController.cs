@@ -6,13 +6,6 @@ using UnityEditor;
 using Newtonsoft.Json;
 using System.IO;
 
-
-public enum ExperimentTask
-{
-    ReciprocalTapping,
-    Dragging
-}
-
 public class IndexOfDifficultyConfiguration
 {
     public float targetWidth;
@@ -309,8 +302,9 @@ public class ExperimentController : MonoBehaviour, ITestListener
         output["participantName"] = participantName;
         output["participantAge"] = participantAge;
         output["testDescription"] = testDescription;
-        output["testTask"] = GetTaskString(results.testConfiguration.task);
+        output["testTask"] = Enum2String.GetTaskString(results.testConfiguration.task);
         output["cursorDiameter"] = experimentConfig.GetCursorDiameter();
+        output["planeOrientation"] = Enum2String.GetPlaneOrientationString(experimentConfig.GetPlaneOrientationsToTest()[currentPlaneOrientation]);
 
         string jsonData = JsonConvert.SerializeObject(output, new JsonSerializerSettings()
         {
@@ -335,24 +329,12 @@ public class ExperimentController : MonoBehaviour, ITestListener
     string GetFilenameForTest(TestMeasurements test)
     {
         var timestamp = test.timestamp.Replace(":", "_");
-        return GetTaskString(test.testConfiguration.task) + test.testConfiguration.testId + "_" + timestamp + ".json";
+        return Enum2String.GetTaskString(test.testConfiguration.task) + test.testConfiguration.testId + "_" + timestamp + ".json";
     }
 
     string GetResultsFolder()
     {
         return "./Experiments/" + participantName +"/";
-    }
-
-    string GetTaskString(ExperimentTask task)
-    {
-        switch (task)
-        {
-            case ExperimentTask.Dragging:
-                return "DraggingTask";
-            case ExperimentTask.ReciprocalTapping:
-                return "ReciprocalTappingTest";
-        }
-        return "undefined";
     }
 
     void UISetNoteText(string text)
