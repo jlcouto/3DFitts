@@ -39,12 +39,12 @@ public class Tapping3DMouseExperimentConfiguration : ExperimentConfiguration
 
     public override int GetNumBlocksPerTest()
     {
-        return 2;
+        return 3;
     }
 
     public override int GetNumTargetsPerTest()
     {
-        return 11;
+        return 13;
     }
 
     public override PlaneOrientation[] GetPlaneOrientationsToTest()
@@ -92,12 +92,12 @@ public class Drag3DMouseExperimentConfiguration : ExperimentConfiguration
 
     public override int GetNumBlocksPerTest()
     {
-        return 2;
+        return 3;
     }
 
     public override int GetNumTargetsPerTest()
     {
-        return 7;
+        return 9;
     }
 
     public override PlaneOrientation[] GetPlaneOrientationsToTest()

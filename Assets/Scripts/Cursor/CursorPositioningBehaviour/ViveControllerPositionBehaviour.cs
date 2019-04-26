@@ -13,6 +13,7 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
     public Vector3 scale = Vector3.one;
     public Vector3 rotation;
 
+    public GameObject calibrationObjects;
     public GameObject XAxisFirstObject;
     public GameObject XAxisSecondObject;
     public GameObject YAxisFirstObject;
@@ -89,7 +90,7 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
         scalingMatrix = Matrix4x4.identity;
         rotationMatrix = Matrix4x4.identity;
 
-        OnTriggerDown += OnTriggerDownEvent;
+        OnTriggerDown += OnTriggerDownEvent;        
     }
     
     void Update()
@@ -139,42 +140,46 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
 
         currentCalibrationAxis = 0;
 
+        calibrationObjects.SetActive(true);
         SetCalibrationObjectsActive(false);
         XAxisFirstObject.SetActive(true);
     }
 
     void OnTriggerDownEvent()
     {
-        if (isCalibrating)
+        MainThreadDispatcher.RunOnMainThread(() =>
         {
-            if (gotFirstPoint)
+            if (isCalibrating)
             {
-                secondPoint[currentCalibrationAxis] = lastRawCursorPosition;
-                FinishAxisCalibration();
-                gotFirstPoint = false;
-            }
-            else
-            {
-                firstPoint[currentCalibrationAxis] = lastRawCursorPosition;
-                gotFirstPoint = true;
-
-                if (currentCalibrationAxis == 0)
+                if (gotFirstPoint)
                 {
-                    XAxisFirstObject.SetActive(false);
-                    XAxisSecondObject.SetActive(true);
-                }
-                else if (currentCalibrationAxis == 1)
-                {
-                    YAxisFirstObject.SetActive(false);
-                    YAxisSecondObject.SetActive(true);
+                    secondPoint[currentCalibrationAxis] = lastRawCursorPosition;
+                    FinishAxisCalibration();
+                    gotFirstPoint = false;
                 }
                 else
                 {
-                    ZAxisFirstObject.SetActive(false);
-                    ZAxisSecondObject.SetActive(true);
+                    firstPoint[currentCalibrationAxis] = lastRawCursorPosition;
+                    gotFirstPoint = true;
+
+                    if (currentCalibrationAxis == 0)
+                    {
+                        XAxisFirstObject.SetActive(false);
+                        XAxisSecondObject.SetActive(true);
+                    }
+                    else if (currentCalibrationAxis == 1)
+                    {
+                        YAxisFirstObject.SetActive(false);
+                        YAxisSecondObject.SetActive(true);
+                    }
+                    else
+                    {
+                        ZAxisFirstObject.SetActive(false);
+                        ZAxisSecondObject.SetActive(true);
+                    }
                 }
             }
-        }
+        });
     }
     
     public void FinishAxisCalibration()
@@ -315,6 +320,7 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
         
         isCalibrating = false;
         SetCalibrationObjectsActive(false);
+        calibrationObjects.SetActive(false);
 
         Debug.Log("Calibration final results: Offset = " + positionOffset + " | Scale = " + scale + " | Rotation = " + rotation);
 
@@ -361,23 +367,24 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
     {
         if (_lastProcessedTriggerState && isTriggerActive)
         {
-            frameTriggerDown = currentFrame;
-            OnTrigger();
+            OnTrigger?.Invoke();
         }
         else if (!_lastProcessedTriggerState && isTriggerActive)
         {
-            OnTriggerDown();
+            frameTriggerDown = currentFrame;
+            OnTriggerDown?.Invoke();
         }
         else if (_lastProcessedTriggerState && !isTriggerActive)
-        {
+        {            
             frameTriggerUp = currentFrame;
-            OnTriggerUp();
+            OnTriggerUp?.Invoke();
         }
         _lastProcessedTriggerState = isTriggerActive;
     }
 
     public bool GetTriggerDown()
     {
+        Debug.Log("Trigger Down = " + frameTriggerDown + " " + currentFrame);
         return frameTriggerDown == currentFrame;
     }
 
