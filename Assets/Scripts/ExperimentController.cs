@@ -96,11 +96,11 @@ public class ExperimentController : MonoBehaviour, ITestListener
         }
         else if (status == ExperimentStatus.CalibrationRunning)
         {
-            Debug.Log("Calibration is already running!");
+            Debug.Log("ExperimentController: Calibration is already running!");
         }
         else
         {
-            Debug.Log("Calibration can only run when experiment is stopped!");
+            Debug.Log("ExperimentController: Calibration can only run when experiment is stopped!");
         }
     }
 
@@ -142,19 +142,19 @@ public class ExperimentController : MonoBehaviour, ITestListener
     {
         if (status == ExperimentStatus.CalibrationRunning)
         {
-            Debug.Log("Calibration is running. Finish Calibration process first.");
+            Debug.Log("ExperimentController: Calibration is running. Finish Calibration process first.");
             return;
         }
         
         if (status == ExperimentStatus.Stopped)
         {
-            Debug.Log("Starting experiment...");
+            Debug.Log("ExperimentController: Starting experiment...");
 
             centerOfTestPlanesObject.SetActive(false);
 
             if (task == ExperimentTask.Dragging)
             {
-                if (cursorPositionController.GetType() == typeof(MetaMouseInputBehaviour))
+                if (cursorPositionController.GetType() == typeof(Mouse2DInputBehaviour))
                 {
                     experimentConfig = new Drag2DMouseExperimentConfiguration();
                 }
@@ -165,7 +165,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
             }
             else
             {
-                if (cursorPositionController.GetType() == typeof(MetaMouseInputBehaviour))
+                if (cursorPositionController.GetType() == typeof(Mouse2DInputBehaviour))
                 {
                     experimentConfig = new Tapping2DMouseExperimentConfiguration();
                 }
@@ -186,13 +186,13 @@ public class ExperimentController : MonoBehaviour, ITestListener
         }
         else if (status == ExperimentStatus.Paused)
         {
-            Debug.Log("Resuming experiment...");
+            Debug.Log("ExperimentController: Resuming experiment...");
             status = ExperimentStatus.Running;
             RunNextTestConfiguration();
         }
         else
         {
-            Debug.Log("Experiment already running!");
+            Debug.Log("ExperimentController: Experiment already running!");
         }
     }
 
@@ -200,7 +200,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
     {
         if (currentTestController != null)
         {
-            Debug.Log("Error: tried to execute new test but the previous one still exists!");
+            Debug.LogWarning("ExperimentController: Tried to execute new test but the previous one still exists!");
         }
         else
         {
@@ -221,7 +221,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
                             experimentConfig.GetTargetConfigurationsToTest()[currentTestConfiguration].targetsDistance,
                             experimentConfig.GetNumBlocksPerTest());
 
-                        Debug.Log("Starting test: (P" + currentPlaneOrientation + ", C" + currentTestConfiguration + ")");
+                        Debug.Log("ExperimentController: Starting test: (P" + currentPlaneOrientation + ", C" + currentTestConfiguration + ")");
                         currentTestController.InitializeTest();
                         currentTestConfiguration++;
                     }
@@ -235,13 +235,13 @@ public class ExperimentController : MonoBehaviour, ITestListener
                 }
                 else
                 {
-                    Debug.Log("Experiment finished with success!");
+                    Debug.Log("ExperimentController: Experiment finished with success!");
                     StopExperiment();
                 }
             }
             else
             {
-                Debug.Log("Experimented is currently paused/stopped.");
+                Debug.Log("ExperimentController: Experimented is currently paused/stopped.");
             }
         }       
     }
@@ -250,12 +250,12 @@ public class ExperimentController : MonoBehaviour, ITestListener
     {
         if (status == ExperimentStatus.Running)
         {
-            Debug.Log("Pausing experiment...");
+            Debug.Log("ExperimentController: Pausing experiment...");
             status = ExperimentStatus.Paused;
         }
         else
         {
-            Debug.Log("No experiment running!");
+            Debug.Log("ExperimentController: No experiment running!");
         }
     }
 
@@ -264,13 +264,14 @@ public class ExperimentController : MonoBehaviour, ITestListener
         if (status == ExperimentStatus.Running || status == ExperimentStatus.Paused)
         {
             status = ExperimentStatus.Stopped;
+            currentTestController = null;
             centerOfTestPlanesObject.SetActive(true);
             CleanTargetPlane();
-            Debug.Log("Stopping experiment...");
+            Debug.Log("ExperimentController: Stopped current experiment...");
         }
         else
         {
-            Debug.Log("No experiment running!");
+            Debug.Log("ExperimentController: No experiment running!");
         }
     }
 
@@ -290,7 +291,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
     public void OnTestEnded(TestMeasurements testMeasurements)
     {
-        Debug.Log("Current test finished.");
+        Debug.Log("ExperimentController: Current test finished.");
         ExportResultsToFile(testMeasurements);
         currentTestController = null;
         RunNextTestConfiguration();
@@ -354,17 +355,14 @@ public class ObjectBuilderEditor : Editor
         DrawDefaultInspector();
 
         ExperimentController myScript = (ExperimentController)target;
-
-        if (GUILayout.Button("Start Calibration"))
-        {
-            myScript.StartCalibrationOfExperimentPosition();
-        }
-
+        
+        GUILayout.Space(20);
         if (GUILayout.Button("Run Experiment"))
         {
             myScript.RunExperiment();
         }
 
+        GUILayout.Space(10);
         if (GUILayout.Button("Pause Experiment"))
         {
             myScript.PauseExperiment();
@@ -373,6 +371,12 @@ public class ObjectBuilderEditor : Editor
         if (GUILayout.Button("Stop Experiment"))
         {
             myScript.StopExperiment();
+        }
+
+        GUILayout.Space(20);
+        if (GUILayout.Button("Start Meta2 Origin Calibration"))
+        {
+            myScript.StartCalibrationOfExperimentPosition();
         }
     }
 }

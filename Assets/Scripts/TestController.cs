@@ -80,6 +80,12 @@ public class TestController : ICursorListener, IBlockListener
 
     public void InitializeTest()
     {
+        if (currentStatus == TestStatus.Finished)
+        {
+            Debug.LogWarning("TestController: Cannot start a new test because another test is already running. Finish it first.");
+            return;
+        }
+
         cursor.RegisterNewListener(this);
         TargetPlaneBuilder.Build(baseTarget, targetPlane, numberOfTargets, targetWidth, targetDistance);
         targets = targetPlane.GetComponentsInChildren<TargetBehaviour>();

@@ -21,10 +21,6 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
     public GameObject ZAxisFirstObject;
     public GameObject ZAxisSecondObject;
 
-    public GameObject finalFirstCube;
-    public GameObject finalSecondCube;
-    public GameObject finalOffsetCube;
-
     public UnityAction OnTriggerDown;
     public UnityAction OnTrigger;
     public UnityAction OnTriggerUp;
@@ -265,11 +261,6 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
         rotation = rotationByAxis[currentCalibrationAxis].eulerAngles;
         rotationMatrix = Matrix4x4.Rotate(Quaternion.Euler(rotation.x, rotation.y, rotation.z));
         
-        // visual feedback
-        finalOffsetCube.transform.position = metaOffsetByAxis[currentCalibrationAxis] + translationMatrix.MultiplyPoint(centerVive);
-        finalFirstCube.transform.position = metaOffsetByAxis[currentCalibrationAxis] + rotationMatrix.MultiplyPoint(scalingMatrix.MultiplyPoint(translationMatrix.MultiplyPoint(firstPoint[currentCalibrationAxis])));
-        finalSecondCube.transform.position = metaOffsetByAxis[currentCalibrationAxis] + rotationMatrix.MultiplyPoint(scalingMatrix.MultiplyPoint(translationMatrix.MultiplyPoint(secondPoint[currentCalibrationAxis])));
-        
         Debug.Log("Calibration result: First = " + firstPoint[currentCalibrationAxis] + " | Second = " + secondPoint[currentCalibrationAxis] + " | Offset = " + offsetByAxis[currentCalibrationAxis] + " | scaling = " + scaleByAxis[currentCalibrationAxis] + " | rot = " + rotationByAxis[currentCalibrationAxis].eulerAngles + " | Meta offset = " + metaOffsetByAxis[currentCalibrationAxis]);
 
         currentCalibrationAxis++;
@@ -334,9 +325,6 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
         YAxisSecondObject.SetActive(isActive);
         ZAxisFirstObject.SetActive(isActive);
         ZAxisSecondObject.SetActive(isActive);
-        finalFirstCube.SetActive(isActive);
-        finalSecondCube.SetActive(isActive);
-        finalOffsetCube.SetActive(isActive);
     }
     
     private void ReceiveData()
