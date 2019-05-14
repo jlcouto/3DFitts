@@ -51,6 +51,8 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
     Matrix4x4 scalingMatrix;
     Matrix4x4 rotationMatrix;
 
+    Action finishCalibrationCallback;
+
     /* UDP communication to read controller data */
     Thread receiveThread;
     UdpClient client;
@@ -120,7 +122,7 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
         rot = rot * rot90 * rot180;
     }
 
-    public void StartVIVEControllerCalibration()
+    public void StartVIVEControllerCalibration(Action callback)
     {
         Debug.Log("Calibrating...");
 
@@ -139,6 +141,8 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
         calibrationObjects.SetActive(true);
         SetCalibrationObjectsActive(false);
         XAxisFirstObject.SetActive(true);
+
+        finishCalibrationCallback = callback;
     }
 
     void OnTriggerDownEvent()
@@ -315,6 +319,8 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
 
         Debug.Log("Calibration final results: Offset = " + positionOffset + " | Scale = " + scale + " | Rotation = " + rotation);
 
+        finishCalibrationCallback?.Invoke();
+        finishCalibrationCallback = null;
     }
 
     void SetCalibrationObjectsActive(bool isActive)
@@ -329,7 +335,6 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
     
     private void ReceiveData()
     {
-        port = 8051;
         client = new UdpClient(port);
         print("Starting UDP Server to get the HTC VIVE information");
         while (true)
@@ -371,8 +376,7 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
     }
 
     public bool GetTriggerDown()
-    {
-        Debug.Log("Trigger Down = " + frameTriggerDown + " " + currentFrame);
+    {        
         return frameTriggerDown == currentFrame;
     }
 
@@ -408,7 +412,7 @@ public class VIVEEditorBuilder : Editor
 
         if (GUILayout.Button("Start Calibration of Controller"))
         {
-            myScript.StartVIVEControllerCalibration();
+            myScript.StartVIVEControllerCalibration(null);
         }
     }
 }

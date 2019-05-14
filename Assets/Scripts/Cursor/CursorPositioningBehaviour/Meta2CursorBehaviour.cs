@@ -29,4 +29,16 @@ public class Meta2CursorBehaviour : CursorPositioningController
     {
         return lastCursorPosition;
     }
+
+    private void OnEnable()
+    {
+        // Enable Meta2 interaction related services
+        provider.gameObject.SetActive(true);
+    }
+
+    private void OnDisable()
+    {
+        // Disabel Meta2 interaction related services
+        provider.gameObject.SetActive(false);
+    }
 }

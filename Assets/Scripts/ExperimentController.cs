@@ -34,15 +34,6 @@ public class ExperimentController : MonoBehaviour, ITestListener
         Paused
     }
 
-    public string participantName;
-    public int participantAge;
-    public string testDescription;
-
-    public ExperimentTask task;
-
-    public CursorPositioningController cursorPositionController;
-    public CursorSelectionMethod cursorSelectionMethod;
-
     public ExperimentConfiguration experimentConfig;
 
     public Text statusText;
@@ -59,10 +50,23 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
     public GameObject centerOfTestPlanesObject;
     public Transform centerOfTestPlanes;
-    public Meta.HandsProvider metaHandsProvider;
     public Meta2CursorBehaviour calibrationPositioningCursor;
 
-    bool isMetaHandsActive;
+    public GameObject inputDevices;
+
+    [Space(30)]
+    public string participantName;
+    public int participantAge;
+    public string testDescription;
+
+    [Space(10)]
+    public ExperimentTask task;
+
+    public CursorPositioningController cursorPositionController;
+    public CursorSelectionMethod cursorSelectionMethod;
+
+
+    bool isCalibratingCenterOfPLanes = false;
     CursorPositioningController.CursorHandPosition originalCursorPosition;
 
     ExperimentStatus status = ExperimentStatus.Stopped;
@@ -76,48 +80,9 @@ public class ExperimentController : MonoBehaviour, ITestListener
         UISetNoteText("");
     }
 
-    public void StartCalibrationOfExperimentPosition()
-    {
-        if (status == ExperimentStatus.Stopped)
-        {
-            status = ExperimentStatus.CalibrationRunning;
-               
-            isMetaHandsActive = metaHandsProvider.gameObject.activeInHierarchy;
-            metaHandsProvider.gameObject.SetActive(true);
-
-            originalCursorPosition = calibrationPositioningCursor.cursorPosition;
-            calibrationPositioningCursor.cursorPosition = CursorPositioningController.CursorHandPosition.HandTop;
-
-            cursor.cursorPositionController = calibrationPositioningCursor;
-            calibrationPositioningCursor.gameObject.SetActive(true);
-
-            cursor.selectionMethod = CursorSelectionMethod.KEYBOARD_SPACEBAR;
-            cursor.transform.localScale = 0.01f * Vector3.one;
-        }
-        else if (status == ExperimentStatus.CalibrationRunning)
-        {
-            Debug.Log("ExperimentController: Calibration is already running!");
-        }
-        else
-        {
-            Debug.Log("ExperimentController: Calibration can only run when experiment is stopped!");
-        }
-    }
-
-    public void FinishCalibrationOfExperimentPosition()
-    {
-        if (status == ExperimentStatus.CalibrationRunning)
-        {
-            status = ExperimentStatus.Stopped;
-            calibrationPositioningCursor.cursorPosition = originalCursorPosition;
-            metaHandsProvider.gameObject.SetActive(isMetaHandsActive);
-            calibrationPositioningCursor.gameObject.SetActive(isMetaHandsActive);
-        }
-    }
-
     private void Update()
     {
-        if (status == ExperimentStatus.CalibrationRunning)
+        if (isCalibratingCenterOfPLanes)
         {
             centerOfTestPlanes.position = cursor.GetCursorPosition();
 
@@ -178,6 +143,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
             cursor.cursorPositionController = cursorPositionController;
             cursor.selectionMethod = cursorSelectionMethod;
             cursor.transform.localScale = experimentConfig.GetCursorDiameter() * Vector3.one;
+            cursor.cursorPositionController.gameObject.SetActive(true);
 
             currentTestConfiguration = 0;
             currentPlaneOrientation = 0;
@@ -187,6 +153,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
         else if (status == ExperimentStatus.Paused)
         {
             Debug.Log("ExperimentController: Resuming experiment...");
+            cursor.cursorPositionController.gameObject.SetActive(true);
             status = ExperimentStatus.Running;
             RunNextTestConfiguration();
         }
@@ -252,6 +219,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
         {
             Debug.Log("ExperimentController: Pausing experiment...");
             status = ExperimentStatus.Paused;
+            cursor.cursorPositionController.gameObject.SetActive(false);
         }
         else
         {
@@ -266,6 +234,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
             status = ExperimentStatus.Stopped;
             currentTestController = null;
             centerOfTestPlanesObject.SetActive(true);
+            cursor.cursorPositionController.gameObject.SetActive(false);
             CleanTargetPlane();
             Debug.Log("ExperimentController: Stopped current experiment...");
         }
@@ -342,6 +311,103 @@ public class ExperimentController : MonoBehaviour, ITestListener
     {
         noteText.text = text;
     }
+
+    bool CanStartCalibrationProcess()
+    {
+        if (status == ExperimentStatus.Stopped)
+        {
+            return true;
+        }
+        else if (status == ExperimentStatus.CalibrationRunning)
+        {
+            Debug.Log("ExperimentController: Calibration is already running!");
+        }
+        else
+        {
+            Debug.Log("ExperimentController: Calibration can only run when experiment is stopped!");
+        }
+        return false;
+    }
+
+    public void StartCalibrationOfExperimentPosition()
+    {
+        if (CanStartCalibrationProcess())
+        {
+            status = ExperimentStatus.CalibrationRunning;
+            isCalibratingCenterOfPLanes = true;
+
+            originalCursorPosition = calibrationPositioningCursor.cursorPosition;
+            calibrationPositioningCursor.cursorPosition = CursorPositioningController.CursorHandPosition.HandTop;
+
+            cursor.cursorPositionController = calibrationPositioningCursor;
+            calibrationPositioningCursor.gameObject.SetActive(true);
+
+            cursor.selectionMethod = CursorSelectionMethod.KEYBOARD_SPACEBAR;
+            cursor.transform.localScale = 0.01f * Vector3.one;
+        }
+    }
+
+    public void StartCalibrationOfVIVEController()
+    {
+        if (CanStartCalibrationProcess())
+        {
+            ViveControllerPositionBehaviour controller = inputDevices.GetComponentInChildren<ViveControllerPositionBehaviour>(true);
+            if (controller != null)
+            {
+                cursor.cursorPositionController = controller;
+                status = ExperimentStatus.CalibrationRunning;
+                controller.gameObject.SetActive(true);
+                controller.StartVIVEControllerCalibration(() => {
+                    FinishCalibration();
+                    controller.gameObject.SetActive(false);
+                });
+            }
+            else
+            {
+                Debug.LogWarning("Could not find the ViveControllerPositionBehaviour component in the children of inputMethods!");
+            }
+        }
+    }
+
+    public void StartCalibrationOfLeapMotionController()
+    {
+        if (CanStartCalibrationProcess())
+        {
+            LeapMotionControllerCursorBehaviour controller = inputDevices.GetComponentInChildren<LeapMotionControllerCursorBehaviour>(true);
+            if (controller != null)
+            {
+                cursor.cursorPositionController = controller;
+                controller.gameObject.SetActive(true);
+                status = ExperimentStatus.CalibrationRunning;
+                controller.StartLeapMotionCalibration(() => {
+                    FinishCalibration();
+                    controller.gameObject.SetActive(false);
+                });
+            }
+            else
+            {
+                Debug.LogWarning("Could not find the LeapMotionControllerCursorBehaviour component in the children of inputMethods!");
+            }
+        }
+    }
+
+    void FinishCalibration()
+    {
+        if (status == ExperimentStatus.CalibrationRunning)
+        {
+            status = ExperimentStatus.Stopped;
+        }
+    }
+
+    public void FinishCalibrationOfExperimentPosition()
+    {
+        if (status == ExperimentStatus.CalibrationRunning)
+        {
+            calibrationPositioningCursor.cursorPosition = originalCursorPosition;            
+            calibrationPositioningCursor.gameObject.SetActive(false);
+            FinishCalibration();
+        }
+    }
 }
 
 
@@ -377,6 +443,16 @@ public class ObjectBuilderEditor : Editor
         if (GUILayout.Button("Start Meta2 Origin Calibration"))
         {
             myScript.StartCalibrationOfExperimentPosition();
+        }
+        GUILayout.Space(20);
+        if (GUILayout.Button("Calibrate VIVE Controller Cursor Offset"))
+        {
+            myScript.StartCalibrationOfVIVEController();
+        }
+
+        if (GUILayout.Button("Calibrate Leap Motion Controller Cursor Offset"))
+        {
+            myScript.StartCalibrationOfLeapMotionController();
         }
     }
 }

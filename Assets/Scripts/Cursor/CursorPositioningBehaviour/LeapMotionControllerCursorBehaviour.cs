@@ -2,15 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Leap.Unity;
-using Leap.Unity.Interaction;
-using UnityEngine.Events;
+using System;
 
 public class LeapMotionControllerCursorBehaviour : CursorPositioningController
 {
-    public LeapServiceProvider leapService;
     public CursorHandPosition handPosition;
 
+    public LeapServiceProvider leapService;
+    public GameObject leapMotionObjects;
+    public HandModelManager leapHandModelManager;
+    public Transform leapMotionOffset;
+
     Vector3 lastCursorPosition;
+
+    bool isCalibrating;
+    Action finishCalibrationCallback;
+
+    const float offsetPositionCalibrationStep = 0.001f;
+    const float offsetAngleCalibrationStep = 0.5f;
 
     private void Update()
     {
@@ -26,10 +35,84 @@ public class LeapMotionControllerCursorBehaviour : CursorPositioningController
                 lastCursorPosition = frame.Hands[0].PalmPosition.ToVector3();
             }
         }
+
+        if (isCalibrating)
+        {
+            Vector3 pos = leapMotionOffset.position;
+            Vector3 rotation = leapMotionOffset.rotation.eulerAngles;
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+            {
+                FinishCalibration();
+            }
+            else if (Input.GetKey(KeyCode.LeftArrow))
+            {
+                pos.x -= offsetPositionCalibrationStep;
+            }
+            else if (Input.GetKey(KeyCode.RightArrow))
+            {
+                pos.x += offsetPositionCalibrationStep;
+            }
+            else if (Input.GetKey(KeyCode.UpArrow))
+            {
+                pos.y += offsetPositionCalibrationStep;
+            }
+            else if (Input.GetKey(KeyCode.DownArrow))
+            {
+                pos.y -= offsetPositionCalibrationStep;
+            }
+            else if (Input.GetKey(KeyCode.W))
+            {
+                pos.z += offsetPositionCalibrationStep;
+            }
+            else if (Input.GetKey(KeyCode.S))
+            {
+                pos.z -= offsetPositionCalibrationStep;
+            }
+            else if (Input.GetKey(KeyCode.O))
+            {
+                leapMotionOffset.rotation = Quaternion.Euler(new Vector3(rotation.x - offsetAngleCalibrationStep, rotation.y, rotation.z));
+            }
+            else if (Input.GetKey(KeyCode.L))
+            {
+                leapMotionOffset.rotation = Quaternion.Euler(new Vector3(rotation.x + offsetAngleCalibrationStep, rotation.y, rotation.z));
+            }
+            leapMotionOffset.position = pos;
+        }
+    }
+
+    private void OnEnable()
+    {
+        // Enable LeapMotion related services
+        leapService.enabled = true;
+        leapMotionObjects.SetActive(true);
+    }
+
+    private void OnDisable()
+    {
+        // Disable LeapMotion related services
+        leapService.enabled = false;
+        leapMotionObjects.SetActive(false);
     }
 
     public override Vector3 GetCurrentCursorPosition()
     {
         return lastCursorPosition;
+    }
+
+    public void StartLeapMotionCalibration(Action callback)
+    {
+        Debug.Log("LeapMotionControllerCursorBehaviour: calibrating...");
+        isCalibrating = true;
+        finishCalibrationCallback = callback;
+        leapHandModelManager.EnableGroup("Rigged Hands");
+    }
+
+    void FinishCalibration()
+    {
+        isCalibrating = false;
+        finishCalibrationCallback?.Invoke();
+        finishCalibrationCallback = null;
+        leapHandModelManager.DisableGroup("Rigged Hands");
+        Debug.Log("LeapMotionControllerCursorBehaviour: finished calibration.");
     }
 }

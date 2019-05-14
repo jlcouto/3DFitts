@@ -217,6 +217,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e38f84e733a8dca42a9ff760c3facbd4, type: 3}
+--- !u!4 &116560119 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4806478397667534, guid: e38f84e733a8dca42a9ff760c3facbd4,
+    type: 3}
+  m_PrefabInstance: {fileID: 111412803}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &181125660
 GameObject:
   m_ObjectHideFlags: 0
@@ -640,12 +646,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 653944a384737bc46a371a7a90226e7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  participantName: John
-  participantAge: 29
-  testDescription: Teste preliminar Mouse Arrastar
-  task: 0
-  cursorPositionController: {fileID: 1710729023}
-  cursorSelectionMethod: 5
   statusText: {fileID: 1539674069}
   testText: {fileID: 392024047}
   repetitionText: {fileID: 1899641583}
@@ -657,8 +657,14 @@ MonoBehaviour:
   targetPlane: {fileID: 1488585436}
   centerOfTestPlanesObject: {fileID: 1738141952}
   centerOfTestPlanes: {fileID: 290812183}
-  metaHandsProvider: {fileID: 278262280}
   calibrationPositioningCursor: {fileID: 702515709}
+  inputDevices: {fileID: 1969886981}
+  participantName: John
+  participantAge: 29
+  testDescription: Teste preliminar Mouse Arrastar
+  task: 0
+  cursorPositionController: {fileID: 1710729023}
+  cursorSelectionMethod: 5
 --- !u!1 &392024045
 GameObject:
   m_ObjectHideFlags: 0
@@ -1030,8 +1036,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7adfca769d3df0543a7b803fafd0bb0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leapService: {fileID: 479886397}
   handPosition: 1
+  leapService: {fileID: 479886397}
+  leapMotionObjects: {fileID: 1303593847}
+  leapHandModelManager: {fileID: 1459617344}
+  leapMotionOffset: {fileID: 116560119}
 --- !u!1 &702515707
 GameObject:
   m_ObjectHideFlags: 0
@@ -1705,6 +1714,24 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &1303593847 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1009706879569456, guid: e38f84e733a8dca42a9ff760c3facbd4,
+    type: 3}
+  m_PrefabInstance: {fileID: 111412803}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1459617344 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114207710384042862, guid: e38f84e733a8dca42a9ff760c3facbd4,
+    type: 3}
+  m_PrefabInstance: {fileID: 111412803}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c592f16851a620743868a31232613370, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1488585435
 GameObject:
   m_ObjectHideFlags: 0
