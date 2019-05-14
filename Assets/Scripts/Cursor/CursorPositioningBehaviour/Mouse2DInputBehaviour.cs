@@ -57,4 +57,9 @@ public class Mouse2DInputBehaviour : CursorPositioningController
     {
         return mousePosition;
     }
+
+    public override int GetTrackedHandId()
+    {
+        return 0;
+    }
 }

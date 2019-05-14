@@ -611,6 +611,7 @@ GameObject:
   m_Component:
   - component: {fileID: 364174328}
   - component: {fileID: 364174330}
+  - component: {fileID: 364174329}
   m_Layer: 0
   m_Name: Experiment
   m_TagString: Untagged
@@ -626,7 +627,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 364174327}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.3, z: 0.5}
+  m_LocalPosition: {x: 0.15, y: -0.3, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 511708672}
@@ -634,6 +635,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &364174329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 364174327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f889d909aa74c834b92d07fb281468af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &364174330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -663,8 +676,8 @@ MonoBehaviour:
   participantAge: 29
   testDescription: Teste preliminar Mouse Arrastar
   task: 0
-  cursorPositionController: {fileID: 1710729023}
-  cursorSelectionMethod: 5
+  cursorPositionController: {fileID: 702515709}
+  cursorSelectionMethod: 0
 --- !u!1 &392024045
 GameObject:
   m_ObjectHideFlags: 0

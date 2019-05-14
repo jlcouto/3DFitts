@@ -10,9 +10,13 @@ public class Meta2CursorBehaviour : CursorPositioningController
 
     Vector3 lastCursorPosition;
 
+    bool isTrackingHand;
+    int detectedHandID;
+
     private void Update()
     {
-        if (provider.ActiveHands.Count > 0)
+        isTrackingHand = provider.ActiveHands.Count > 0;
+        if (isTrackingHand)
         {
             if (cursorPosition == CursorHandPosition.HandPalm)
             {
@@ -22,12 +26,22 @@ public class Meta2CursorBehaviour : CursorPositioningController
             {
                 lastCursorPosition = provider.ActiveHands[0].Data.Top;
             }
+            detectedHandID = provider.ActiveHands[0].Data.UniqueId;
+        }
+        else
+        {
+            detectedHandID = -1;
         }
     }
 
     public override Vector3 GetCurrentCursorPosition()
     {
         return lastCursorPosition;
+    }
+
+    public override int GetTrackedHandId()
+    {
+        return detectedHandID;
     }
 
     private void OnEnable()

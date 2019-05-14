@@ -68,6 +68,11 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
         return lastCursorPosition;
     }
 
+    public override int GetTrackedHandId()
+    {
+        return 0;
+    }
+
     void Start()
     {
         float_array = new Double[7];

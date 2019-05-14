@@ -32,6 +32,7 @@ public abstract class CursorBehaviour : MonoBehaviour {
     public abstract void CursorDragTargetEnded(TargetBehaviour draggedTarget, TargetBehaviour receivingTarget);
 
     public abstract Vector3 GetCursorPosition();
+    public abstract int GetTrackedHandId();
 
     public void PlayCorrectAudio() {
         correctAudio.Play();

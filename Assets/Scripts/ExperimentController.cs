@@ -75,6 +75,17 @@ public class ExperimentController : MonoBehaviour, ITestListener
     int currentPlaneOrientation = 0;
     TestController currentTestController;
 
+    ulong frameNumber = 0;    
+
+    struct FrameData
+    {
+        public ulong frameNumber;
+        public float time;
+        public SimpleVector3 cursorPosition;
+        public int trackingHandId;
+    }
+    List<FrameData> frameData;
+
     void Start()
     {
         UISetNoteText("");
@@ -82,7 +93,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
     private void Update()
     {
-        if (isCalibratingCenterOfPLanes)
+        if (status == ExperimentStatus.CalibrationRunning && isCalibratingCenterOfPLanes)
         {
             centerOfTestPlanes.position = cursor.GetCursorPosition();
 
@@ -101,6 +112,21 @@ public class ExperimentController : MonoBehaviour, ITestListener
                 centerOfTestPlanes.rotation = Quaternion.Euler(new Vector3(currentRotation.x, currentRotation.y + 0.5f, currentRotation.z));
             }
         }
+        else if (status == ExperimentStatus.Running)
+        {
+            LogFrameData();
+        }
+    }
+
+    void LogFrameData()
+    {
+        frameNumber++;
+        FrameData newData = new FrameData();
+        newData.frameNumber = frameNumber;
+        newData.time = Time.time;
+        newData.cursorPosition = new SimpleVector3(cursor.GetCursorPosition());
+        newData.trackingHandId = cursor.GetTrackedHandId();
+        frameData.Add(newData);
     }
 
     public void RunExperiment()
@@ -148,6 +174,9 @@ public class ExperimentController : MonoBehaviour, ITestListener
             currentTestConfiguration = 0;
             currentPlaneOrientation = 0;
             status = ExperimentStatus.Running;
+
+            frameData = new List<FrameData>(60 * 60 * 120); // Enough capacity to record up to 2 min of data at 60 fps
+
             RunNextTestConfiguration();
         }
         else if (status == ExperimentStatus.Paused)
@@ -281,7 +310,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             Formatting = Formatting.Indented
         });
-        string filename = GetFilenameForTest(results);
+        string filename = GetTestResultsFilenameForTest(results);
         string path = GetResultsFolder() + filename;
         Debug.Log("Saving results on file: " + path);
         try
@@ -294,9 +323,51 @@ public class ExperimentController : MonoBehaviour, ITestListener
             Debug.Log("Error writing results file for experiment: " + filename);
         }
         UISetNoteText("File saved: " + filename);
+
+        ExportFrameDataToFile(results);
     }
 
-    string GetFilenameForTest(TestMeasurements test)
+    void ExportFrameDataToFile(TestMeasurements results)
+    {
+        Dictionary<string, object> frameDataDictionary = new Dictionary<string, object>();
+        List<Dictionary<string, object>> frames = new List<Dictionary<string, object>>();
+        foreach (FrameData data in frameData)
+        {
+            Dictionary<string, object> aFrame = new Dictionary<string, object>();
+            aFrame["Frame"] = data.frameNumber;
+            aFrame["Time"] = data.time;
+            aFrame["CursorPosition"] = data.cursorPosition;
+            aFrame["TrackedHandID"] = data.trackingHandId;
+            frames.Add(aFrame);
+        }
+        frameDataDictionary["frameData"] = frames;
+
+        string jsonData = JsonConvert.SerializeObject(frameDataDictionary, new JsonSerializerSettings()
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            Formatting = Formatting.Indented
+        });
+        string filename = GetFrameDataResultsFilenameForTest(results);
+        string path = GetResultsFolder() + filename;
+        Debug.Log("Saving results on file: " + path);
+        try
+        {
+            Directory.CreateDirectory(GetResultsFolder());
+            File.WriteAllText(path, jsonData);
+        }
+        catch
+        {
+            Debug.Log("Error writing results file for experiment: " + filename);
+        }
+    }
+
+    string GetFrameDataResultsFilenameForTest(TestMeasurements test)
+    {
+        var timestamp = test.timestamp.Replace(":", "_");
+        return Enum2String.GetTaskString(test.testConfiguration.task) + test.testConfiguration.testId + "_" + timestamp + "_FrameData" + ".json";
+    }
+
+    string GetTestResultsFilenameForTest(TestMeasurements test)
     {
         var timestamp = test.timestamp.Replace(":", "_");
         return Enum2String.GetTaskString(test.testConfiguration.task) + test.testConfiguration.testId + "_" + timestamp + ".json";
@@ -403,6 +474,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
     {
         if (status == ExperimentStatus.CalibrationRunning)
         {
+            isCalibratingCenterOfPLanes = false;
             calibrationPositioningCursor.cursorPosition = originalCursorPosition;            
             calibrationPositioningCursor.gameObject.SetActive(false);
             FinishCalibration();

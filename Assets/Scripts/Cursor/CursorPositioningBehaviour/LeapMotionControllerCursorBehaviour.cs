@@ -21,10 +21,15 @@ public class LeapMotionControllerCursorBehaviour : CursorPositioningController
     const float offsetPositionCalibrationStep = 0.001f;
     const float offsetAngleCalibrationStep = 0.5f;
 
+    bool isTrackingHand;
+    int detectedHandID;
+
     private void Update()
     {
         Leap.Frame frame = leapService.CurrentFrame;
-        if (frame.Hands.Count > 0)
+        isTrackingHand = frame.Hands.Count > 0;
+
+        if (isTrackingHand)
         {
             if (handPosition == CursorHandPosition.HandTop)
             {
@@ -34,6 +39,11 @@ public class LeapMotionControllerCursorBehaviour : CursorPositioningController
             {
                 lastCursorPosition = frame.Hands[0].PalmPosition.ToVector3();
             }
+            detectedHandID = frame.Hands[0].Id;
+        }
+        else
+        {
+            detectedHandID = -1;
         }
 
         if (isCalibrating)
@@ -97,6 +107,11 @@ public class LeapMotionControllerCursorBehaviour : CursorPositioningController
     public override Vector3 GetCurrentCursorPosition()
     {
         return lastCursorPosition;
+    }
+
+    public override int GetTrackedHandId()
+    {
+        return detectedHandID;
     }
 
     public void StartLeapMotionCalibration(Action callback)

@@ -24,7 +24,8 @@ public abstract class CursorPositioningController : MonoBehaviour
         HandPalm
     }
 
-    public abstract Vector3 GetCurrentCursorPosition();
+    public abstract Vector3 GetCurrentCursorPosition();    
+    public abstract int GetTrackedHandId();
 }
 
 public class CursorInteractorBehaviour : CursorBehaviour
@@ -286,5 +287,10 @@ public class CursorInteractorBehaviour : CursorBehaviour
     public override Vector3 GetCursorPosition()
     {
         return this.transform.position;
+    }
+
+    public override int GetTrackedHandId()
+    {
+        return cursorPositionController.GetTrackedHandId();
     }
 }
