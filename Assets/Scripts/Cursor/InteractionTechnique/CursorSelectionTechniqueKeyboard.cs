@@ -21,4 +21,16 @@ public class CursorSelectionTechniqueKeyboard : CursorSelectionTechnique
     {
         return Input.GetKeyUp(key);
     }
+
+    public override string GetInteractionName()
+    {
+        if (key == KeyCode.Space)
+        {
+            return "Keyboard_SpaceBar";
+        }
+        else
+        {
+            return "Keyboard";
+        }        
+    }
 }

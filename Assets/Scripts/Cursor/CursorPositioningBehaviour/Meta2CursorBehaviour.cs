@@ -34,6 +34,11 @@ public class Meta2CursorBehaviour : CursorPositioningController
         }
     }
 
+    public override string GetDeviceName()
+    {
+        return "Meta2InteractionSystem";
+    }
+
     public override Vector3 GetCurrentCursorPosition()
     {
         return lastCursorPosition;

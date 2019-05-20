@@ -49,4 +49,9 @@ public class CursorSelectionTechniqueMeta2Grab : CursorSelectionTechnique
         }
         return false;
     }
+
+    public override string GetInteractionName()
+    {
+        return "Meta2_GrabGesture";
+    }
 }

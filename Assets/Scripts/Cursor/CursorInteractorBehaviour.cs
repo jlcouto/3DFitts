@@ -24,6 +24,7 @@ public abstract class CursorPositioningController : MonoBehaviour
         HandPalm
     }
 
+    public abstract string GetDeviceName();
     public abstract Vector3 GetCurrentCursorPosition();    
     public abstract int GetTrackedHandId();
 }
@@ -292,5 +293,15 @@ public class CursorInteractorBehaviour : CursorBehaviour
     public override int GetTrackedHandId()
     {
         return cursorPositionController.GetTrackedHandId();
+    }
+
+    public override string GetDeviceName()
+    {
+        return cursorPositionController.GetDeviceName();
+    }
+
+    public override string GetInteractionTechniqueName()
+    {
+        return selectionTechnique.GetInteractionName();
     }
 }

@@ -63,6 +63,11 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
     private int currentFrame = 0;
     private Double[] float_array;
 
+    public override string GetDeviceName()
+    {
+        return "VIVEController";
+    }
+
     public override Vector3 GetCurrentCursorPosition()
     {
         return lastCursorPosition;

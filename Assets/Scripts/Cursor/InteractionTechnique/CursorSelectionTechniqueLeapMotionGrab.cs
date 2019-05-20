@@ -51,4 +51,9 @@ public class CursorSelectionTechniqueLeapMotionGrab : CursorSelectionTechnique
         }
         return false;
     }
+
+    public override string GetInteractionName()
+    {        
+        return "LeapMotion_GrabGesture";        
+    }
 }

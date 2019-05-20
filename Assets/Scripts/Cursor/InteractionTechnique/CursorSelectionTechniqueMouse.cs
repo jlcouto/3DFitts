@@ -21,4 +21,9 @@ public class CursorSelectionTechniqueMouse : CursorSelectionTechnique
     {
         return Input.GetMouseButtonUp(button);
     }
+
+    public override string GetInteractionName()
+    {
+        return "Mouse_LeftButton";
+    }
 }

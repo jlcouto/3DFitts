@@ -34,6 +34,9 @@ public abstract class CursorBehaviour : MonoBehaviour {
     public abstract Vector3 GetCursorPosition();
     public abstract int GetTrackedHandId();
 
+    public abstract string GetDeviceName();
+    public abstract string GetInteractionTechniqueName();
+
     public void PlayCorrectAudio() {
         correctAudio.Play();
     }

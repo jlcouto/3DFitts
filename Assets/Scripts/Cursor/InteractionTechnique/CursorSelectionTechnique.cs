@@ -8,4 +8,5 @@ public abstract class CursorSelectionTechnique
     public abstract bool SelectionInteractionStarted();
     public abstract bool SelectionInteractionMantained();
     public abstract bool SelectionInteractionEnded();
+    public abstract string GetInteractionName();
 }

@@ -25,4 +25,9 @@ public class CursorSelectionTechniqueVive : CursorSelectionTechnique
     {
         return viveController.GetTriggerUp();
     }
+
+    public override string GetInteractionName()
+    {
+        return "VIVEController_TriggerButton";
+    }
 }

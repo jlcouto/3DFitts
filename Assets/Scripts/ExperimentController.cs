@@ -302,6 +302,8 @@ public class ExperimentController : MonoBehaviour, ITestListener
         output["participantAge"] = participantAge;
         output["testDescription"] = testDescription;
         output["testTask"] = Enum2String.GetTaskString(results.testConfiguration.task);
+        output["device"] = cursor.GetDeviceName();
+        output["interactionTechnique"] = cursor.GetInteractionTechniqueName();
         output["cursorDiameter"] = experimentConfig.GetCursorDiameter();
         output["planeOrientation"] = Enum2String.GetPlaneOrientationString(experimentConfig.GetPlaneOrientationsToTest()[currentPlaneOrientation]);
 

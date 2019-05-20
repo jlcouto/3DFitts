@@ -104,6 +104,11 @@ public class LeapMotionControllerCursorBehaviour : CursorPositioningController
         leapMotionObjects.SetActive(false);
     }
 
+    public override string GetDeviceName()
+    {
+        return "LeapMotionController";
+    }
+
     public override Vector3 GetCurrentCursorPosition()
     {
         return lastCursorPosition;

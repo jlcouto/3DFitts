@@ -53,6 +53,11 @@ public class Mouse2DInputBehaviour : CursorPositioningController
         }
     }
 
+    public override string GetDeviceName()
+    {
+        return "Mouse";
+    }
+
     public override Vector3 GetCurrentCursorPosition()
     {
         return mousePosition;

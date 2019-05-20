@@ -193,7 +193,7 @@ PrefabInstance:
     - target: {fileID: 114027796001092686, guid: e38f84e733a8dca42a9ff760c3facbd4,
         type: 3}
       propertyPath: _enableDepthOcclusion
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114207710384042862, guid: e38f84e733a8dca42a9ff760c3facbd4,
         type: 3}
@@ -627,7 +627,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 364174327}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.15, y: -0.3, z: 0.5}
+  m_LocalPosition: {x: 0.15, y: -0.35, z: 0.45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 511708672}
@@ -676,8 +676,8 @@ MonoBehaviour:
   participantAge: 29
   testDescription: Teste preliminar Mouse Arrastar
   task: 0
-  cursorPositionController: {fileID: 702515709}
-  cursorSelectionMethod: 0
+  cursorPositionController: {fileID: 308976758}
+  cursorSelectionMethod: 1
 --- !u!1 &392024045
 GameObject:
   m_ObjectHideFlags: 0
