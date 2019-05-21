@@ -14,7 +14,7 @@ public abstract class ExperimentConfiguration
 
 public class Tapping3DMouseExperimentConfiguration : ExperimentConfiguration
 {
-    protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneYZ, PlaneOrientation.PlaneXY, PlaneOrientation.PlaneZX };
+    protected static readonly PlaneOrientation[] planeOrientations = { /*PlaneOrientation.PlaneYZ,*/ PlaneOrientation.PlaneXY, PlaneOrientation.PlaneZX };
     static readonly IndexOfDifficultyConfiguration[] configurations = {
         new IndexOfDifficultyConfiguration(0.04f, 0.2f),
         new IndexOfDifficultyConfiguration(0.04f, 0.3f),
