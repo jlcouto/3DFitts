@@ -11,18 +11,32 @@ public interface ICursorListener {
 }
 
 public abstract class CursorBehaviour : MonoBehaviour {
-    protected ICursorListener listener;
+    protected HashSet<ICursorListener> listeners;
 
     public AudioSource correctAudio;
     public AudioSource errorAudio;
 
-    public void RegisterNewListener(ICursorListener newListener)
+    public Vector3 lastCursorSelectionPosition;
+    public float lastCursorSelectionTime;
+
+    protected void Start()
     {
-        listener = newListener;
+        listeners = new HashSet<ICursorListener>();        
     }
 
-    public void RemoveCurrentListener() {
-        listener = null;
+    public void RegisterNewListener(ICursorListener newListener)
+    {        
+        listeners.Add(newListener);        
+    }
+
+    public void RemoveListener(ICursorListener listener) {
+        listeners.Remove(listener);
+    }
+
+    public void RegisterSelectionInformation(float timeOfSelection, Vector3 positionOfCursor)
+    {
+        this.lastCursorSelectionTime = timeOfSelection;
+        this.lastCursorSelectionPosition = positionOfCursor;
     }
 
     public abstract void EnterTarget(TargetBehaviour theTarget);

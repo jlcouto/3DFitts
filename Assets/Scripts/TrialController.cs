@@ -6,7 +6,7 @@ public interface ITrialListener {
     void OnTrialEnded(TrialMeasurements measurements);
 }
 
-public abstract class TrialController : MonoBehaviour, ICursorListener {
+public abstract class TrialController : ICursorListener {
 
     public TargetBehaviour initialTarget;
     public TargetBehaviour finalTarget;
@@ -42,9 +42,9 @@ public abstract class TrialController : MonoBehaviour, ICursorListener {
     }
 
     public virtual void FinishTrial() {
-        cursor.RemoveCurrentListener();
-        trialData.finalTime = Time.realtimeSinceStartup;
-        trialData.finalPosition = SimpleVector3.FromVector3(cursor.GetCursorPosition());
+        cursor.RemoveListener(this);
+        trialData.finalTime = cursor.lastCursorSelectionTime;
+        trialData.finalPosition = SimpleVector3.FromVector3(cursor.lastCursorSelectionPosition);
         if (listener != null) {
             listener.OnTrialEnded(trialData);
         }

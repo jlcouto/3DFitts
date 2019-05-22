@@ -26,4 +26,9 @@ public class SimpleVector3
     {
         return new SimpleVector3(vector);
     }
+
+    public override string ToString()
+    {
+        return "(" + this.x + ", " + this.y + ", " + this.z + ")";
+    }
 }

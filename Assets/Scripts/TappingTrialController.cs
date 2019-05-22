@@ -18,17 +18,17 @@ public class TappingTrialController : TrialController
 
     public override void CursorEnteredTarget(TargetBehaviour target)
     {
-        Debug.Log("Tapping CursorEnteredTarget");
+        //Debug.Log("Tapping CursorEnteredTarget");
     }
 
     public override void CursorExitedTarget(TargetBehaviour target)
     {
-        Debug.Log("Tapping CursorExitedTarget");
+        //Debug.Log("Tapping CursorExitedTarget");
     }
 
     public override void CursorAcquiredTarget(TargetBehaviour target)
     {
-        Debug.Log("Tapping CursorAcquiredTarget");
+        //Debug.Log("Tapping CursorAcquiredTarget");
         if (target != null && target.targetId == finalTarget.targetId)
         {
             trialData.missedTarget = false;
@@ -44,11 +44,11 @@ public class TappingTrialController : TrialController
 
     public override void CursorDragTargetStarted(TargetBehaviour target)
     {
-        Debug.Log("Tapping CursorDragTargetStarted");
+        //Debug.Log("Tapping CursorDragTargetStarted");
     }
 
     public override void CursorDragTargetEnded(TargetBehaviour draggedTarget, TargetBehaviour receivingTarget)
     {
-        Debug.Log("Tapping CursorDragTargetEnded");
+        //Debug.Log("Tapping CursorDragTargetEnded");
     }
 }

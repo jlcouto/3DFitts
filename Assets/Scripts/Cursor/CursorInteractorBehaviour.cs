@@ -8,6 +8,7 @@ using UnityEngine;
 
 public enum CursorSelectionMethod
 {
+    DWELL_TIME,
     KEYBOARD_SPACEBAR,
     MOUSE_LEFTCLICK,
     AUTOMATIC_BYCONTACT,
@@ -40,6 +41,9 @@ public class CursorInteractorBehaviour : CursorBehaviour
             _selectionMethod = value;
             switch (_selectionMethod)
             {
+                case CursorSelectionMethod.DWELL_TIME:
+                    selectionTechnique = new CursorSelectionTechniqueDwell(1f, this);
+                    break;
                 case CursorSelectionMethod.KEYBOARD_SPACEBAR:
                     selectionTechnique = new CursorSelectionTechniqueKeyboard();
                     break;
@@ -84,10 +88,11 @@ public class CursorInteractorBehaviour : CursorBehaviour
     const int numFramesToStartDragInteraction = 5;
 #endif
 
-    private void Start()
+    private new void Start()
     {
+        base.Start();
         currentTargetsCollidingWithCursor = new HashSet<TargetBehaviour>();
-        selectionMethod = CursorSelectionMethod.KEYBOARD_SPACEBAR;
+        selectionMethod = CursorSelectionMethod.KEYBOARD_SPACEBAR;        
     }
 
     void Update()
@@ -98,7 +103,7 @@ public class CursorInteractorBehaviour : CursorBehaviour
         {
             CheckAutomaticByContactSelection();
         }
-        else
+        else if (selectionTechnique != null)
         {
             ManageSelectionInteraction(selectionTechnique);
         }
@@ -111,6 +116,10 @@ public class CursorInteractorBehaviour : CursorBehaviour
 #if DRAG_START_WITH_CONTINUOUS_SELECTION
             numFramesSelectionIsActive = 0;
 #endif
+            if (selectionMethod != CursorSelectionMethod.DWELL_TIME)
+            {
+                RegisterSelectionInformation(Time.realtimeSinceStartup, GetCursorPosition());
+            }
             AcquireTarget(currentHighlightedTarget);
             acquiredPosition = GetCursorPosition();
         }
@@ -215,10 +224,7 @@ public class CursorInteractorBehaviour : CursorBehaviour
         Debug.Log("TargetEnter: " + target.name + " pos= " + target.transform.position);
 #endif
 
-        if (listener != null)
-        {
-            listener.CursorEnteredTarget(target);         
-        }
+        ExecuteForEachCursorListener((ICursorListener listener) => { listener.CursorEnteredTarget(target); });        
     }
 
     public override void ExitTarget(TargetBehaviour target)
@@ -239,23 +245,27 @@ public class CursorInteractorBehaviour : CursorBehaviour
         {
             currentHighlightedTarget = null;
         }
-       
+
 #if DEBUG_CURSOR
         Debug.Log("TargetExit: " + target.name + " pos= " + target.transform.position);
 #endif
 
-        if (listener != null)
+        ExecuteForEachCursorListener((ICursorListener listener) => { listener.CursorExitedTarget(target); });        
+    }
+
+    void ExecuteForEachCursorListener(System.Action<ICursorListener> action)
+    {
+        ICursorListener[] listenersCopy = new ICursorListener[listeners.Count];
+        listeners.CopyTo(listenersCopy);
+        foreach (var listener in listenersCopy)
         {
-            listener.CursorExitedTarget(target);
+            action?.Invoke(listener);
         }
     }
 
     public override void AcquireTarget(TargetBehaviour target)
-    {
-        if (listener != null)
-        {
-            listener.CursorAcquiredTarget(target);
-        }
+    {        
+        ExecuteForEachCursorListener((ICursorListener listener) => { listener.CursorAcquiredTarget(target); });        
 
 #if DEBUG_CURSOR
         if (target != null)
@@ -271,18 +281,12 @@ public class CursorInteractorBehaviour : CursorBehaviour
 
     public override void CursorDragTargetStarted(TargetBehaviour target)
     {
-        if (listener != null)
-        {
-            listener.CursorDragTargetStarted(target);
-        }  
+        ExecuteForEachCursorListener((ICursorListener listener) => { listener.CursorDragTargetStarted(target); });        
     }
 
     public override void CursorDragTargetEnded(TargetBehaviour draggedTarget, TargetBehaviour receivingTarget)
     {
-        if (listener != null)
-        {
-            listener.CursorDragTargetEnded(draggedTarget, receivingTarget);
-        }
+        ExecuteForEachCursorListener((ICursorListener listener) => { listener.CursorDragTargetEnded(draggedTarget, receivingTarget); });        
     }
 
     public override Vector3 GetCursorPosition()
