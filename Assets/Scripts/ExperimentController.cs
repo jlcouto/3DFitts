@@ -54,6 +54,10 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
     public GameObject inputDevices;
 
+    [Space(30)]    
+    public int currentTestConfiguration = 0;
+    public int currentPlaneOrientation = 0;
+
     [Space(30)]
     public string participantName;
     public int participantAge;
@@ -63,11 +67,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
     public ExperimentTask task;
 
     public CursorPositioningController cursorPositionController;
-    public CursorSelectionMethod cursorSelectionMethod;
-
-    [Space(10)]
-    public int currentTestConfiguration = 0;
-    public int currentPlaneOrientation = 0;
+    public CursorSelectionMethod cursorSelectionMethod;    
 
     bool isCalibratingCenterOfPLanes = false;
     CursorPositioningController.CursorHandPosition originalCursorPosition;

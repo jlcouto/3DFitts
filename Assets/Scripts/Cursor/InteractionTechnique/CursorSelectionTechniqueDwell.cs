@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class CursorSelectionTechniqueDwell : CursorSelectionTechnique, ICursorListener
 {
+    /* This Selection Technique will select only the starting or next target types, if the cursor is kept inside them
+     * for more than dwellTimeInSeconds. The user won't be able to select other types of targets. */
     public float dwellTimeInSeconds;
 
     private TargetBehaviour lastTarget;
     private Vector3 cursorPositionWhenEnteredLastTarget;
     private float timeEnteredLastTarget = -1;
-    private bool interactionStarted = false;    
+    private bool targetWasSelected = false;    
 
     private CursorBehaviour cursor;
 
@@ -27,15 +29,21 @@ public class CursorSelectionTechniqueDwell : CursorSelectionTechnique, ICursorLi
 
     public void CursorEnteredTarget(TargetBehaviour target)
     {
-        lastTarget = target;
-        cursorPositionWhenEnteredLastTarget = this.cursor.GetCursorPosition();
-        timeEnteredLastTarget = Time.realtimeSinceStartup;
-        interactionStarted = false;
+        if (target.type == TargetType.NextTarget || target.type == TargetType.StartingTestTarget)
+        {
+            if (lastTarget == null || target.targetId != lastTarget.targetId)
+            {
+                lastTarget = target;
+                targetWasSelected = false;
+                cursorPositionWhenEnteredLastTarget = this.cursor.GetCursorPosition();
+                timeEnteredLastTarget = Time.realtimeSinceStartup;
+            }
+        }
     }
 
     public void CursorExitedTarget(TargetBehaviour target)
     {
-        if (target == lastTarget)
+        if (lastTarget != null && target.targetId == lastTarget.targetId)
         {
             lastTarget = null;
             FinishSelection();
@@ -48,9 +56,9 @@ public class CursorSelectionTechniqueDwell : CursorSelectionTechnique, ICursorLi
 
     public override bool SelectionInteractionStarted()
     {        
-        if (!interactionStarted && (timeEnteredLastTarget > 0) && (Time.realtimeSinceStartup - timeEnteredLastTarget > dwellTimeInSeconds))
+        if (!targetWasSelected && (timeEnteredLastTarget > 0) && (Time.realtimeSinceStartup - timeEnteredLastTarget > dwellTimeInSeconds))
         {
-            interactionStarted = true;
+            targetWasSelected = true;
             this.cursor.RegisterSelectionInformation(timeEnteredLastTarget, cursorPositionWhenEnteredLastTarget);
             return true;
         }
@@ -62,23 +70,18 @@ public class CursorSelectionTechniqueDwell : CursorSelectionTechnique, ICursorLi
 
     public override bool SelectionInteractionMantained()
     {
-        return interactionStarted && (timeEnteredLastTarget > 0);        
+        return false;
     }
 
     public override bool SelectionInteractionEnded()
-    {
-        if (interactionStarted)
-        {
-            FinishSelection();
-            return true;
-        }
+    {        
         return false;
     }
 
     void FinishSelection()
     {
         timeEnteredLastTarget = -1;
-        interactionStarted = false;
+        targetWasSelected = false;
     }
 
     public override string GetInteractionName()
