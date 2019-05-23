@@ -1,3 +1,12 @@
+#######################
+jlcouto (23/05/2019):
+This code was originally obtained from https://github.com/TriadSemi/triad_openvr/archive/master.zip.
+
+Some changes were made by me (for exemple, get and send the trigger button state through the UDP connection on udp_emitter.py)
+The original README.md contents follow below.
+#######################
+
+
 # Triad OpenVR Python Wrapper
 
 This is an enhanced wrapper for the already excellent [pyopenvr library](https://github.com/cmbruns/pyopenvr) by [cmbruns](https://github.com/cmbruns).  The goal of this library is to create easy to use python functions for any SteamVR tracked system.
