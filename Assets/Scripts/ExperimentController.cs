@@ -90,6 +90,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
     void Start()
     {
         UISetNoteText("");
+        frameData = new List<FrameData>(60 * 60 * 120); // Enough capacity to record up to 2 min of data at 60 fps
     }
 
     private void Update()
@@ -115,7 +116,10 @@ public class ExperimentController : MonoBehaviour, ITestListener
         }
         else if (status == ExperimentStatus.Running)
         {
-            LogFrameData();
+            if (currentTestController != null && currentTestController.isRunning())
+            {
+                LogFrameData();
+            }            
         }
     }
 
@@ -174,9 +178,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
             currentTestConfiguration = 0;
             currentPlaneOrientation = 0;
-            status = ExperimentStatus.Running;
-
-            frameData = new List<FrameData>(60 * 60 * 120); // Enough capacity to record up to 2 min of data at 60 fps
+            status = ExperimentStatus.Running;            
 
             RunNextTestConfiguration();
         }
@@ -208,6 +210,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
                     if (currentTestConfiguration < experimentConfig.GetTargetConfigurationsToTest().Length)
                     {
                         CleanTargetPlane();
+                        frameData.Clear();
 
                         currentTestController = new TestController(this, statusText, testText, repetitionText, correctTargetAudio, wrongTargetAudio,
                             cursor, baseTarget, targetPlane,
@@ -219,7 +222,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
                             experimentConfig.GetNumBlocksPerTest());
 
                         Debug.Log("ExperimentController: Starting test: (P" + currentPlaneOrientation + ", C" + currentTestConfiguration + ")");
-                        currentTestController.InitializeTest();
+                        currentTestController.InitializeTest();                        
                         currentTestConfiguration++;
                     }
                     else

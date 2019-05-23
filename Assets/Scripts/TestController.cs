@@ -141,6 +141,11 @@ public class TestController : ICursorListener, IBlockListener
         testListener.OnTestEnded(testData);
     }
 
+    public bool isRunning()
+    {
+        return currentStatus == TestStatus.Running;
+    }
+
     public void CursorAcquiredTarget(TargetBehaviour target) {
         //Debug.Log("TestController CursorAcquiredTarget");
         if (target != null && target.type == TargetType.StartingTestTarget) {
