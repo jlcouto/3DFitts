@@ -30,8 +30,8 @@ public class Mouse2DInputBehaviour : CursorPositioningController
         else
         {
             float minScreenSize = Mathf.Min(Screen.width, Screen.height);
-            float xCoord = (Mathf.Clamp01(screenPos.x / minScreenSize) - 0.5f) * spaceSize.x;
-            float yCoord = (Mathf.Clamp01(screenPos.y / minScreenSize) - 0.5f) * spaceSize.y;
+            float xCoord = Mathf.Clamp((screenPos.x - 0.5f*Screen.width) / minScreenSize, -1, 1) * spaceSize.x;
+            float yCoord = Mathf.Clamp((screenPos.y - 0.5f*Screen.height) / minScreenSize, -1, 1) * spaceSize.y;
 
             switch (plane)
             {

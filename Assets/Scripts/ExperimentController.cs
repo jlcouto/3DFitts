@@ -65,14 +65,15 @@ public class ExperimentController : MonoBehaviour, ITestListener
     public CursorPositioningController cursorPositionController;
     public CursorSelectionMethod cursorSelectionMethod;
 
+    [Space(10)]
+    public int currentTestConfiguration = 0;
+    public int currentPlaneOrientation = 0;
 
     bool isCalibratingCenterOfPLanes = false;
     CursorPositioningController.CursorHandPosition originalCursorPosition;
 
     ExperimentStatus status = ExperimentStatus.Stopped;
-
-    int currentTestConfiguration = 0;
-    int currentPlaneOrientation = 0;
+    
     TestController currentTestController;
 
     ulong frameNumber = 0;    
@@ -350,11 +351,11 @@ public class ExperimentController : MonoBehaviour, ITestListener
             Formatting = Formatting.Indented
         });
         string filename = GetFrameDataResultsFilenameForTest(results);
-        string path = GetResultsFolder() + filename;
-        Debug.Log("Saving results on file: " + path);
+        string path = GetFrameDataResultsFolder() + filename;
+        Debug.Log("Saving frame data results on file: " + path);
         try
         {
-            Directory.CreateDirectory(GetResultsFolder());
+            Directory.CreateDirectory(GetFrameDataResultsFolder());
             File.WriteAllText(path, jsonData);
         }
         catch
@@ -363,21 +364,25 @@ public class ExperimentController : MonoBehaviour, ITestListener
         }
     }
 
-    string GetFrameDataResultsFilenameForTest(TestMeasurements test)
-    {
-        var timestamp = test.timestamp.Replace(":", "_");
-        return Enum2String.GetTaskString(test.testConfiguration.task) + test.testConfiguration.testId + "_" + timestamp + "_FrameData" + ".json";
-    }
-
     string GetTestResultsFilenameForTest(TestMeasurements test)
     {
         var timestamp = test.timestamp.Replace(":", "_");
-        return Enum2String.GetTaskString(test.testConfiguration.task) + test.testConfiguration.testId + "_" + timestamp + ".json";
+        return cursor.GetDeviceName() + "_" + Enum2String.GetTaskString(test.testConfiguration.task) + test.testConfiguration.testId + "_" + timestamp + ".json";
     }
 
     string GetResultsFolder()
     {
         return "./Experiments/" + participantName +"/";
+    }
+
+    string GetFrameDataResultsFolder()
+    {
+        return GetResultsFolder() + "FrameData/";
+    }
+
+    string GetFrameDataResultsFilenameForTest(TestMeasurements test)
+    {
+        return "FrameData_" + GetTestResultsFilenameForTest(test);
     }
 
     void UISetNoteText(string text)

@@ -33,10 +33,10 @@ public class TestMeasurements {
         List<Dictionary<string, object>> blocks = new List<Dictionary<string, object>>(blocksData.Count);
         foreach (BlockMeasurements b in blocksData)
         {
-            blocks.Add(b.SerializeToDictionary());
+            blocks.Add(b.SerializeToDictionary());            
         }
         data["blocksData"] = blocks;
-
+        
         var configuration = testConfiguration.SerializeToDictionary();
 
         Dictionary<string, object> theTest = new Dictionary<string, object>();
@@ -45,6 +45,50 @@ public class TestMeasurements {
 
         Dictionary<string, object> output = new Dictionary<string, object>();
         output["test"] = theTest;
+        output["computedResults"] = ComputeResults();
+
         return output;
     }
+
+    public Dictionary<string, object> ComputeResults()
+    {
+        int totalTrials = 0;
+        int totalMissedTargets = 0;
+        float totalMovementTime = 0;
+        List<double> projectedCoordinates = new List<double>();        
+
+        foreach (BlockMeasurements b in blocksData)
+        {
+            foreach (TrialMeasurements t in b.trialsData)
+            {
+                totalTrials++;
+                if (t.missedTarget)
+                {
+                    totalMissedTargets++;
+                }
+                totalMovementTime += t.trialDuration;
+                projectedCoordinates.Add(t.finalPositionProjectedCoordinate);
+            }
+        }
+
+        Dictionary<string, object> results = new Dictionary<string, object>();
+        results["totalTrials"] = totalTrials;
+        results["totalMissedTargets"] = totalMissedTargets;
+        results["totalMovementTime"] = totalMovementTime;
+        results["errorRate"] = totalMissedTargets / totalTrials;
+
+        float averageMovementTime = totalMovementTime / totalTrials;
+        results["averageMovementTime"] = averageMovementTime;
+
+        float effectiveWidth = (float) (4.133f * ResultsMath.ComputeStandardDeviation(projectedCoordinates));
+        results["effectiveWidth"] = effectiveWidth;
+
+        float effectiveIndexOfDifficulty = ResultsMath.IndexOfDifficulty(effectiveWidth, testConfiguration.targetDistance);
+        results["effectiveIndexOfDifficulty"] = effectiveIndexOfDifficulty;
+
+        results["throughput"] = effectiveIndexOfDifficulty / averageMovementTime;
+        
+        return results;
+    }
+
 }

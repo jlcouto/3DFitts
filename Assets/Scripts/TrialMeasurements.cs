@@ -8,6 +8,9 @@ public class TrialMeasurements {
     public int initialTargetId;
     public int finalTargetId;
 
+    public Vector3 initialTargetPosition;
+    public Vector3 finalTargetPosition;
+
     public float initialTime;
     public float finalTime;
     public float trialDuration { get { return finalTime - initialTime; } }
@@ -15,12 +18,16 @@ public class TrialMeasurements {
     public SimpleVector3 initialPosition;
     public SimpleVector3 finalPosition;
 
+    public float finalPositionProjectedCoordinate;
+
     public bool missedTarget = false;
 
     public TrialMeasurements(int trialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget) {
         this.trialId = trialId;
         this.initialTargetId = initialTarget.targetId;
         this.finalTargetId = finalTarget.targetId;
+        this.initialTargetPosition = initialTarget.position;
+        this.finalTargetPosition = finalTarget.position;
     }
 
     public Dictionary<string, object> SerializeToDictionary()
@@ -35,6 +42,10 @@ public class TrialMeasurements {
         output["initialPosition"] = initialPosition;
         output["finalPosition"] = finalPosition;
         output["missedTarget"] = missedTarget;
+
+        finalPositionProjectedCoordinate = ResultsMath.Projected3DPointCoordinate(initialTargetPosition, finalTargetPosition, SimpleVector3.ToVector3(finalPosition));
+        output["finalProjectedDistance"] = finalPositionProjectedCoordinate;
+
         return output;
     }
 }

@@ -22,6 +22,11 @@ public class SimpleVector3
         this.z = vector.z;
     }
 
+    public static Vector3 ToVector3(SimpleVector3 vector)
+    {
+        return new Vector3(vector.x, vector.y, vector.z);
+    }
+
     public static SimpleVector3 FromVector3(Vector3 vector)
     {
         return new SimpleVector3(vector);

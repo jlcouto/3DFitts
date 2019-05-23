@@ -43,9 +43,10 @@ public class TestConfiguration
         output["numberOfTargets"] = numberOfTargets;
         output["targetWidth"] = targetWidth;
         output["targetDistance"] = targetDistance;
+        output["indexOfDifficulty"] = ResultsMath.IndexOfDifficulty(targetWidth, targetDistance);
         output["numOfBlocksPerTest"] = numOfBlocksPerTest;
         output["targetsPositions"] = targetsPositions;
-
+        
         return output;
     }
 }

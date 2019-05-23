@@ -42,7 +42,7 @@ public class CursorInteractorBehaviour : CursorBehaviour
             switch (_selectionMethod)
             {
                 case CursorSelectionMethod.DWELL_TIME:
-                    selectionTechnique = new CursorSelectionTechniqueDwell(1f, this);
+                    selectionTechnique = new CursorSelectionTechniqueDwell(0.3f, this);
                     break;
                 case CursorSelectionMethod.KEYBOARD_SPACEBAR:
                     selectionTechnique = new CursorSelectionTechniqueKeyboard();

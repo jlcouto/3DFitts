@@ -29,7 +29,7 @@ public class BlockMeasurements {
         List<Dictionary<string, object>> trials = new List<Dictionary<string, object>>(trialsData.Count);
         foreach (TrialMeasurements t in trialsData) {
             trials.Add(t.SerializeToDictionary());
-        }
+        }        
         output["trialsData"] = trials;
 
         return output;

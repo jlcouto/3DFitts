@@ -83,6 +83,6 @@ public class CursorSelectionTechniqueDwell : CursorSelectionTechnique, ICursorLi
 
     public override string GetInteractionName()
     {
-        return "DwellTime_" + dwellTimeInSeconds.ToString() + "s";
+        return string.Format("DwellTime_{0:0}ms", dwellTimeInSeconds * 1000);
     }
 }
