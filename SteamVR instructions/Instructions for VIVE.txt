@@ -1,0 +1,8 @@
+For testing the Vive Controller with Meta 2 headset, you will need to run the script 'udp_emmiter.py' (on the folder 'triad_openvr-master').
+This script is responsible to read the data from the Vive Controller and send it to Unity through a local UDP connection.
+You need to update the config.json file so it will contain the serial number of the controller you want to track.
+One way of getting the serial of the controllers is deleting (or renaming or moving to another folder) the config.json file and running the
+controller_test.py script while the desired controller is connected to the SteamVR application. The script shall print the info
+of the identified controller. Once you have the serial number, you can edit the config.json file and update its info. After that,
+you still need to update the udp_emitter.py file so it will search for the desired controller data (update the value of the
+'desiredController' variable).
