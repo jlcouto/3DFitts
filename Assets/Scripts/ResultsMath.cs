@@ -36,6 +36,13 @@ public static class ResultsMath
     public static double ComputeStandardDeviation(this IEnumerable<double> values)
     {
         double avg = values.Average();
+        int numSamples = values.Count();
+        return Math.Sqrt(values.Sum(v => Math.Pow(v - avg, 2))/(numSamples - 1));
+    }
+
+    public static double ComputeStandardDeviationPopulation(this IEnumerable<double> values)
+    {
+        double avg = values.Average();
         return Math.Sqrt(values.Average(v => Math.Pow(v - avg, 2)));
     }
 }
