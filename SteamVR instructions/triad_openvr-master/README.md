@@ -1,10 +1,10 @@
-#######################
-jlcouto (23/05/2019):
-This code was originally obtained from https://github.com/TriadSemi/triad_openvr/archive/master.zip.
+# Original source
 
-Some changes were made by me (for exemple, get and send the trigger button state through the UDP connection on udp_emitter.py)
+jlcouto (23/05/2019): This code was originally obtained from https://github.com/TriadSemi/triad_openvr/archive/master.zip.
+
+Some changes were made by me (for example, get and send the trigger button state through the UDP connection on udp_emitter.py).
+
 The original README.md contents follow below.
-#######################
 
 
 # Triad OpenVR Python Wrapper
