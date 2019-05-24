@@ -43,7 +43,7 @@ public class TrialMeasurements {
         output["finalPosition"] = finalPosition;
         output["missedTarget"] = missedTarget;
 
-        finalPositionProjectedCoordinate = ResultsMath.Projected3DPointCoordinate(initialTargetPosition, finalTargetPosition, SimpleVector3.ToVector3(finalPosition));
+        finalPositionProjectedCoordinate = (float) ResultsMath.Projected3DPointCoordinate(initialTargetPosition, finalTargetPosition, SimpleVector3.ToVector3(finalPosition));
         output["finalProjectedCoordinate"] = finalPositionProjectedCoordinate;
 
         return output;
