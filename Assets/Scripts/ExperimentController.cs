@@ -128,7 +128,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
         frameNumber++;
         FrameData newData = new FrameData();
         newData.frameNumber = frameNumber;
-        newData.time = Time.time;
+        newData.time = Time.realtimeSinceStartup;
         newData.cursorPosition = new SimpleVector3(cursor.GetCursorPosition());
         newData.trackingHandId = cursor.GetTrackedHandId();
         frameData.Add(newData);
@@ -265,7 +265,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
         if (status == ExperimentStatus.Running || status == ExperimentStatus.Paused)
         {
             status = ExperimentStatus.Stopped;
-            currentTestController = null;
+            AbortCurrentTest();
             centerOfTestPlanesObject.SetActive(true);
             cursor.cursorPositionController.gameObject.SetActive(false);
             CleanTargetPlane();
@@ -295,8 +295,28 @@ public class ExperimentController : MonoBehaviour, ITestListener
     {
         Debug.Log("ExperimentController: Current test finished.");
         ExportResultsToFile(testMeasurements);
-        currentTestController = null;
+        AbortCurrentTest();
         RunNextTestConfiguration();
+    }
+
+    bool AbortCurrentTest()
+    {
+        if (currentTestController != null)
+        {            
+            currentTestController.AbortTest();
+            currentTestController = null;
+            return true;
+        }
+        return false;
+    }
+
+    public void AbortCurrentConfigurationAndRunNext()
+    {
+        if (AbortCurrentTest())
+        {
+            Debug.Log("ExperimentController: Current test aborted.");
+            RunNextTestConfiguration();
+        }
     }
 
     void ExportResultsToFile(TestMeasurements results)
@@ -508,6 +528,12 @@ public class ObjectBuilderEditor : Editor
         if (GUILayout.Button("Run Experiment"))
         {
             myScript.RunExperiment();
+        }
+
+        GUILayout.Space(10);
+        if (GUILayout.Button("Abort Current & Run Next Configuration"))
+        {
+            myScript.AbortCurrentConfigurationAndRunNext();
         }
 
         GUILayout.Space(10);

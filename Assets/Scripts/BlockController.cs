@@ -63,4 +63,14 @@ public class BlockController : ITrialListener {
         currentInitialTargetId++;
         RunNextTrial();
     }
+
+    public void AbortBlock()
+    {
+        if (currentTrial != null)
+        {
+            currentTrial.AbortTrial();
+        }
+        currentTrial = null;
+        listener = null;
+    }
 }

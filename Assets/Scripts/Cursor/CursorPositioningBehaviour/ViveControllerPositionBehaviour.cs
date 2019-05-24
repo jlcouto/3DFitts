@@ -8,7 +8,7 @@ using UnityEngine.Events;
 
 public class ViveControllerPositionBehaviour : CursorPositioningController
 {
-    public Vector3 offset = Vector3.zero;
+    public Transform offset;
     public Vector3 positionOffset = Vector3.zero;
     public Vector3 scale = Vector3.one;
     public Vector3 rotation;
@@ -63,6 +63,8 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
     private int currentFrame = 0;
     private Double[] float_array;
 
+    private const uint numFramesToWaitBeforeNewTrigger = 5;
+
     public override string GetDeviceName()
     {
         return "VIVEController";
@@ -111,7 +113,7 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
         //scalingMatrix = Matrix4x4.Scale(scale);
         //rotationMatrix = Matrix4x4.Rotate(Quaternion.Euler(rotation.x, rotation.y, rotation.z));
 
-        lastCursorPosition = offset + scalingMatrix.MultiplyPoint(rotationMatrix.MultiplyPoint(translationMatrix.MultiplyPoint(lastRawCursorPosition)));
+        lastCursorPosition = offset.position + scalingMatrix.MultiplyPoint(rotationMatrix.MultiplyPoint(translationMatrix.MultiplyPoint(lastRawCursorPosition)));
         lastCursorRotation = lastRawCursorRotation;
 
         currentFrame++;
@@ -374,8 +376,12 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
         }
         else if (!_lastProcessedTriggerState && isTriggerActive)
         {
-            frameTriggerDown = currentFrame;
-            OnTriggerDown?.Invoke();
+            if (currentFrame > frameTriggerDown + numFramesToWaitBeforeNewTrigger)
+            {
+                // Filter sequential trigger actions, to avoid multiple triggers in a short period of time
+                frameTriggerDown = currentFrame;
+                OnTriggerDown?.Invoke();
+            }            
         }
         else if (_lastProcessedTriggerState && !isTriggerActive)
         {            

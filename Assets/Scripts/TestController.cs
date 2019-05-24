@@ -141,6 +141,17 @@ public class TestController : ICursorListener, IBlockListener
         testListener.OnTestEnded(testData);
     }
 
+    public void AbortTest()
+    {
+        if (currentBlock != null)
+        {
+            currentBlock.AbortBlock();
+        }
+        currentBlock = null;
+        cursor.RemoveListener(this);
+        testListener = null;
+    }
+
     public bool isRunning()
     {
         return currentStatus == TestStatus.Running;

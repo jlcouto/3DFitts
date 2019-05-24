@@ -50,6 +50,12 @@ public abstract class TrialController : ICursorListener {
         }
     }
 
+    public virtual void AbortTrial()
+    {
+        cursor.RemoveListener(this);
+        listener = null;
+    }
+
     public abstract void CursorEnteredTarget(TargetBehaviour target);
     public abstract void CursorExitedTarget(TargetBehaviour target);
     public abstract void CursorAcquiredTarget(TargetBehaviour target);
