@@ -10,14 +10,14 @@ public class BlockController : ITrialListener {
     BlockMeasurements blockMeasurements;
     TrialController currentTrial;
     TargetBehaviour[] targets;
-    CursorBehaviour cursor;
+    CursorInteractorBehaviour cursor;
     int blockId;
     ExperimentTask task;
 
     int currentInitialTargetId = 0;
     IBlockListener listener;
 
-    public BlockController(ExperimentTask task, int blockId, TargetBehaviour[] targets, IBlockListener listener, CursorBehaviour theCursor) {
+    public BlockController(ExperimentTask task, int blockId, TargetBehaviour[] targets, IBlockListener listener, CursorInteractorBehaviour theCursor) {
         this.task = task;
         this.blockId = blockId;
         this.targets = targets;

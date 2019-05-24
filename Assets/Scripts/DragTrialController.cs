@@ -7,7 +7,7 @@ public class DragTestController : TrialController
     GameObject draggableObject;
     bool isDraggingTarget = false;
 
-    public DragTestController(int theTrialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget, ITrialListener theListener, CursorBehaviour theCursor)
+    public DragTestController(int theTrialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget, ITrialListener theListener, CursorInteractorBehaviour theCursor)
         : base(theTrialId, initialTarget, finalTarget, theListener, theCursor)
     {
         draggableObject = GameObject.Instantiate(initialTarget.gameObject);

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TappingTrialController : TrialController
 {
-    public TappingTrialController(int theTrialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget, ITrialListener theListener, CursorBehaviour theCursor)
+    public TappingTrialController(int theTrialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget, ITrialListener theListener, CursorInteractorBehaviour theCursor)
         : base(theTrialId, initialTarget, finalTarget, theListener, theCursor)
     {
     }

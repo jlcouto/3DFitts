@@ -6,6 +6,7 @@ using Meta.Mouse;
 public class Mouse2DInputBehaviour : CursorPositioningController
 {
     Vector3 mousePosition;
+    Vector2 mousePositionOnScreen;
 
     public Transform targetPlane;
     public PlaneOrientation plane = PlaneOrientation.PlaneXY;
@@ -16,7 +17,7 @@ public class Mouse2DInputBehaviour : CursorPositioningController
 
     private void Update()
     {
-        Vector3 screenPos = Input.mousePosition;
+        mousePositionOnScreen = Input.mousePosition;
 
         if (!manualOffset)
         {
@@ -30,8 +31,8 @@ public class Mouse2DInputBehaviour : CursorPositioningController
         else
         {
             float minScreenSize = Mathf.Min(Screen.width, Screen.height);
-            float xCoord = Mathf.Clamp((screenPos.x - 0.5f*Screen.width) / minScreenSize, -1, 1) * spaceSize.x;
-            float yCoord = Mathf.Clamp((screenPos.y - 0.5f*Screen.height) / minScreenSize, -1, 1) * spaceSize.y;
+            float xCoord = Mathf.Clamp((mousePositionOnScreen.x - 0.5f*Screen.width) / minScreenSize, -1, 1) * spaceSize.x;
+            float yCoord = Mathf.Clamp((mousePositionOnScreen.y - 0.5f*Screen.height) / minScreenSize, -1, 1) * spaceSize.y;
 
             switch (plane)
             {
@@ -62,6 +63,11 @@ public class Mouse2DInputBehaviour : CursorPositioningController
     public override Vector3 GetCurrentCursorPosition()
     {
         return mousePosition;
+    }
+
+    public Vector2 GetCurrentCursorPositionOnScreen()
+    {
+        return mousePositionOnScreen;
     }
 
     public override int GetTrackedHandId()

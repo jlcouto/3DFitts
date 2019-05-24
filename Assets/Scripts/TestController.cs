@@ -19,7 +19,7 @@ public class TestController : ICursorListener, IBlockListener
     public AudioSource correctTargetAudio;
     public AudioSource wrongTargetAudio;
 
-    public CursorBehaviour cursor;
+    public CursorInteractorBehaviour cursor;
     public GameObject baseTarget;
     public Transform targetPlane;
     public PlaneOrientation orientation = PlaneOrientation.PlaneXY;
@@ -54,7 +54,7 @@ public class TestController : ICursorListener, IBlockListener
 
     public TestController(ITestListener listener, Text statusText, Text testText, Text repetitionText,
         AudioSource correctTargetAudio, AudioSource wrongTargetAudio,
-        CursorBehaviour cursor, GameObject baseTarget, Transform targetPlane, ExperimentTask task,
+        CursorInteractorBehaviour cursor, GameObject baseTarget, Transform targetPlane, ExperimentTask task,
         PlaneOrientation orientation, int numberOfTargets, float targetWidth, float targetDistance, int numOfBlocksPerTest)
     {
         this.testListener = listener;

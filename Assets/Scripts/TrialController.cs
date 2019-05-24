@@ -10,7 +10,7 @@ public abstract class TrialController : ICursorListener {
 
     public TargetBehaviour initialTarget;
     public TargetBehaviour finalTarget;
-    public CursorBehaviour cursor;
+    public CursorInteractorBehaviour cursor;
 
     public ITrialListener listener;
 
@@ -18,7 +18,7 @@ public abstract class TrialController : ICursorListener {
 
     public TrialMeasurements trialData;
 
-    public TrialController(int theTrialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget, ITrialListener theListener, CursorBehaviour theCursor) {
+    public TrialController(int theTrialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget, ITrialListener theListener, CursorInteractorBehaviour theCursor) {
         this.trialId = theTrialId;
         this.initialTarget = initialTarget;
         this.finalTarget = finalTarget;
@@ -38,13 +38,23 @@ public abstract class TrialController : ICursorListener {
     {
         cursor.RegisterNewListener(this);
         trialData.initialTime = Time.realtimeSinceStartup;
-        trialData.initialPosition = SimpleVector3.FromVector3(cursor.GetCursorPosition());  
+        trialData.initialPosition = SimpleVector3.FromVector3(cursor.GetCursorPosition()); 
+        if (cursor.cursorPositionController is Mouse2DInputBehaviour)
+        {
+            Mouse2DInputBehaviour mouse = (Mouse2DInputBehaviour) cursor.cursorPositionController;
+            trialData.initialMousePositionOnScreen = SimpleVector2.FromVector2(mouse.GetCurrentCursorPositionOnScreen());
+        }
     }
 
     public virtual void FinishTrial() {
         cursor.RemoveListener(this);
         trialData.finalTime = cursor.lastCursorSelectionTime;
         trialData.finalPosition = SimpleVector3.FromVector3(cursor.lastCursorSelectionPosition);
+        if (cursor.cursorPositionController is Mouse2DInputBehaviour)
+        {
+            Mouse2DInputBehaviour mouse = (Mouse2DInputBehaviour)cursor.cursorPositionController;
+            trialData.finalMousePositionOnScreen = SimpleVector2.FromVector2(mouse.GetCurrentCursorPositionOnScreen());
+        }
         if (listener != null) {
             listener.OnTrialEnded(trialData);
         }

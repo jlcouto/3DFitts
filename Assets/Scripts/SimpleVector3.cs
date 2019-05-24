@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class SimpleVector3
 {
@@ -35,5 +33,38 @@ public class SimpleVector3
     public override string ToString()
     {
         return "(" + this.x + ", " + this.y + ", " + this.z + ")";
+    }
+}
+
+public class SimpleVector2
+{
+    public float x;
+    public float y;
+
+    public SimpleVector2(float x, float y, float z)
+    {
+        this.x = x;
+        this.y = y;
+    }
+
+    public SimpleVector2(Vector2 vector)
+    {
+        this.x = vector.x;
+        this.y = vector.y;
+    }
+
+    public static Vector2 ToVector2(SimpleVector2 vector)
+    {
+        return new Vector2(vector.x, vector.y);
+    }
+
+    public static SimpleVector2 FromVector2(Vector2 vector)
+    {
+        return new SimpleVector2(vector);
+    }
+
+    public override string ToString()
+    {
+        return "(" + this.x + ", " + this.y + ")";
     }
 }

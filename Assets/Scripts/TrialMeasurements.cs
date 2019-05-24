@@ -18,6 +18,9 @@ public class TrialMeasurements {
     public SimpleVector3 initialPosition;
     public SimpleVector3 finalPosition;
 
+    public SimpleVector2 initialMousePositionOnScreen;
+    public SimpleVector2 finalMousePositionOnScreen;
+
     public float finalPositionProjectedCoordinate;
 
     public bool missedTarget = false;
@@ -42,6 +45,9 @@ public class TrialMeasurements {
         output["initialPosition"] = initialPosition;
         output["finalPosition"] = finalPosition;
         output["missedTarget"] = missedTarget;
+
+        output["initialMousePositionOnScreen"] = initialMousePositionOnScreen;
+        output["finalMousePositionOnScreen"] = finalMousePositionOnScreen;
 
         finalPositionProjectedCoordinate = (float) ResultsMath.Projected3DPointCoordinate(initialTargetPosition, finalTargetPosition, SimpleVector3.ToVector3(finalPosition));
         output["finalProjectedCoordinate"] = finalPositionProjectedCoordinate;
