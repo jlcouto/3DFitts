@@ -253,16 +253,6 @@ public class CursorInteractorBehaviour : CursorBehaviour
         ExecuteForEachCursorListener((ICursorListener listener) => { listener.CursorExitedTarget(target); });        
     }
 
-    void ExecuteForEachCursorListener(System.Action<ICursorListener> action)
-    {
-        ICursorListener[] listenersCopy = new ICursorListener[listeners.Count];
-        listeners.CopyTo(listenersCopy);
-        foreach (var listener in listenersCopy)
-        {
-            action?.Invoke(listener);
-        }
-    }
-
     public override void AcquireTarget(TargetBehaviour target)
     {        
         ExecuteForEachCursorListener((ICursorListener listener) => { listener.CursorAcquiredTarget(target); });        

@@ -75,7 +75,7 @@ public class TestMeasurements {
         results["totalTrials"] = totalTrials;
         results["totalMissedTargets"] = totalMissedTargets;
         results["totalMovementTime"] = totalMovementTime;
-        results["errorRate"] = totalMissedTargets / totalTrials;
+        results["errorRate"] = (float)totalMissedTargets / (float)totalTrials;
 
         float averageMovementTime = totalMovementTime / totalTrials;
         results["averageMovementTime"] = averageMovementTime;

@@ -1,0 +1,277 @@
+{
+  "test": {
+    "configuration": {
+      "testId": "PYZW15D300T9R0",
+      "task": "ReciprocalTappingTest",
+      "numberOfTargets": 9,
+      "targetWidth": 0.015,
+      "targetDistance": 0.3,
+      "indexOfDifficulty": 4.392318,
+      "numOfBlocksPerTest": 1,
+      "targetsPositions": [
+        {
+          "x": 0.15,
+          "y": -0.199999973,
+          "z": 0.349999964
+        },
+        {
+          "x": 0.09869695,
+          "y": -0.4909539,
+          "z": 0.350000024
+        },
+        {
+          "x": 0.246418148,
+          "y": -0.23509331,
+          "z": 0.349999964
+        },
+        {
+          "x": 0.0200961828,
+          "y": -0.424999982,
+          "z": 0.35
+        },
+        {
+          "x": 0.297721177,
+          "y": -0.323952764,
+          "z": 0.35
+        },
+        {
+          "x": 0.00227884948,
+          "y": -0.3239527,
+          "z": 0.35
+        },
+        {
+          "x": 0.279903829,
+          "y": -0.425,
+          "z": 0.35
+        },
+        {
+          "x": 0.0535818934,
+          "y": -0.235093281,
+          "z": 0.349999964
+        },
+        {
+          "x": 0.201303,
+          "y": -0.490953922,
+          "z": 0.350000024
+        }
+      ]
+    },
+    "data": {
+      "timestamp": "2019-05-27T20:29:44",
+      "testId": "PYZW15D300T9R0",
+      "planeOrientation": "YZ",
+      "initialTime": 54.70766,
+      "finalTime": 60.8986359,
+      "testDuration": 6.190975,
+      "blocksData": [
+        {
+          "blockId": 0,
+          "initialTargetId": 0,
+          "initialTime": 54.7076645,
+          "finalTime": 60.8986359,
+          "blockDuration": 6.19097137,
+          "trialsData": [
+            {
+              "trialId": 0,
+              "initialTargetId": 0,
+              "finalTargetId": 5,
+              "initialTime": 54.7076721,
+              "finalTime": 55.38316,
+              "trialDuration": 0.6754875,
+              "initialPosition": {
+                "x": 0.144891456,
+                "y": -0.197254136,
+                "z": 0.35
+              },
+              "finalPosition": {
+                "x": 0.0958493054,
+                "y": -0.487420171,
+                "z": 0.35
+              },
+              "missedTarget": false,
+              "finalProjectedCoordinate": -0.00298555
+            },
+            {
+              "trialId": 1,
+              "initialTargetId": 5,
+              "finalTargetId": 1,
+              "initialTime": 55.3832321,
+              "finalTime": 56.1068039,
+              "trialDuration": 0.7235718,
+              "initialPosition": {
+                "x": 0.0958493054,
+                "y": -0.487420171,
+                "z": 0.35
+              },
+              "finalPosition": {
+                "x": 0.240932316,
+                "y": -0.2381226,
+                "z": 0.35
+              },
+              "missedTarget": false,
+              "finalProjectedCoordinate": -0.005366336
+            },
+            {
+              "trialId": 2,
+              "initialTargetId": 1,
+              "finalTargetId": 6,
+              "initialTime": 56.10685,
+              "finalTime": 56.8463058,
+              "trialDuration": 0.7394562,
+              "initialPosition": {
+                "x": 0.240932316,
+                "y": -0.2381226,
+                "z": 0.35
+              },
+              "finalPosition": {
+                "x": 0.0202426612,
+                "y": -0.4250958,
+                "z": 0.35
+              },
+              "missedTarget": false,
+              "finalProjectedCoordinate": -5.062065E-05
+            },
+            {
+              "trialId": 3,
+              "initialTargetId": 6,
+              "finalTargetId": 2,
+              "initialTime": 56.8463478,
+              "finalTime": 57.3807373,
+              "trialDuration": 0.5343895,
+              "initialPosition": {
+                "x": 0.0202426612,
+                "y": -0.4250958,
+                "z": 0.35
+              },
+              "finalPosition": {
+                "x": 0.307343543,
+                "y": -0.325989783,
+                "z": 0.35
+              },
+              "missedTarget": false,
+              "finalProjectedCoordinate": 0.008345361
+            },
+            {
+              "trialId": 4,
+              "initialTargetId": 2,
+              "finalTargetId": 7,
+              "initialTime": 57.3807831,
+              "finalTime": 58.06768,
+              "trialDuration": 0.6868973,
+              "initialPosition": {
+                "x": 0.307343543,
+                "y": -0.325989783,
+                "z": 0.35
+              },
+              "finalPosition": {
+                "x": 0.005938694,
+                "y": -0.3270115,
+                "z": 0.35
+              },
+              "missedTarget": false,
+              "finalProjectedCoordinate": -0.003659849
+            },
+            {
+              "trialId": 5,
+              "initialTargetId": 7,
+              "finalTargetId": 3,
+              "initialTime": 58.0677223,
+              "finalTime": 58.74591,
+              "trialDuration": 0.6781883,
+              "initialPosition": {
+                "x": 0.005938694,
+                "y": -0.3270115,
+                "z": 0.35
+              },
+              "finalPosition": {
+                "x": 0.283844173,
+                "y": -0.430204332,
+                "z": 0.35
+              },
+              "missedTarget": false,
+              "finalProjectedCoordinate": 0.005482701
+            },
+            {
+              "trialId": 6,
+              "initialTargetId": 3,
+              "finalTargetId": 8,
+              "initialTime": 58.7459564,
+              "finalTime": 59.53053,
+              "trialDuration": 0.7845726,
+              "initialPosition": {
+                "x": 0.283844173,
+                "y": -0.430204332,
+                "z": 0.35
+              },
+              "finalPosition": {
+                "x": 0.0519157127,
+                "y": -0.244252861,
+                "z": 0.35
+              },
+              "missedTarget": false,
+              "finalProjectedCoordinate": -0.004611269
+            },
+            {
+              "trialId": 7,
+              "initialTargetId": 8,
+              "finalTargetId": 4,
+              "initialTime": 59.5305748,
+              "finalTime": 60.1906128,
+              "trialDuration": 0.660038,
+              "initialPosition": {
+                "x": 0.0519157127,
+                "y": -0.244252861,
+                "z": 0.35
+              },
+              "finalPosition": {
+                "x": 0.208237559,
+                "y": -0.492528737,
+                "z": 0.35
+              },
+              "missedTarget": false,
+              "finalProjectedCoordinate": 0.004831088
+            },
+            {
+              "trialId": 8,
+              "initialTargetId": 4,
+              "finalTargetId": 0,
+              "initialTime": 60.19066,
+              "finalTime": 60.89859,
+              "trialDuration": 0.7079315,
+              "initialPosition": {
+                "x": 0.208237559,
+                "y": -0.492528737,
+                "z": 0.35
+              },
+              "finalPosition": {
+                "x": 0.157151982,
+                "y": -0.203384414,
+                "z": 0.35
+              },
+              "missedTarget": false,
+              "finalProjectedCoordinate": -0.00457491446
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "computedResults": {
+    "totalTrials": 9,
+    "totalMissedTargets": 0,
+    "totalMovementTime": 6.19053268,
+    "errorRate": 0,
+    "averageMovementTime": 0.687836945,
+    "effectiveWidth": 0.0214558654,
+    "effectiveIndexOfDifficulty": 3.90517664,
+    "throughput": 5.6774745
+  },
+  "participantName": "MouseOnScreen",
+  "participantAge": 27,
+  "testDescription": "Preliminar test for mouse learning curve",
+  "testTask": "ReciprocalTappingTest",
+  "device": "Mouse",
+  "interactionTechnique": "Mouse_LeftButton",
+  "cursorDiameter": 0.01,
+  "planeOrientation": "YZ"
+}

@@ -47,7 +47,7 @@ public class Tapping3DMouseExperimentConfiguration : ExperimentConfiguration
 
     public override int GetNumBlocksPerTest()
     {
-        return 2;
+        return 1;
     }
 
     public override int GetNumTargetsPerTest()
@@ -108,7 +108,7 @@ public class Drag3DMouseExperimentConfiguration : ExperimentConfiguration
 
     public override int GetNumBlocksPerTest()
     {
-        return 2;
+        return 1;
     }
 
     public override int GetNumTargetsPerTest()

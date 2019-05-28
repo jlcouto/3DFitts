@@ -123,6 +123,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerEyesWithInteractionManager
       objectReference: {fileID: 0}
+    - target: {fileID: 1007630385045748, guid: e38f84e733a8dca42a9ff760c3facbd4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4182233044837094, guid: e38f84e733a8dca42a9ff760c3facbd4, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -495,10 +499,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetPlane: {fileID: 1488585436}
   plane: 1
-  screenSize: {x: 1920, y: 1080}
   spaceSize: {x: 0.5, y: 0.5, z: 0.5}
-  manualOffset: 0
-  offset: {x: 0, y: 0, z: 0}
+  offset: {x: 0.15, y: -0.35, z: 0.35}
 --- !u!1 &312115917
 GameObject:
   m_ObjectHideFlags: 0
@@ -661,12 +663,12 @@ MonoBehaviour:
   inputDevices: {fileID: 1969886981}
   currentTestConfiguration: 0
   currentPlaneOrientation: 0
-  participantName: John2
+  participantName: John
   participantAge: 29
-  testDescription: Preliminar tests with Dwell
+  testDescription: Preliminar test for mouse learning curve
   task: 0
   cursorPositionController: {fileID: 308976758}
-  cursorSelectionMethod: 0
+  cursorSelectionMethod: 2
 --- !u!1 &392024045
 GameObject:
   m_ObjectHideFlags: 0

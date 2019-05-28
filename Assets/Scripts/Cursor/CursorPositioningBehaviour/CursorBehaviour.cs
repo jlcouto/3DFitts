@@ -39,6 +39,16 @@ public abstract class CursorBehaviour : MonoBehaviour {
         this.lastCursorSelectionPosition = positionOfCursor;
     }
 
+    protected void ExecuteForEachCursorListener(System.Action<ICursorListener> action)
+    {
+        ICursorListener[] listenersCopy = new ICursorListener[listeners.Count];
+        listeners.CopyTo(listenersCopy);
+        foreach (var listener in listenersCopy)
+        {
+            action?.Invoke(listener);
+        }
+    }
+
     public abstract void EnterTarget(TargetBehaviour theTarget);
     public abstract void ExitTarget(TargetBehaviour theTarget);
     public abstract void AcquireTarget(TargetBehaviour theTarget);

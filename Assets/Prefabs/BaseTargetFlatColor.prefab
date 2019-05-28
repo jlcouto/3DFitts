@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1925247953157016
+--- !u!1 &1590297525248434
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,47 +8,47 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4823541459063326}
-  - component: {fileID: 33060653458040030}
-  - component: {fileID: 23073994459574272}
-  - component: {fileID: 135152999238440338}
-  - component: {fileID: 4935531237737987653}
+  - component: {fileID: 4421768408072580}
+  - component: {fileID: 33270278493884132}
+  - component: {fileID: 23664006581400802}
+  - component: {fileID: 135132370650510408}
+  - component: {fileID: 114628266394818154}
   m_Layer: 0
-  m_Name: Cursor
+  m_Name: BaseTargetFlatColor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4823541459063326
+--- !u!4 &4421768408072580
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1925247953157016}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_GameObject: {fileID: 1590297525248434}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &33060653458040030
+--- !u!33 &33270278493884132
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1925247953157016}
+  m_GameObject: {fileID: 1590297525248434}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &23073994459574272
+--- !u!23 &23664006581400802
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1925247953157016}
+  m_GameObject: {fileID: 1590297525248434}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -59,7 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2e9ae023f7b014ec98b46ca97b205cce, type: 2}
+  - {fileID: 2100000, guid: 10740fafb78af854cada23ae89169944, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -79,36 +79,40 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!135 &135152999238440338
+--- !u!135 &135132370650510408
 SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1925247953157016}
+  m_GameObject: {fileID: 1590297525248434}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4935531237737987653
+--- !u!114 &114628266394818154
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1925247953157016}
+  m_GameObject: {fileID: 1590297525248434}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03684d89ab77f2b41853f677abc27ba0, type: 3}
+  m_Script: {fileID: 11500000, guid: 492e86dfca9aa4d06aa4ad776e352dba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  correctAudio: {fileID: 0}
-  errorAudio: {fileID: 0}
-  lastCursorSelectionPosition: {x: 0, y: 0, z: 0}
-  lastCursorSelectionTime: 0
-  cursorPositionController: {fileID: 0}
-  metaHandsProvider: {fileID: 0}
-  leapMotionServiceProvider: {fileID: 0}
-  viveController: {fileID: 0}
+  targetId: 0
+  startingTestTargetMaterial: {fileID: 2100000, guid: 3ae6eaf47db7be24e9fe88efb3fdf355,
+    type: 2}
+  normalTargetMaterial: {fileID: 2100000, guid: 10740fafb78af854cada23ae89169944,
+    type: 2}
+  highlightedTargetMaterial: {fileID: 2100000, guid: 82d8d273929409a44ac75db6da08e4d8,
+    type: 2}
+  nextTargetMaterial: {fileID: 2100000, guid: 4aef9652bac95a44dba4d642abb44d34, type: 2}
+  draggableTargetMaterial: {fileID: 2100000, guid: 2c9e6a79d8ff334418a5c08e4fc24269,
+    type: 2}
+  type: 0
+  isHighlighted: 0
