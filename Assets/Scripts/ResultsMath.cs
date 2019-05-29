@@ -15,12 +15,29 @@ public static class ResultsMath
     {
         // Returns the realInteractionPoint projected into the line defined by initial and final target positions, considering that the origin
         // of the coordinates is at the finalTargetPosition and that the coordinates are negative if they are in the same side of the initialTargetPosition point
+
+        // This formula was obtained trigonometrically.
+        // A positive value indicates an overshoot occurred, whereas a negative value indicates an undershoot occurred.
+        double distanceRealToFinal = Vector3.Distance(realInteractionPoint, finalTargetPosition);
+        double distanceRealToInitial = Vector3.Distance(realInteractionPoint, initialTargetPosition);
+        double distanceInitialToFinal = Vector3.Distance(initialTargetPosition, finalTargetPosition);
+        return (Math.Pow(distanceRealToInitial, 2) - (Math.Pow(distanceRealToFinal, 2) + Math.Pow(distanceInitialToFinal, 2))) / (2 * distanceInitialToFinal);
+    }
+
+    public static double Projected3DPointCoordinateV2(Vector3 initialTargetPosition, Vector3 finalTargetPosition, Vector3 realInteractionPoint)
+    {
+        // This method is the same as the Projected3DPointCoordinate, but using vectors dot product to find the projection of realInteractionPoint
+        // in the line defined by initialTargetPosition and finalTargetPosition
+
         // Computing distance between 'realInteractionPoint' and the line determined by 'initialTargetPosition' and 'finalTargetPosition'
         Vector3 x1x0 = initialTargetPosition - realInteractionPoint;
         Vector3 x2x1 = finalTargetPosition - initialTargetPosition;
         double x1x0_2 = Vector3.Dot(x1x0, x1x0);
         double x2x1_2 = Vector3.Dot(x2x1, x2x1);
-        double Dreal_projection = Math.Sqrt((x1x0_2 * x2x1_2 - Math.Pow((Vector3.Dot(x1x0, x2x1)), 2)) / x2x1_2);
+
+        // We must round the value because when the real point is very near or over the line, floating errors may result in negative numbers
+        // inside the square-root (when they should be zero), generating NaN values
+        double Dreal_projection = Math.Sqrt((Math.Round(x1x0_2 * x2x1_2, 6) - Math.Round(Math.Pow((Vector3.Dot(x1x0, x2x1)), 2), 6)) / x2x1_2);
 
         // Finding the distance between 'initialTargetPosition' and the point of the projection of 'realInteractionPoint' onto the line
         double Dinitial_real = Vector3.Distance(initialTargetPosition, realInteractionPoint);
