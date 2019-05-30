@@ -48,8 +48,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
     public GameObject baseTarget;
     public Transform targetPlane;
 
-    public GameObject centerOfTestPlanesObject;
-    public Transform centerOfTestPlanes;
+    public GameObject centerOfTestPlanesObject;    
     public Meta2CursorBehaviour calibrationPositioningCursor;
 
     public GameObject inputDevices;
@@ -90,14 +89,14 @@ public class ExperimentController : MonoBehaviour, ITestListener
     void Start()
     {
         UISetNoteText("");
-        frameData = new List<FrameData>(60 * 60 * 120); // Enough capacity to record up to 2 min of data at 60 fps
+        frameData = new List<FrameData>(60 * 60 * 120); // Enough capacity to record up to 2 min of data at 60 fps        
     }
 
     private void Update()
     {
         if (status == ExperimentStatus.CalibrationRunning && isCalibratingCenterOfPLanes)
         {
-            centerOfTestPlanes.position = cursor.GetCursorPosition();
+            transform.position = cursor.GetCursorPosition();
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -105,13 +104,13 @@ public class ExperimentController : MonoBehaviour, ITestListener
             }
             else if (Input.GetKey(KeyCode.RightArrow))
             {
-                Vector3 currentRotation = centerOfTestPlanes.rotation.eulerAngles;
-                centerOfTestPlanes.rotation =  Quaternion.Euler(new Vector3(currentRotation.x, currentRotation.y - 0.5f, currentRotation.z));
+                Vector3 currentRotation = transform.rotation.eulerAngles;
+                transform.rotation =  Quaternion.Euler(new Vector3(currentRotation.x, currentRotation.y - 0.5f, currentRotation.z));
             }
             else if (Input.GetKey(KeyCode.LeftArrow))
             {
-                Vector3 currentRotation = centerOfTestPlanes.rotation.eulerAngles;
-                centerOfTestPlanes.rotation = Quaternion.Euler(new Vector3(currentRotation.x, currentRotation.y + 0.5f, currentRotation.z));
+                Vector3 currentRotation = transform.rotation.eulerAngles;
+                transform.rotation = Quaternion.Euler(new Vector3(currentRotation.x, currentRotation.y + 0.5f, currentRotation.z));
             }
         }
         else if (status == ExperimentStatus.Running)
@@ -329,7 +328,9 @@ public class ExperimentController : MonoBehaviour, ITestListener
         output["device"] = cursor.GetDeviceName();
         output["interactionTechnique"] = cursor.GetInteractionTechniqueName();
         output["cursorDiameter"] = experimentConfig.GetCursorDiameter();
-        output["planeOrientation"] = Enum2String.GetPlaneOrientationString(experimentConfig.GetPlaneOrientationsToTest()[currentPlaneOrientation]);
+        output["planeOrientation"] = Enum2String.GetPlaneOrientationString(experimentConfig.GetPlaneOrientationsToTest()[currentPlaneOrientation]);        
+        output["centerOfPlanePosition"] = SimpleVector3.FromVector3(transform.position);
+        output["centerOfPlaneRotation"] = SimpleVector3.FromVector3(transform.rotation.eulerAngles);
 
         string jsonData = JsonConvert.SerializeObject(output, new JsonSerializerSettings()
         {
