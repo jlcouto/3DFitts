@@ -16,6 +16,15 @@ public class Tapping3DMouseExperimentConfiguration : ExperimentConfiguration
 {
     protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneYZ, PlaneOrientation.PlaneXY, PlaneOrientation.PlaneZX };
     static readonly IndexOfDifficultyConfiguration[] configurations = {
+        new IndexOfDifficultyConfiguration(0.02f, 0.05f),
+        new IndexOfDifficultyConfiguration(0.02f, 0.10f),
+        new IndexOfDifficultyConfiguration(0.02f, 0.15f),
+        new IndexOfDifficultyConfiguration(0.01f, 0.05f),
+        new IndexOfDifficultyConfiguration(0.01f, 0.10f),
+        new IndexOfDifficultyConfiguration(0.01f, 0.15f)
+    };
+    /*
+    static readonly IndexOfDifficultyConfiguration[] configurations = {
         new IndexOfDifficultyConfiguration(0.035f, 0.2f),
         new IndexOfDifficultyConfiguration(0.035f, 0.3f),
         new IndexOfDifficultyConfiguration(0.035f, 0.4f),
@@ -23,6 +32,7 @@ public class Tapping3DMouseExperimentConfiguration : ExperimentConfiguration
         new IndexOfDifficultyConfiguration(0.015f, 0.3f),
         new IndexOfDifficultyConfiguration(0.015f, 0.4f)
     };
+    */
     /*static readonly IndexOfDifficultyConfiguration[] configurations = {
         new IndexOfDifficultyConfiguration(0.04f, 0.2f),
         new IndexOfDifficultyConfiguration(0.04f, 0.3f),
