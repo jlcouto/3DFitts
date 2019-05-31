@@ -16,12 +16,12 @@ public class Tapping3DMouseExperimentConfiguration : ExperimentConfiguration
 {
     protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneYZ, PlaneOrientation.PlaneXY, PlaneOrientation.PlaneZX };
     static readonly IndexOfDifficultyConfiguration[] configurations = {
-        new IndexOfDifficultyConfiguration(0.02f, 0.05f),
-        new IndexOfDifficultyConfiguration(0.02f, 0.10f),
-        new IndexOfDifficultyConfiguration(0.02f, 0.15f),
-        new IndexOfDifficultyConfiguration(0.01f, 0.05f),
-        new IndexOfDifficultyConfiguration(0.01f, 0.10f),
-        new IndexOfDifficultyConfiguration(0.01f, 0.15f)
+        new IndexOfDifficultyConfiguration(0.013f, 0.074f),
+        new IndexOfDifficultyConfiguration(0.013f, 0.103f),
+        new IndexOfDifficultyConfiguration(0.013f, 0.133f),
+        new IndexOfDifficultyConfiguration(0.0055f, 0.074f),
+        new IndexOfDifficultyConfiguration(0.0055f, 0.103f),
+        new IndexOfDifficultyConfiguration(0.0055f, 0.133f)
     };
     /*
     static readonly IndexOfDifficultyConfiguration[] configurations = {
@@ -47,7 +47,7 @@ public class Tapping3DMouseExperimentConfiguration : ExperimentConfiguration
 
     public override float GetCursorDiameter()
     {
-        return 0.01f;
+        return 0.005f;
     }
 
     public override ExperimentTask GetExperimentTask()

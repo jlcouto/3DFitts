@@ -17,6 +17,12 @@ public enum CursorSelectionMethod
     VIVE_TRIGGER
 }
 
+public enum CursorAcquireMethod
+{
+    ACQUIRE_TARGET_ON_DOWN_EVENT,
+    ACQUIRE_TARGET_ON_UP_EVENT
+}
+
 public abstract class CursorPositioningController : MonoBehaviour
 {
     public enum CursorHandPosition
@@ -65,6 +71,8 @@ public class CursorInteractorBehaviour : CursorBehaviour
         }
         get { return _selectionMethod; }
     }
+
+    public CursorAcquireMethod cursorAcquireMethod = CursorAcquireMethod.ACQUIRE_TARGET_ON_UP_EVENT;
 
     public Meta.HandsProvider metaHandsProvider;
     public Leap.Unity.LeapServiceProvider leapMotionServiceProvider;
@@ -116,22 +124,30 @@ public class CursorInteractorBehaviour : CursorBehaviour
 #if DRAG_START_WITH_CONTINUOUS_SELECTION
             numFramesSelectionIsActive = 0;
 #endif
-            if (selectionMethod != CursorSelectionMethod.DWELL_TIME)
-            {
-                RegisterSelectionInformation(Time.realtimeSinceStartup, GetCursorPosition());
-            }
-            AcquireTarget(currentHighlightedTarget);
             acquiredPosition = GetCursorPosition();
+
+            if (cursorAcquireMethod == CursorAcquireMethod.ACQUIRE_TARGET_ON_DOWN_EVENT)
+            {
+                CursorAcquiredTarget();
+            }                       
         }
 
-        if (isDragging && selectionInteraction.SelectionInteractionEnded())
+        if (selectionInteraction.SelectionInteractionEnded())
         {
-            CursorDragTargetEnded(currentDraggedTarget, currentHighlightedTarget);
+            if (cursorAcquireMethod == CursorAcquireMethod.ACQUIRE_TARGET_ON_UP_EVENT)
+            {
+                CursorAcquiredTarget();
+            }
+
+            if (isDragging)
+            {
+                CursorDragTargetEnded(currentDraggedTarget, currentHighlightedTarget);
 #if DRAG_START_WITH_CONTINUOUS_SELECTION
             numFramesSelectionIsActive = 0;
 #endif
-            currentDraggedTarget = null;
-            isDragging = false;
+                currentDraggedTarget = null;
+                isDragging = false;
+            }            
         }
         else if (selectionInteraction.SelectionInteractionMantained())
         {
@@ -156,6 +172,15 @@ public class CursorInteractorBehaviour : CursorBehaviour
             numFramesSelectionIsActive = 0;
 #endif
         }
+    }
+
+    void CursorAcquiredTarget()
+    {
+        if (selectionMethod != CursorSelectionMethod.DWELL_TIME)
+        {
+            RegisterSelectionInformation(Time.realtimeSinceStartup, GetCursorPosition());
+        }
+        AcquireTarget(currentHighlightedTarget);
     }
 
     void CheckAutomaticByContactSelection()
