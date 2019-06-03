@@ -1,15 +1,39 @@
-﻿
+﻿public enum ExperimentMode
+{
+    Experiment2D,
+    Experiment3DOnMeta2
+}
+
 public enum ExperimentTask
 {
     ReciprocalTapping,
-    Dragging
+    ReciprocalDragging
+}
+
+public enum CursorPositioningMethod
+{
+    Mouse,
+    Meta2Interaction,
+    LeapMotionController,
+    VIVE
+}
+
+public enum CursorSelectionMethod
+{
+    DwellTime,
+    KeyboardSpaceBar,
+    MouseLeftButton,
+    FirstEntrySelection,
+    Meta2GrabInteraction,
+    LeapMotionGrabInteraction,
+    VIVETriggerButton
 }
 
 public enum PlaneOrientation
 {
     PlaneXY = 0,
     PlaneYZ,
-    PlaneZX
+    PlaneZX    
 }
 
 public static class Enum2String
@@ -18,8 +42,8 @@ public static class Enum2String
     {
         switch (task)
         {
-            case ExperimentTask.Dragging:
-                return "DraggingTask";
+            case ExperimentTask.ReciprocalDragging:
+                return "ReciprocalDraggingTask";
             case ExperimentTask.ReciprocalTapping:
                 return "ReciprocalTappingTest";
         }

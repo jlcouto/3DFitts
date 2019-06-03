@@ -6,24 +6,6 @@ using UnityEditor;
 using Newtonsoft.Json;
 using System.IO;
 
-public class IndexOfDifficultyConfiguration
-{
-    public float targetWidth;
-    public float targetsDistance;
-
-    public IndexOfDifficultyConfiguration(float targetWidth, float targetsDistance)
-    {
-        this.targetWidth = targetWidth;
-        this.targetsDistance = targetsDistance;
-    }
-
-    float getIndexOfDifficulty()
-    {
-        return Mathf.Log((targetsDistance / targetWidth + 1), 2);
-    }
-}
-
-
 public class ExperimentController : MonoBehaviour, ITestListener
 {
     enum ExperimentStatus
@@ -147,7 +129,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
             centerOfTestPlanesObject.SetActive(false);
 
-            if (task == ExperimentTask.Dragging)
+            if (task == ExperimentTask.ReciprocalDragging)
             {
                 if (cursorPositionController.GetType() == typeof(Mouse2DInputBehaviour))
                 {
@@ -444,7 +426,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
             cursor.cursorPositionController = calibrationPositioningCursor;
             calibrationPositioningCursor.gameObject.SetActive(true);
 
-            cursor.selectionMethod = CursorSelectionMethod.KEYBOARD_SPACEBAR;
+            cursor.selectionMethod = CursorSelectionMethod.KeyboardSpaceBar;
             cursor.transform.localScale = 0.01f * Vector3.one;
         }
     }

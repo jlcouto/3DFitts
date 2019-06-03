@@ -37,7 +37,7 @@ public class BlockController : ITrialListener {
         int currentFinalIndex = (currentInitialTargetId + 1) % targets.Length;
         if (currentInitialTargetId < targets.Length)
         {
-            if (task == ExperimentTask.Dragging)
+            if (task == ExperimentTask.ReciprocalDragging)
             {
                 currentTrial = new DragTestController(currentInitialTargetId, targets[currentInitialTargetId], targets[currentFinalIndex], this, cursor);
             }

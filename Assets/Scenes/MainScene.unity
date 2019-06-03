@@ -569,7 +569,7 @@ GameObject:
   - component: {fileID: 98114850}
   - component: {fileID: 98114849}
   m_Layer: 5
-  m_Name: InputField Amplitudes (1)
+  m_Name: InputField Cursor Width
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -589,7 +589,7 @@ RectTransform:
   - {fileID: 1529507902}
   - {fileID: 1369101173}
   m_Father: {fileID: 1912151705}
-  m_RootOrder: 18
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -2485,7 +2485,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1912151705}
-  m_RootOrder: 11
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -3247,7 +3247,7 @@ GameObject:
   - component: {fileID: 542077480}
   - component: {fileID: 542077479}
   m_Layer: 5
-  m_Name: Text Input Plane (1)
+  m_Name: Text Input Cursor Width
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3265,7 +3265,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1912151705}
-  m_RootOrder: 17
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -3299,7 +3299,7 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
-    m_Alignment: 3
+    m_Alignment: 5
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -4084,7 +4084,7 @@ GameObject:
   - component: {fileID: 756025377}
   - component: {fileID: 756025376}
   m_Layer: 5
-  m_Name: Dropdown Device
+  m_Name: Dropdown Cursor Positioning Method
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4350,7 +4350,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1912151705}
-  m_RootOrder: 15
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -4708,7 +4708,7 @@ GameObject:
   - component: {fileID: 820422786}
   - component: {fileID: 820422785}
   m_Layer: 5
-  m_Name: Text Input Device
+  m_Name: Text Input Cursor Positioning Method
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8825,7 +8825,7 @@ GameObject:
   - component: {fileID: 1442545842}
   - component: {fileID: 1442545841}
   m_Layer: 5
-  m_Name: Text Experiment Type
+  m_Name: Text Experiment Mode
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8883,7 +8883,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Experiment type:'
+  m_Text: 'Experiment mode:'
 --- !u!222 &1442545842
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10151,12 +10151,12 @@ MonoBehaviour:
   m_Script: {fileID: 1980459831, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.863
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -10214,6 +10214,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 462f20190de254a53981963c9092a757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  participantCode: {fileID: 681228818}
+  conditionCode: {fileID: 460810514}
+  sessionCode: {fileID: 792470868}
+  groupCode: {fileID: 1369026950}
+  observations: {fileID: 2088581526}
+  experimentMode: {fileID: 2111405645}
+  experimentTask: {fileID: 1315711313}
+  cursorPositioningMethod: {fileID: 756025376}
+  cursorSelectionMethod: {fileID: 1674465430}
+  planeOrientation: {fileID: 2046468994}
+  numberOfTargets: {fileID: 1927159814}
+  cursorWidth: {fileID: 98114849}
+  amplitudes: {fileID: 2102670094}
+  widths: {fileID: 2048957921}
 --- !u!1 &1647511251
 GameObject:
   m_ObjectHideFlags: 0
@@ -10427,7 +10441,7 @@ GameObject:
   - component: {fileID: 1674465431}
   - component: {fileID: 1674465430}
   m_Layer: 5
-  m_Name: Dropdown Selection Technique
+  m_Name: Dropdown Selection Method
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11546,7 +11560,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1912151705}
-  m_RootOrder: 13
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -11709,14 +11723,14 @@ RectTransform:
   - {fileID: 1674465429}
   - {fileID: 1581305465}
   - {fileID: 2046468993}
+  - {fileID: 542077478}
+  - {fileID: 98114848}
   - {fileID: 384091809}
   - {fileID: 1927159813}
   - {fileID: 1871552645}
   - {fileID: 2102670093}
   - {fileID: 765033863}
   - {fileID: 2048957920}
-  - {fileID: 542077478}
-  - {fileID: 98114848}
   m_Father: {fileID: 1983678423}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -11796,7 +11810,7 @@ RectTransform:
   - {fileID: 1980047021}
   - {fileID: 1104693203}
   m_Father: {fileID: 1912151705}
-  m_RootOrder: 12
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -13109,7 +13123,7 @@ RectTransform:
   - {fileID: 1934357358}
   - {fileID: 1122741576}
   m_Father: {fileID: 1912151705}
-  m_RootOrder: 16
+  m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -14131,7 +14145,7 @@ RectTransform:
   - {fileID: 868818097}
   - {fileID: 1551590342}
   m_Father: {fileID: 1912151705}
-  m_RootOrder: 14
+  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -14291,7 +14305,7 @@ GameObject:
   - component: {fileID: 2111405646}
   - component: {fileID: 2111405645}
   m_Layer: 5
-  m_Name: Dropdown Test Type
+  m_Name: Dropdown Experiment Mode
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14373,7 +14387,18 @@ MonoBehaviour:
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1630452361}
+        m_MethodName: OnSelectedExperimentMode
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Dropdown+DropdownEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
   m_AlphaFadeSpeed: 0.15

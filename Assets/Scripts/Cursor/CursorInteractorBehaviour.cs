@@ -6,17 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum CursorSelectionMethod
-{
-    DWELL_TIME,
-    KEYBOARD_SPACEBAR,
-    MOUSE_LEFTCLICK,
-    AUTOMATIC_BYCONTACT,
-    META2_GRAB,
-    LMC_GRAB,
-    VIVE_TRIGGER
-}
-
 public enum CursorAcquireMethod
 {
     ACQUIRE_TARGET_ON_DOWN_EVENT,
@@ -47,22 +36,22 @@ public class CursorInteractorBehaviour : CursorBehaviour
             _selectionMethod = value;
             switch (_selectionMethod)
             {
-                case CursorSelectionMethod.DWELL_TIME:
+                case CursorSelectionMethod.DwellTime:
                     selectionTechnique = new CursorSelectionTechniqueDwell(0.5f, this);
                     break;
-                case CursorSelectionMethod.KEYBOARD_SPACEBAR:
+                case CursorSelectionMethod.KeyboardSpaceBar:
                     selectionTechnique = new CursorSelectionTechniqueKeyboard();
                     break;
-                case CursorSelectionMethod.MOUSE_LEFTCLICK:
+                case CursorSelectionMethod.MouseLeftButton:
                     selectionTechnique = new CursorSelectionTechniqueMouse();
                     break;
-                case CursorSelectionMethod.META2_GRAB:
+                case CursorSelectionMethod.Meta2GrabInteraction:
                     selectionTechnique = new CursorSelectionTechniqueMeta2Grab(metaHandsProvider);
                     break;
-                case CursorSelectionMethod.LMC_GRAB:
+                case CursorSelectionMethod.LeapMotionGrabInteraction:
                     selectionTechnique = new CursorSelectionTechniqueLeapMotionGrab(leapMotionServiceProvider);
                     break;
-                case CursorSelectionMethod.VIVE_TRIGGER:
+                case CursorSelectionMethod.VIVETriggerButton:
                     selectionTechnique = new CursorSelectionTechniqueVive(viveController);
                     break;
                 default:
@@ -100,14 +89,14 @@ public class CursorInteractorBehaviour : CursorBehaviour
     {
         base.Start();
         currentTargetsCollidingWithCursor = new HashSet<TargetBehaviour>();
-        selectionMethod = CursorSelectionMethod.KEYBOARD_SPACEBAR;        
+        selectionMethod = CursorSelectionMethod.KeyboardSpaceBar;        
     }
 
     void Update()
     {
         this.transform.position = cursorPositionController.GetCurrentCursorPosition();
 
-        if (selectionMethod == CursorSelectionMethod.AUTOMATIC_BYCONTACT)
+        if (selectionMethod == CursorSelectionMethod.FirstEntrySelection)
         {
             CheckAutomaticByContactSelection();
         }
@@ -176,7 +165,7 @@ public class CursorInteractorBehaviour : CursorBehaviour
 
     void CursorAcquiredTarget()
     {
-        if (selectionMethod != CursorSelectionMethod.DWELL_TIME)
+        if (selectionMethod != CursorSelectionMethod.DwellTime)
         {
             RegisterSelectionInformation(Time.realtimeSinceStartup, GetCursorPosition());
         }
