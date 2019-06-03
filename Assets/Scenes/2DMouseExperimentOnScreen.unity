@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.3587269, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -54,7 +54,7 @@ LightmapSettings:
     m_EnableBakedLightmaps: 1
     m_EnableRealtimeLightmaps: 0
   m_LightmapEditorSettings:
-    serializedVersion: 10
+    serializedVersion: 12
     m_Resolution: 2
     m_BakeResolution: 10
     m_AtlasSize: 512
@@ -62,6 +62,7 @@ LightmapSettings:
     m_AOMaxDistance: 1
     m_CompAOExponent: 1
     m_CompAOExponentDirect: 0
+    m_ExtractAmbientOcclusion: 0
     m_Padding: 2
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
@@ -76,10 +77,16 @@ LightmapSettings:
     m_PVRDirectSampleCount: 32
     m_PVRSampleCount: 256
     m_PVRBounces: 2
+    m_PVREnvironmentSampleCount: 256
+    m_PVREnvironmentReferencePointCount: 2048
+    m_PVRFilteringMode: 2
+    m_PVRDenoiserTypeDirect: 0
+    m_PVRDenoiserTypeIndirect: 0
+    m_PVRDenoiserTypeAO: 0
     m_PVRFilterTypeDirect: 0
     m_PVRFilterTypeIndirect: 0
     m_PVRFilterTypeAO: 0
-    m_PVRFilteringMode: 1
+    m_PVREnvironmentMIS: 0
     m_PVRCulling: 1
     m_PVRFilteringGaussRadiusDirect: 1
     m_PVRFilteringGaussRadiusIndirect: 5
@@ -88,6 +95,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaIndirect: 2
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ShowResolutionOverlay: 1
+    m_ExportTrainingData: 0
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -302,7 +310,6 @@ MonoBehaviour:
   baseTarget: {fileID: 1590297525248434, guid: 0cf3f53adfeaf0146807ab4410a9a564, type: 3}
   targetPlane: {fileID: 1488585436}
   centerOfTestPlanesObject: {fileID: 1738141952}
-  centerOfTestPlanes: {fileID: 290812183}
   calibrationPositioningCursor: {fileID: 0}
   inputDevices: {fileID: 1969886981}
   currentTestConfiguration: 0
@@ -447,6 +454,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: CursorFlatColor
       objectReference: {fileID: 0}
+    - target: {fileID: 4935531237737987653, guid: 53750b39b77972348bfdc4896195ef34,
+        type: 3}
+      propertyPath: correctAudio
+      value: 
+      objectReference: {fileID: 1632592937}
+    - target: {fileID: 4935531237737987653, guid: 53750b39b77972348bfdc4896195ef34,
+        type: 3}
+      propertyPath: errorAudio
+      value: 
+      objectReference: {fileID: 1294870371}
+    - target: {fileID: 4935531237737987653, guid: 53750b39b77972348bfdc4896195ef34,
+        type: 3}
+      propertyPath: cursorPositionController
+      value: 
+      objectReference: {fileID: 1807053818}
     - target: {fileID: 4823541459063326, guid: 53750b39b77972348bfdc4896195ef34, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -491,21 +513,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4935531237737987653, guid: 53750b39b77972348bfdc4896195ef34,
-        type: 3}
-      propertyPath: correctAudio
-      value: 
-      objectReference: {fileID: 1632592937}
-    - target: {fileID: 4935531237737987653, guid: 53750b39b77972348bfdc4896195ef34,
-        type: 3}
-      propertyPath: errorAudio
-      value: 
-      objectReference: {fileID: 1294870371}
-    - target: {fileID: 4935531237737987653, guid: 53750b39b77972348bfdc4896195ef34,
-        type: 3}
-      propertyPath: cursorPositionController
-      value: 
-      objectReference: {fileID: 1807053818}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53750b39b77972348bfdc4896195ef34, type: 3}
 --- !u!4 &1012468508 stripped
@@ -657,7 +664,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: dc4fa8fe17f1b4a8bbae2c2c95d3663d, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0.368
   m_Pitch: 1
   Loop: 0
@@ -893,7 +900,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 007b45dee5fd747c3b0529d72bfbcbef, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0.055
   m_Pitch: 1
   Loop: 0
@@ -1101,7 +1108,6 @@ MonoBehaviour:
   targetPlane: {fileID: 1488585436}
   plane: 1
   spaceSize: {x: 0.6, y: 0.6, z: 0.6}
-  offset: {x: 0.15, y: -0.35, z: 0.35}
 --- !u!4 &1807053819
 Transform:
   m_ObjectHideFlags: 0
@@ -1299,9 +1305,10 @@ Camera:
   m_ClearFlags: 2
   m_BackGroundColor: {r: 1, g: 1, b: 1, a: 0}
   m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
-  m_GateFitMode: 2
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
