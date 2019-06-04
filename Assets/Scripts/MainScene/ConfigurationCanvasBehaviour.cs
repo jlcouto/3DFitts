@@ -21,19 +21,35 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
 
     public Dropdown numberOfTargets;
 
+    public InputField dwellTime;
     public InputField cursorWidth;
     public InputField amplitudes;
     public InputField widths;
      
     void Start()
     {
-        
+        ResetValuesToDefault();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ResetValuesToDefault()
     {
-        
+        ResetDropdown(experimentMode);
+        ResetDropdown(experimentTask);
+        ResetDropdown(cursorPositioningMethod);
+        ResetDropdown(cursorSelectionMethod);
+        ResetDropdown(planeOrientation);
+        ResetDropdown(numberOfTargets, 3);
+
+        dwellTime.text = "500";
+        cursorWidth.text = "15";
+        amplitudes.text = "74, 103, 133";
+        widths.text = "13, 5.5";
+    }
+
+    void ResetDropdown(Dropdown d, int value = 0)
+    {
+        d.SetValueWithoutNotify(value);
+        OnDropdownValueChanged(d);
     }
 
     public void OnDropdownValueChanged(Dropdown dropdown)
@@ -74,6 +90,7 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         else if (dropdown == cursorSelectionMethod)
         {
             CurrentExperimentConfiguration.cursorSelectionMethod = (CursorSelectionMethod)dropdown.value;
+            dwellTime.interactable = CurrentExperimentConfiguration.cursorSelectionMethod == CursorSelectionMethod.DwellTime;
         }
         else if (dropdown == planeOrientation)
         {
@@ -81,7 +98,7 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         }
         else if (dropdown == numberOfTargets)
         {
-            CurrentExperimentConfiguration.numberOfTargets = 2*dropdown.value + 3;
+            CurrentExperimentConfiguration.numberOfTargets = int.Parse(dropdown.options[dropdown.value].text);
         }
         else if (dropdown == participantCode)
         {
@@ -104,6 +121,18 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
     public void OnObservationsValueChanged(string newValue)
     {
         CurrentExperimentConfiguration.observations = newValue;
+    }
+
+    public void OnDwellTimeValueChanged(string newValue)
+    {
+        if (CurrentExperimentConfiguration.TrySetDwellTimeFromString(newValue))
+        {
+            dwellTime.text = CurrentExperimentConfiguration.dwellTime.ToString();
+        }
+        else
+        {
+            dwellTime.text = "-";
+        }
     }
 
     public void OnCursorWidthValueChanged(string newValue)

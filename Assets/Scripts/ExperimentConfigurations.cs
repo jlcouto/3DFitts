@@ -42,16 +42,32 @@ public static class CurrentExperimentConfiguration
     public static CursorPositioningMethod cursorPositioningMethod;
     public static CursorSelectionMethod cursorSelectionMethod;
     public static PlaneOrientation planeOrientation;
+    public static float dwellTime;
     public static float cursorWidth;
     public static int numberOfTargets;
     public static float[] amplitudes;
     public static float[] widths;    
     public static List<IndexOfDifficulty> sequences = new List<IndexOfDifficulty>();
 
-    public static bool TrySetCursorWidthFromString(string stringAmplitudes)
+    public static bool TrySetDwellTimeFromString(string dwellTimeString)
     {
         float[] temp;
-        if (ParseFloatsOnString(stringAmplitudes, out temp))
+        if (ParseFloatsOnString(dwellTimeString, out temp))
+        {
+            dwellTime = temp[0];
+            return true;
+        }
+        else
+        {
+            dwellTime = -1;
+            return false;
+        }
+    }
+
+    public static bool TrySetCursorWidthFromString(string stringCursorWidth)
+    {
+        float[] temp;
+        if (ParseFloatsOnString(stringCursorWidth, out temp))
         {
             cursorWidth = temp[0];
             return true;
