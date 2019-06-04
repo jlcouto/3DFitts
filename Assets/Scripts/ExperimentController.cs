@@ -502,7 +502,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
 
 
-
+#if UNITY_EDITOR
 [CustomEditor(typeof(ExperimentController))]
 public class ObjectBuilderEditor : Editor
 {
@@ -552,3 +552,4 @@ public class ObjectBuilderEditor : Editor
         }
     }
 }
+#endif

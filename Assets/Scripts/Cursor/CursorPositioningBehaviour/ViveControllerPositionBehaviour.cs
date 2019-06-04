@@ -416,7 +416,7 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
     }
 }
 
-
+#if UNITY_EDITOR
 [CustomEditor(typeof(ViveControllerPositionBehaviour))]
 public class VIVEEditorBuilder : Editor
 {
@@ -432,3 +432,4 @@ public class VIVEEditorBuilder : Editor
         }
     }
 }
+#endif
