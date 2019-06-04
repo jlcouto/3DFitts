@@ -147,7 +147,9 @@ public class ExperimentController : MonoBehaviour, ITestListener
             centerOfTestPlanesObject.SetActive(false);
 
             cursor.cursorPositionController = GetControllerForPositioningMethod(experimentConfig.cursorPositioningMethod);
-            cursor.selectionMethod = experimentConfig.cursorSelectionMethod;
+            cursor.selectionMethod = experimentConfig.cursorSelectionMethod;            
+            cursor.SetDwellTime(experimentConfig.dwellTime);            
+            
             cursor.transform.localScale = experimentConfig.cursorWidth * Vector3.one;
             cursor.cursorPositionController.gameObject.SetActive(true);
 

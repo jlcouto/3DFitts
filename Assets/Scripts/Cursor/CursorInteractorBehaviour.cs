@@ -37,7 +37,7 @@ public class CursorInteractorBehaviour : CursorBehaviour
             switch (_selectionMethod)
             {
                 case CursorSelectionMethod.DwellTime:
-                    selectionTechnique = new CursorSelectionTechniqueDwell(0.5f, this);
+                    selectionTechnique = new CursorSelectionTechniqueDwell(this.dwellTime, this);
                     break;
                 case CursorSelectionMethod.KeyboardSpaceBar:
                     selectionTechnique = new CursorSelectionTechniqueKeyboard();
@@ -59,7 +59,7 @@ public class CursorInteractorBehaviour : CursorBehaviour
             }
         }
         get { return _selectionMethod; }
-    }
+    }    
 
     public CursorAcquireMethod cursorAcquireMethod = CursorAcquireMethod.ACQUIRE_TARGET_ON_UP_EVENT;
 
@@ -68,6 +68,7 @@ public class CursorInteractorBehaviour : CursorBehaviour
     public ViveControllerPositionBehaviour viveController;
 
     CursorSelectionTechnique selectionTechnique;
+    private float dwellTime = 0.5f;
 
     HashSet<TargetBehaviour> currentTargetsCollidingWithCursor;
     TargetBehaviour currentHighlightedTarget;
@@ -104,6 +105,15 @@ public class CursorInteractorBehaviour : CursorBehaviour
         {
             ManageSelectionInteraction(selectionTechnique);
         }
+    }
+
+    public void SetDwellTime(float dwellTime)
+    {
+        this.dwellTime = dwellTime;
+        if (selectionTechnique.GetType() == typeof(CursorSelectionTechniqueDwell))
+        {
+            ((CursorSelectionTechniqueDwell)selectionTechnique).dwellTimeInSeconds = this.dwellTime;
+        }      
     }
 
     void ManageSelectionInteraction(CursorSelectionTechnique selectionInteraction)

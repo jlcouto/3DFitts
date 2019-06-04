@@ -11,7 +11,7 @@ public class CursorSelectionTechniqueDwell : CursorSelectionTechnique, ICursorLi
     private TargetBehaviour lastTarget;
     private Vector3 cursorPositionWhenEnteredLastTarget;
     private float timeEnteredLastTarget = -1;
-    private bool targetWasSelected = false;    
+    private bool targetWasSelected = false;
 
     private CursorBehaviour cursor;
 
@@ -50,15 +50,10 @@ public class CursorSelectionTechniqueDwell : CursorSelectionTechnique, ICursorLi
         }       
     }
 
-    public void CursorAcquiredTarget(TargetBehaviour target) { }
-    public void CursorDragTargetStarted(TargetBehaviour target) { }
-    public void CursorDragTargetEnded(TargetBehaviour draggedTarget, TargetBehaviour receivingTarget) { }
-
-    public override bool SelectionInteractionStarted()
-    {        
+    bool ShouldTriggerSelectionEvent()
+    {
         if (!targetWasSelected && (timeEnteredLastTarget > 0) && (Time.realtimeSinceStartup - timeEnteredLastTarget > dwellTimeInSeconds))
-        {
-            targetWasSelected = true;
+        {                        
             this.cursor.RegisterSelectionInformation(timeEnteredLastTarget, cursorPositionWhenEnteredLastTarget);
             return true;
         }
@@ -68,13 +63,32 @@ public class CursorSelectionTechniqueDwell : CursorSelectionTechnique, ICursorLi
         }
     }
 
+    public void CursorAcquiredTarget(TargetBehaviour target) { }
+    public void CursorDragTargetStarted(TargetBehaviour target) { }
+    public void CursorDragTargetEnded(TargetBehaviour draggedTarget, TargetBehaviour receivingTarget) { }
+
+    public override bool SelectionInteractionStarted()
+    {
+        // We are assuming the Dwell to be a instantaneous selection event.
+        // Thus, it will trigger both the Start of Selection and the End of Selection events simultaneously.
+        return ShouldTriggerSelectionEvent();        
+    }
+
     public override bool SelectionInteractionMantained()
     {
+        // The Dwell method will never be able to "mantain" a selection because it will release the target at the same frame it was acquired.
         return false;
     }
 
     public override bool SelectionInteractionEnded()
-    {        
+    {
+        // We are assuming the Dwell to be a instantaneous selection event.
+        // Thus, it will trigger both the Start of Selection and the End of Selection events simultaneously.
+        if (ShouldTriggerSelectionEvent())
+        {
+            targetWasSelected = true;
+            return true;
+        }
         return false;
     }
 
