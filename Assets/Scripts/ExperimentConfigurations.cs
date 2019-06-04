@@ -19,81 +19,53 @@ public class IndexOfDifficulty
     }
 }
 
-public abstract class ExperimentConfiguration
+public class ExperimentConfiguration
 {
-    public abstract float GetCursorDiameter();
-    public abstract ExperimentTask GetExperimentTask();
-    public abstract int GetNumBlocksPerTest();
-    public abstract int GetNumTargetsPerTest();
-    public abstract PlaneOrientation[] GetPlaneOrientationsToTest();
-    public abstract IndexOfDifficulty[] GetTargetConfigurationsToTest();
-}
+    public readonly string participantCode;
+    public readonly string conditionCode;
+    public readonly string sessionCode;
+    public readonly string groupCode;
+    public readonly string observations;
 
-public static class CurrentExperimentConfiguration
-{
-    public static string participantCode;
-    public static string conditionCode;
-    public static string sessionCode;
-    public static string groupCode;
-    public static string observations;
+    public readonly ExperimentMode experimentMode;
+    public readonly ExperimentTask experimentTask;
+    public readonly CursorPositioningMethod cursorPositioningMethod;
+    public readonly CursorSelectionMethod cursorSelectionMethod;
+    public readonly PlaneOrientation planeOrientation;
+    public readonly float dwellTime;
+    public readonly float cursorWidth;
+    public readonly int numberOfTargets;
+    public readonly List<IndexOfDifficulty> sequences = new List<IndexOfDifficulty>();
 
-    public static ExperimentMode experimentMode;
-    public static ExperimentTask experimentTask;
-    public static CursorPositioningMethod cursorPositioningMethod;
-    public static CursorSelectionMethod cursorSelectionMethod;
-    public static PlaneOrientation planeOrientation;
-    public static float dwellTime;
-    public static float cursorWidth;
-    public static int numberOfTargets;
-    public static float[] amplitudes;
-    public static float[] widths;    
-    public static List<IndexOfDifficulty> sequences = new List<IndexOfDifficulty>();
-
-    public static bool TrySetDwellTimeFromString(string dwellTimeString)
+    public ExperimentConfiguration(
+        string participantCode, string conditionCode, string sessionCode, string groupCode, string observations,
+        ExperimentMode experimentMode, ExperimentTask experimentTask, CursorPositioningMethod cursorPositioningMethod,
+        CursorSelectionMethod cursorSelectionMethod, PlaneOrientation planeOrientation, float dwellTime, float cursorWidth,
+        int numberOfTargets, float[] amplitudes, float[] widths)
     {
-        float[] temp;
-        if (ParseFloatsOnString(dwellTimeString, out temp))
-        {
-            dwellTime = temp[0];
-            return true;
-        }
-        else
-        {
-            dwellTime = -1;
-            return false;
-        }
+        this.participantCode = participantCode;
+        this.conditionCode = conditionCode;
+        this.sessionCode = sessionCode;
+        this.groupCode = groupCode;
+        this.observations = observations;
+
+        this.experimentMode = experimentMode;
+        this.experimentTask = experimentTask;
+        this.cursorPositioningMethod = cursorPositioningMethod;
+        this.cursorSelectionMethod = cursorSelectionMethod;
+        this.planeOrientation = planeOrientation;
+        this.dwellTime = dwellTime;
+        this.cursorWidth = cursorWidth;
+        this.numberOfTargets = numberOfTargets;
+
+        sequences = ComputeIndexOfDifficultySequences(amplitudes, widths);
     }
 
-    public static bool TrySetCursorWidthFromString(string stringCursorWidth)
-    {
-        float[] temp;
-        if (ParseFloatsOnString(stringCursorWidth, out temp))
-        {
-            cursorWidth = temp[0];
-            return true;
-        }
-        else
-        {
-            cursorWidth = -1;
-            return false;
-        }
-    }
-
-    public static bool TrySetAmplitudesFromString(string stringAmplitudes)
-    {
-        return ParseFloatsOnString(stringAmplitudes, out amplitudes); 
-    }
-
-    public static bool TrySetWidthsFromString(string stringWidths)
-    {
-        return ParseFloatsOnString(stringWidths, out widths);
-    }
-
-    static void ComputeIndexOfDifficultySequences()
-    {
-        sequences.Clear();
+    List<IndexOfDifficulty> ComputeIndexOfDifficultySequences(float[] amplitudes, float[] widths)
+    {                
         if (amplitudes != null && widths != null)
         {
+            List<IndexOfDifficulty> sequences = new List<IndexOfDifficulty>();
             foreach (float a in amplitudes)
             {
                 foreach (float w in widths)
@@ -101,163 +73,8 @@ public static class CurrentExperimentConfiguration
                     sequences.Add(new IndexOfDifficulty(w, a));
                 }
             }
+            return sequences;
         }
-    }
-
-    static bool ParseFloatsOnString(string stringWithValues, out float[] values)
-    {
-        values = null;
-        char[] delimiters = { ' ', ',' };
-        string[] stringValues = stringWithValues.Split(delimiters, System.StringSplitOptions.RemoveEmptyEntries);
-
-        if (stringValues.Length > 0)
-        {
-            values = new float[stringValues.Length];
-        }
-
-        for (int i = 0; i < stringValues.Length; i++)
-        {
-            if (!float.TryParse(stringValues[i], out values[i]))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-}
-
-public class Tapping3DMouseExperimentConfiguration : ExperimentConfiguration
-{
-    protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneXY, PlaneOrientation.PlaneZX, PlaneOrientation.PlaneYZ };
-    static readonly IndexOfDifficulty[] configurations = {
-        new IndexOfDifficulty(0.013f, 0.074f),
-        new IndexOfDifficulty(0.013f, 0.103f),
-        new IndexOfDifficulty(0.013f, 0.133f),
-        new IndexOfDifficulty(0.0055f, 0.074f),
-        new IndexOfDifficulty(0.0055f, 0.103f),
-        new IndexOfDifficulty(0.0055f, 0.133f)
-    };
-    /*
-    static readonly IndexOfDifficulty[] configurations = {
-        new IndexOfDifficulty(0.035f, 0.2f),
-        new IndexOfDifficulty(0.035f, 0.3f),
-        new IndexOfDifficulty(0.035f, 0.4f),
-        new IndexOfDifficulty(0.015f, 0.2f),
-        new IndexOfDifficulty(0.015f, 0.3f),
-        new IndexOfDifficulty(0.015f, 0.4f)
-    };
-    */
-    /*static readonly IndexOfDifficulty[] configurations = {
-        new IndexOfDifficulty(0.04f, 0.2f),
-        new IndexOfDifficulty(0.04f, 0.3f),
-        new IndexOfDifficulty(0.04f, 0.4f),
-        new IndexOfDifficulty(0.02f, 0.2f),
-        new IndexOfDifficulty(0.02f, 0.3f),
-        new IndexOfDifficulty(0.02f, 0.4f),
-        new IndexOfDifficulty(0.01f, 0.2f),
-        new IndexOfDifficulty(0.01f, 0.3f),
-        new IndexOfDifficulty(0.01f, 0.4f)
-    };*/
-
-    public override float GetCursorDiameter()
-    {
-        return 0.005f;
-    }
-
-    public override ExperimentTask GetExperimentTask()
-    {
-        return ExperimentTask.ReciprocalTapping;
-    }
-
-    public override int GetNumBlocksPerTest()
-    {
-        return 1;
-    }
-
-    public override int GetNumTargetsPerTest()
-    {
-        return 9;
-    }
-
-    public override PlaneOrientation[] GetPlaneOrientationsToTest()
-    {
-        return planeOrientations;
-    }
-
-    public override IndexOfDifficulty[] GetTargetConfigurationsToTest()
-    {
-        return configurations;
-    }
-}
-
-public class Tapping2DMouseExperimentConfiguration : Tapping3DMouseExperimentConfiguration
-{
-    new protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneXY };
-
-    public override PlaneOrientation[] GetPlaneOrientationsToTest()
-    {
-        return planeOrientations;
-    }
-}
-
-public class Drag3DMouseExperimentConfiguration : ExperimentConfiguration
-{
-    protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneXY, PlaneOrientation.PlaneZX, PlaneOrientation.PlaneYZ };
-    static readonly IndexOfDifficulty[] configurations = {
-        new IndexOfDifficulty(0.035f, 0.2f),
-        new IndexOfDifficulty(0.035f, 0.3f),
-        new IndexOfDifficulty(0.035f, 0.4f),
-        new IndexOfDifficulty(0.015f, 0.2f),
-        new IndexOfDifficulty(0.015f, 0.3f),
-        new IndexOfDifficulty(0.015f, 0.4f)
-    };
-    /*static readonly IndexOfDifficulty[] configurations = {
-        new IndexOfDifficulty(0.04f, 0.2f),
-        new IndexOfDifficulty(0.04f, 0.3f),
-        new IndexOfDifficulty(0.02f, 0.2f),
-        new IndexOfDifficulty(0.02f, 0.4f),
-        new IndexOfDifficulty(0.01f, 0.3f),
-        new IndexOfDifficulty(0.01f, 0.4f)
-    };*/
-
-    public override float GetCursorDiameter()
-    {
-        return 0.01f;
-    }
-
-    public override ExperimentTask GetExperimentTask()
-    {
-        return ExperimentTask.ReciprocalDragging;
-    }
-
-    public override int GetNumBlocksPerTest()
-    {
-        return 1;
-    }
-
-    public override int GetNumTargetsPerTest()
-    {
-        return 9;
-    }
-
-    public override PlaneOrientation[] GetPlaneOrientationsToTest()
-    {
-        return planeOrientations;
-    }
-
-    public override IndexOfDifficulty[] GetTargetConfigurationsToTest()
-    {
-        return configurations;
-    }
-}
-
-public class Drag2DMouseExperimentConfiguration : Drag3DMouseExperimentConfiguration
-{
-    new protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneXY };
-
-    public override PlaneOrientation[] GetPlaneOrientationsToTest()
-    {
-        return planeOrientations;
+        return null;
     }
 }

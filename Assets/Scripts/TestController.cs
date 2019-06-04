@@ -55,7 +55,7 @@ public class TestController : ICursorListener, IBlockListener
     public TestController(ITestListener listener, Text statusText, Text testText, Text repetitionText,
         AudioSource correctTargetAudio, AudioSource wrongTargetAudio,
         CursorBehaviour cursor, GameObject baseTarget, Transform targetPlane, ExperimentTask task,
-        PlaneOrientation orientation, int numberOfTargets, float targetWidth, float targetDistance, int numOfBlocksPerTest)
+        PlaneOrientation orientation, int numberOfTargets, float targetWidth, float targetDistance, int numOfBlocksPerTest = 1)
     {
         this.testListener = listener;
 

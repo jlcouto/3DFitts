@@ -10,13 +10,14 @@ public class ExperimentController : MonoBehaviour, ITestListener
 {
     enum ExperimentStatus
     {
+        Initializing,
         CalibrationRunning,
         Stopped,
         Running,
         Paused
     }
 
-    public ExperimentConfiguration experimentConfig;
+    ExperimentConfiguration experimentConfig;
 
     public Text statusText;
     public Text testText;
@@ -35,25 +36,12 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
     public GameObject inputDevices;
 
-    [Space(30)]    
-    public int currentTestConfiguration = 0;
-    public int currentPlaneOrientation = 0;
-
-    [Space(30)]
-    public string participantName;
-    public int participantAge;
-    public string testDescription;
-
-    [Space(10)]
-    public ExperimentTask task;
-
-    public CursorPositioningController cursorPositionController;
-    public CursorSelectionMethod cursorSelectionMethod;    
-
+    int currentSequence = 0;
+    
     bool isCalibratingCenterOfPLanes = false;
     CursorPositioningController.CursorHandPosition originalCursorPosition;
 
-    ExperimentStatus status = ExperimentStatus.Stopped;
+    ExperimentStatus status = ExperimentStatus.Initializing;
     
     TestController currentTestController;
 
@@ -70,8 +58,33 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
     void Start()
     {
+        status = ExperimentStatus.Initializing;
+
         UISetNoteText("");
-        frameData = new List<FrameData>(60 * 60 * 120); // Enough capacity to record up to 2 min of data at 60 fps        
+        frameData = new List<FrameData>(60 * 60 * 120); // Enough capacity to record up to 2 min of data at 60 fps     
+
+        LoadConfigurationsFromCanvasValues();        
+    }
+
+    void LoadConfigurationsFromCanvasValues()
+    {
+        experimentConfig = new ExperimentConfiguration(
+            CanvasExperimentConfigurationValues.participantCode,
+            CanvasExperimentConfigurationValues.conditionCode,
+            CanvasExperimentConfigurationValues.sessionCode,
+            CanvasExperimentConfigurationValues.groupCode,
+            CanvasExperimentConfigurationValues.observations,
+            CanvasExperimentConfigurationValues.experimentMode,
+            CanvasExperimentConfigurationValues.experimentTask,
+            CanvasExperimentConfigurationValues.cursorPositioningMethod,
+            CanvasExperimentConfigurationValues.cursorSelectionMethod,
+            CanvasExperimentConfigurationValues.planeOrientation,
+            CanvasExperimentConfigurationValues.dwellTime,
+            CanvasExperimentConfigurationValues.cursorWidth,
+            CanvasExperimentConfigurationValues.numberOfTargets,
+            CanvasExperimentConfigurationValues.amplitudes,
+            CanvasExperimentConfigurationValues.widths
+            );
     }
 
     private void Update()
@@ -102,6 +115,10 @@ public class ExperimentController : MonoBehaviour, ITestListener
                 LogFrameData();
             }            
         }
+        else if (status == ExperimentStatus.Initializing)
+        {
+            RunExperiment();
+        }
     }
 
     void LogFrameData()
@@ -123,42 +140,18 @@ public class ExperimentController : MonoBehaviour, ITestListener
             return;
         }
         
-        if (status == ExperimentStatus.Stopped)
+        if (status == ExperimentStatus.Initializing || status == ExperimentStatus.Stopped)
         {
             Debug.Log("ExperimentController: Starting experiment...");
 
             centerOfTestPlanesObject.SetActive(false);
 
-            if (task == ExperimentTask.ReciprocalDragging)
-            {
-                if (cursorPositionController.GetType() == typeof(Mouse2DInputBehaviour))
-                {
-                    experimentConfig = new Drag2DMouseExperimentConfiguration();
-                }
-                else
-                {
-                    experimentConfig = new Drag3DMouseExperimentConfiguration();
-                }
-            }
-            else
-            {
-                if (cursorPositionController.GetType() == typeof(Mouse2DInputBehaviour))
-                {
-                    experimentConfig = new Tapping2DMouseExperimentConfiguration();
-                }
-                else
-                {
-                    experimentConfig = new Tapping3DMouseExperimentConfiguration();
-                }
-            }
-
-            cursor.cursorPositionController = cursorPositionController;
-            cursor.selectionMethod = cursorSelectionMethod;
-            cursor.transform.localScale = experimentConfig.GetCursorDiameter() * Vector3.one;
+            cursor.cursorPositionController = GetControllerForPositioningMethod(experimentConfig.cursorPositioningMethod);
+            cursor.selectionMethod = experimentConfig.cursorSelectionMethod;
+            cursor.transform.localScale = experimentConfig.cursorWidth * Vector3.one;
             cursor.cursorPositionController.gameObject.SetActive(true);
 
-            currentTestConfiguration = 0;
-            currentPlaneOrientation = 0;
+            currentSequence = 0;
             status = ExperimentStatus.Running;            
 
             RunNextTestConfiguration();
@@ -176,6 +169,22 @@ public class ExperimentController : MonoBehaviour, ITestListener
         }
     }
 
+    CursorPositioningController GetControllerForPositioningMethod(CursorPositioningMethod cursorPositioningMethod)
+    {     
+        switch (cursorPositioningMethod)
+        {            
+            case CursorPositioningMethod.Meta2Interaction:
+                return inputDevices.GetComponentInChildren<Meta2CursorBehaviour>(true);                
+            case CursorPositioningMethod.LeapMotionController:
+                return inputDevices.GetComponentInChildren<LeapMotionControllerCursorBehaviour>(true);
+            case CursorPositioningMethod.VIVE:
+                return inputDevices.GetComponentInChildren<ViveControllerPositionBehaviour>(true);
+            case CursorPositioningMethod.Mouse:
+            default:
+                return inputDevices.GetComponentInChildren<Mouse2DInputBehaviour>(true);
+        }        
+    }
+
     void RunNextTestConfiguration()
     {
         if (currentTestController != null)
@@ -185,39 +194,30 @@ public class ExperimentController : MonoBehaviour, ITestListener
         else
         {
             if (status == ExperimentStatus.Running)
-            {
-                if (currentPlaneOrientation < experimentConfig.GetPlaneOrientationsToTest().Length)
+            {                
+                if (currentSequence < experimentConfig.sequences.Count)
                 {
-                    if (currentTestConfiguration < experimentConfig.GetTargetConfigurationsToTest().Length)
-                    {
-                        CleanTargetPlane();
-                        frameData.Clear();
+                    CleanTargetPlane();
+                    frameData.Clear();
 
-                        currentTestController = new TestController(this, statusText, testText, repetitionText, correctTargetAudio, wrongTargetAudio,
-                            cursor, baseTarget, targetPlane,
-                            experimentConfig.GetExperimentTask(),
-                            experimentConfig.GetPlaneOrientationsToTest()[currentPlaneOrientation],
-                            experimentConfig.GetNumTargetsPerTest(),
-                            experimentConfig.GetTargetConfigurationsToTest()[currentTestConfiguration].targetWidth,
-                            experimentConfig.GetTargetConfigurationsToTest()[currentTestConfiguration].targetsDistance,
-                            experimentConfig.GetNumBlocksPerTest());
+                    currentTestController = new TestController(this, statusText, testText, repetitionText, correctTargetAudio, wrongTargetAudio,
+                        cursor, baseTarget, targetPlane,
+                        experimentConfig.experimentTask,
+                        experimentConfig.planeOrientation,
+                        experimentConfig.numberOfTargets,
+                        experimentConfig.sequences[currentSequence].targetWidth,
+                        experimentConfig.sequences[currentSequence].targetsDistance);
 
-                        Debug.Log("ExperimentController: Starting test: (P" + currentPlaneOrientation + ", C" + currentTestConfiguration + ")");
-                        currentTestController.InitializeTest();                        
-                        currentTestConfiguration++;
-                    }
-                    else
-                    {
-                        currentPlaneOrientation++;
-                        currentTestConfiguration = 0;
-                        RunNextTestConfiguration();
-                        return;
-                    }
+                    Debug.Log("ExperimentController: Starting sequence " + currentSequence + ")");
+                    currentTestController.InitializeTest();                        
+                    currentSequence++;
                 }
                 else
                 {
+                    currentSequence = 0;
                     Debug.Log("ExperimentController: Experiment finished with success!");
                     StopExperiment();
+                    return;
                 }
             }
             else
@@ -303,16 +303,19 @@ public class ExperimentController : MonoBehaviour, ITestListener
     void ExportResultsToFile(TestMeasurements results)
     {
         var output = results.SerializeToDictionary();
-        output["participantName"] = participantName;
-        output["participantAge"] = participantAge;
-        output["testDescription"] = testDescription;
-        output["testTask"] = Enum2String.GetTaskString(results.testConfiguration.task);
-        output["device"] = cursor.GetDeviceName();
-        output["interactionTechnique"] = cursor.GetInteractionTechniqueName();
-        output["cursorDiameter"] = experimentConfig.GetCursorDiameter();
-        output["planeOrientation"] = Enum2String.GetPlaneOrientationString(experimentConfig.GetPlaneOrientationsToTest()[currentPlaneOrientation]);        
-        output["centerOfPlanePosition"] = SimpleVector3.FromVector3(transform.position);
-        output["centerOfPlaneRotation"] = SimpleVector3.FromVector3(transform.rotation.eulerAngles);
+        output["ParticipantCode"] = experimentConfig.participantCode;
+        output["ConditionCode"] = experimentConfig.conditionCode;
+        output["SessionCode"] = experimentConfig.sessionCode;
+        output["GroupCode"] = experimentConfig.groupCode;
+        output["Observations"] = experimentConfig.observations;
+
+        output["ExperimentTask"] = Enum2String.GetTaskString(results.testConfiguration.task);
+        output["PositioningMethod"] = cursor.GetDeviceName();
+        output["SelectionMethod"] = cursor.GetInteractionTechniqueName();
+        output["CursorWidth"] = experimentConfig.cursorWidth;
+        output["PlaneOrientation"] = Enum2String.GetPlaneOrientationString(experimentConfig.planeOrientation);        
+        output["CenterOfPlanePosition"] = SimpleVector3.FromVector3(transform.position);
+        output["CenterOfPlaneRotation"] = SimpleVector3.FromVector3(transform.rotation.eulerAngles);
 
         string jsonData = JsonConvert.SerializeObject(output, new JsonSerializerSettings()
         {
@@ -378,7 +381,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
     string GetResultsFolder()
     {
-        return "./Experiments/" + participantName +"/";
+        return "./Experiments/" + experimentConfig.participantCode +"/";
     }
 
     string GetFrameDataResultsFolder()

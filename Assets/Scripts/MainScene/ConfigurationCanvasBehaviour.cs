@@ -25,9 +25,25 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
     public InputField cursorWidth;
     public InputField amplitudes;
     public InputField widths;
-     
+
+    string defaultDwellTime = "500";
+    string defaultCursorWidth = "15";
+    string defaultAmplitudes = "74, 103, 133";
+    string defaultWidths = "13, 5.5";
+
     void Start()
     {
+        InitializeValues();
+    }
+
+    void InitializeValues()
+    {
+        ResetDropdown(participantCode);
+        ResetDropdown(conditionCode);
+        ResetDropdown(sessionCode);
+        ResetDropdown(groupCode);
+        observations.text = "";
+
         ResetValuesToDefault();
     }
 
@@ -40,10 +56,17 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         ResetDropdown(planeOrientation);
         ResetDropdown(numberOfTargets, 3);
 
-        dwellTime.text = "500";
-        cursorWidth.text = "15";
-        amplitudes.text = "74, 103, 133";
-        widths.text = "13, 5.5";
+        dwellTime.SetTextWithoutNotify(defaultDwellTime);
+        OnDwellTimeValueChanged(defaultDwellTime);
+
+        cursorWidth.SetTextWithoutNotify(defaultCursorWidth);
+        OnCursorWidthValueChanged(defaultCursorWidth);
+
+        amplitudes.SetTextWithoutNotify(defaultAmplitudes);
+        OnAmplitudesValueChanged(defaultAmplitudes);
+
+        widths.SetTextWithoutNotify(defaultWidths);
+        OnWidthsValueChanged(defaultWidths);        
     }
 
     void ResetDropdown(Dropdown d, int value = 0)
@@ -59,9 +82,9 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         if (dropdown == experimentMode)
         {
             ExperimentMode newValue = (ExperimentMode)experimentMode.value;
-            CurrentExperimentConfiguration.experimentMode = newValue;
+            CanvasExperimentConfigurationValues.experimentMode = newValue;
 
-            switch (CurrentExperimentConfiguration.experimentMode)
+            switch (CanvasExperimentConfigurationValues.experimentMode)
             {
                 case ExperimentMode.Experiment2D:
                     // For now, only mouse can be used for 2D experiment
@@ -81,53 +104,53 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         }
         else if (dropdown == experimentTask)
         {
-            CurrentExperimentConfiguration.experimentTask = (ExperimentTask)dropdown.value;
+            CanvasExperimentConfigurationValues.experimentTask = (ExperimentTask)dropdown.value;
         }
         else if (dropdown == cursorPositioningMethod)
         {
-            CurrentExperimentConfiguration.cursorPositioningMethod = (CursorPositioningMethod)dropdown.value;
+            CanvasExperimentConfigurationValues.cursorPositioningMethod = (CursorPositioningMethod)dropdown.value;
         }
         else if (dropdown == cursorSelectionMethod)
         {
-            CurrentExperimentConfiguration.cursorSelectionMethod = (CursorSelectionMethod)dropdown.value;
-            dwellTime.interactable = CurrentExperimentConfiguration.cursorSelectionMethod == CursorSelectionMethod.DwellTime;
+            CanvasExperimentConfigurationValues.cursorSelectionMethod = (CursorSelectionMethod)dropdown.value;
+            dwellTime.interactable = CanvasExperimentConfigurationValues.cursorSelectionMethod == CursorSelectionMethod.DwellTime;
         }
         else if (dropdown == planeOrientation)
         {
-            CurrentExperimentConfiguration.planeOrientation = (PlaneOrientation)dropdown.value;
+            CanvasExperimentConfigurationValues.planeOrientation = (PlaneOrientation)dropdown.value;
         }
         else if (dropdown == numberOfTargets)
         {
-            CurrentExperimentConfiguration.numberOfTargets = int.Parse(dropdown.options[dropdown.value].text);
+            CanvasExperimentConfigurationValues.numberOfTargets = int.Parse(dropdown.options[dropdown.value].text);
         }
         else if (dropdown == participantCode)
         {
-            CurrentExperimentConfiguration.participantCode = dropdown.options[dropdown.value].text;
+            CanvasExperimentConfigurationValues.participantCode = dropdown.options[dropdown.value].text;
         }
         else if (dropdown == conditionCode)
         {
-            CurrentExperimentConfiguration.conditionCode = dropdown.options[dropdown.value].text;
+            CanvasExperimentConfigurationValues.conditionCode = dropdown.options[dropdown.value].text;
         }
         else if (dropdown == sessionCode)
         {
-            CurrentExperimentConfiguration.sessionCode = dropdown.options[dropdown.value].text;
+            CanvasExperimentConfigurationValues.sessionCode = dropdown.options[dropdown.value].text;
         }
         else if (dropdown == groupCode)
         {
-            CurrentExperimentConfiguration.groupCode = dropdown.options[dropdown.value].text;
+            CanvasExperimentConfigurationValues.groupCode = dropdown.options[dropdown.value].text;
         }
     }
 
     public void OnObservationsValueChanged(string newValue)
     {
-        CurrentExperimentConfiguration.observations = newValue;
+        CanvasExperimentConfigurationValues.observations = newValue;
     }
 
     public void OnDwellTimeValueChanged(string newValue)
     {
-        if (CurrentExperimentConfiguration.TrySetDwellTimeFromString(newValue))
+        if (CanvasExperimentConfigurationValues.TrySetDwellTimeFromString(newValue))
         {
-            dwellTime.text = CurrentExperimentConfiguration.dwellTime.ToString();
+            dwellTime.text = (CanvasExperimentConfigurationValues.dwellTime * 1000).ToString();
         }
         else
         {
@@ -137,9 +160,9 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
 
     public void OnCursorWidthValueChanged(string newValue)
     {
-        if (CurrentExperimentConfiguration.TrySetCursorWidthFromString(newValue))
+        if (CanvasExperimentConfigurationValues.TrySetCursorWidthFromString(newValue))
         {
-            cursorWidth.text = CurrentExperimentConfiguration.cursorWidth.ToString();
+            cursorWidth.text = (CanvasExperimentConfigurationValues.cursorWidth * 1000).ToString();
         }
         else
         {
@@ -149,7 +172,7 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
 
     public void OnAmplitudesValueChanged(string newValue)
     {
-        if (!CurrentExperimentConfiguration.TrySetAmplitudesFromString(newValue))
+        if (!CanvasExperimentConfigurationValues.TrySetAmplitudesFromString(newValue))
         {
             amplitudes.text = "-";
         }
@@ -157,7 +180,7 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
 
     public void OnWidthsValueChanged(string newValue)
     {
-        if (!CurrentExperimentConfiguration.TrySetWidthsFromString(newValue))
+        if (!CanvasExperimentConfigurationValues.TrySetWidthsFromString(newValue))
         {
             widths.text = "-";
         }
@@ -165,7 +188,7 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
 
     public void RunExperiment()
     {
-        switch (CurrentExperimentConfiguration.experimentMode)
+        switch (CanvasExperimentConfigurationValues.experimentMode)
         {
             case ExperimentMode.Experiment2D:
                 SceneManager.LoadScene("2DMouseExperimentOnScreen");
