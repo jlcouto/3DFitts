@@ -96,7 +96,7 @@ public class CursorInteractorBehaviour : CursorBehaviour
     {
         this.transform.position = cursorPositionController.GetCurrentCursorPosition();
 
-        if (selectionMethod == CursorSelectionMethod.FirstEntrySelection)
+        if (selectionMethod == CursorSelectionMethod.SelectionOnContact)
         {
             CheckAutomaticByContactSelection();
         }

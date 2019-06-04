@@ -31,25 +31,46 @@ public abstract class ExperimentConfiguration
 
 public static class CurrentExperimentConfiguration
 {
+    public static string participantCode;
+    public static string conditionCode;
+    public static string sessionCode;
+    public static string groupCode;
+    public static string observations;
+
     public static ExperimentMode experimentMode;
     public static ExperimentTask experimentTask;
-    public static CursorPositioningMethod positioningMethod;
-    public static CursorSelectionMethod selectionMethod;
+    public static CursorPositioningMethod cursorPositioningMethod;
+    public static CursorSelectionMethod cursorSelectionMethod;
     public static PlaneOrientation planeOrientation;
-    public static float cursorDiameter;
+    public static float cursorWidth;
     public static int numberOfTargets;
     public static float[] amplitudes;
     public static float[] widths;    
     public static List<IndexOfDifficulty> sequences = new List<IndexOfDifficulty>();
 
-    public static void SetAmplitudes(string stringAmplitudes)
+    public static bool TrySetCursorWidthFromString(string stringAmplitudes)
     {
-        ParseFloatsOnString(stringAmplitudes, out amplitudes); 
+        float[] temp;
+        if (ParseFloatsOnString(stringAmplitudes, out temp))
+        {
+            cursorWidth = temp[0];
+            return true;
+        }
+        else
+        {
+            cursorWidth = -1;
+            return false;
+        }
     }
 
-    public static void SetWidths(string stringWidths)
+    public static bool TrySetAmplitudesFromString(string stringAmplitudes)
     {
-        ParseFloatsOnString(stringWidths, out widths);
+        return ParseFloatsOnString(stringAmplitudes, out amplitudes); 
+    }
+
+    public static bool TrySetWidthsFromString(string stringWidths)
+    {
+        return ParseFloatsOnString(stringWidths, out widths);
     }
 
     static void ComputeIndexOfDifficultySequences()

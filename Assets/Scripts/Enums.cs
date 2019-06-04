@@ -20,10 +20,10 @@ public enum CursorPositioningMethod
 
 public enum CursorSelectionMethod
 {
-    DwellTime,
-    KeyboardSpaceBar,
     MouseLeftButton,
-    FirstEntrySelection,
+    DwellTime,
+    SelectionOnContact,
+    KeyboardSpaceBar,
     Meta2GrabInteraction,
     LeapMotionGrabInteraction,
     VIVETriggerButton
@@ -32,8 +32,8 @@ public enum CursorSelectionMethod
 public enum PlaneOrientation
 {
     PlaneXY = 0,
-    PlaneYZ,
-    PlaneZX    
+    PlaneZX,
+    PlaneYZ        
 }
 
 public static class Enum2String
