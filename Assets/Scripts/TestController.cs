@@ -94,13 +94,13 @@ public class TestController : ICursorListener, IBlockListener
         Vector3 planeRotation;
         switch (orientation)
         {
-            case PlaneOrientation.PlaneYZ:
+            case PlaneOrientation.PlaneXY:
                 planeRotation = new Vector3(-90, 0, 0);
                 break;
-            case PlaneOrientation.PlaneZX:
+            case PlaneOrientation.PlaneYZ:
                 planeRotation = new Vector3(0, 0, 90);
                 break;
-            case PlaneOrientation.PlaneXY:
+            case PlaneOrientation.PlaneZX:
             default:
                 planeRotation = new Vector3(0, 0, 0);
                 break;

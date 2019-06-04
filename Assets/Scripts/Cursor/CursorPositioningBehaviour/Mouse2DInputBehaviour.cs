@@ -25,17 +25,17 @@ public class Mouse2DInputBehaviour : CursorPositioningController
 
         switch (plane)
         {
-            case PlaneOrientation.PlaneXY:
+            case PlaneOrientation.PlaneZX:
                 mousePosition.x = xCoord + offset.x;
                 mousePosition.y = offset.y;
                 mousePosition.z = yCoord + offset.z;
                 break;
-            case PlaneOrientation.PlaneYZ:
+            case PlaneOrientation.PlaneXY:
                 mousePosition.x = Mathf.Cos(-Mathf.PI * targetPlane.rotation.eulerAngles.y / 180) * xCoord + offset.x;
                 mousePosition.y = yCoord + offset.y;
                 mousePosition.z = Mathf.Sin(-Mathf.PI * targetPlane.rotation.eulerAngles.y / 180) * xCoord + offset.z;
                 break;
-            case PlaneOrientation.PlaneZX:
+            case PlaneOrientation.PlaneYZ:
                 mousePosition.x = offset.x;
                 mousePosition.y = xCoord + offset.y;
                 mousePosition.z = yCoord + offset.z;

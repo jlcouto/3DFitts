@@ -92,7 +92,7 @@ public static class CurrentExperimentConfiguration
 
 public class Tapping3DMouseExperimentConfiguration : ExperimentConfiguration
 {
-    protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneYZ, PlaneOrientation.PlaneXY, PlaneOrientation.PlaneZX };
+    protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneXY, PlaneOrientation.PlaneZX, PlaneOrientation.PlaneYZ };
     static readonly IndexOfDifficulty[] configurations = {
         new IndexOfDifficulty(0.013f, 0.074f),
         new IndexOfDifficulty(0.013f, 0.103f),
@@ -156,7 +156,7 @@ public class Tapping3DMouseExperimentConfiguration : ExperimentConfiguration
 
 public class Tapping2DMouseExperimentConfiguration : Tapping3DMouseExperimentConfiguration
 {
-    new protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneYZ };
+    new protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneXY };
 
     public override PlaneOrientation[] GetPlaneOrientationsToTest()
     {
@@ -166,7 +166,7 @@ public class Tapping2DMouseExperimentConfiguration : Tapping3DMouseExperimentCon
 
 public class Drag3DMouseExperimentConfiguration : ExperimentConfiguration
 {
-    protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneYZ, PlaneOrientation.PlaneXY, PlaneOrientation.PlaneZX };
+    protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneXY, PlaneOrientation.PlaneZX, PlaneOrientation.PlaneYZ };
     static readonly IndexOfDifficulty[] configurations = {
         new IndexOfDifficulty(0.035f, 0.2f),
         new IndexOfDifficulty(0.035f, 0.3f),
@@ -217,7 +217,7 @@ public class Drag3DMouseExperimentConfiguration : ExperimentConfiguration
 
 public class Drag2DMouseExperimentConfiguration : Drag3DMouseExperimentConfiguration
 {
-    new protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneYZ };
+    new protected static readonly PlaneOrientation[] planeOrientations = { PlaneOrientation.PlaneXY };
 
     public override PlaneOrientation[] GetPlaneOrientationsToTest()
     {

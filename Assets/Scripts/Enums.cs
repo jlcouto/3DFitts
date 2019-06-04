@@ -43,9 +43,9 @@ public static class Enum2String
         switch (task)
         {
             case ExperimentTask.ReciprocalDragging:
-                return "ReciprocalDraggingTask";
+                return "ReciprocalDragging";
             case ExperimentTask.ReciprocalTapping:
-                return "ReciprocalTappingTest";
+                return "ReciprocalTapping";
         }
         return "?";
     }
