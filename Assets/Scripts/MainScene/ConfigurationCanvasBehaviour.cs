@@ -1,7 +1,12 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Converters;
 
 public class ConfigurationCanvasBehaviour : MonoBehaviour
 {
@@ -11,25 +16,22 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
     public Dropdown groupCode;
     public InputField observations;
 
-    public Dropdown experimentMode;
+    public Dropdown experimentMode;    
     public Dropdown experimentTask;
     
-    public Dropdown cursorPositioningMethod;
+    public Dropdown cursorPositioningMethod;    
     public Dropdown cursorSelectionMethod;
-
-    public Dropdown planeOrientation;
-
+    
+    public Dropdown planeOrientation;    
     public Dropdown numberOfTargets;
-
-    public InputField dwellTime;
-    public InputField cursorWidth;
-    public InputField amplitudes;
+        
+    public InputField dwellTime;    
+    public InputField cursorWidth;    
+    public InputField amplitudes;    
     public InputField widths;
 
-    string defaultDwellTime = "500";
-    string defaultCursorWidth = "15";
-    string defaultAmplitudes = "74, 103, 133";
-    string defaultWidths = "13, 5.5";
+    const float TIME_SCALE = 0.001f;
+    const float DIMENSIONS_SCALE = 0.001f;
 
     void Start()
     {
@@ -42,37 +44,108 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         ResetDropdown(conditionCode);
         ResetDropdown(sessionCode);
         ResetDropdown(groupCode);
-        observations.text = "";
 
-        ResetValuesToDefault();
+        observations.SetTextWithoutNotify("");
+        OnInputFieldTextChanged(observations);
+
+        ResetConfigurationValuesToDefault();
     }
 
-    public void ResetValuesToDefault()
+    void ResetDropdown(Dropdown dropdown)
     {
-        ResetDropdown(experimentMode);
-        ResetDropdown(experimentTask);
-        ResetDropdown(cursorPositioningMethod);
-        ResetDropdown(cursorSelectionMethod);
-        ResetDropdown(planeOrientation);
-        ResetDropdown(numberOfTargets, 3);
-
-        dwellTime.SetTextWithoutNotify(defaultDwellTime);
-        OnDwellTimeValueChanged(defaultDwellTime);
-
-        cursorWidth.SetTextWithoutNotify(defaultCursorWidth);
-        OnCursorWidthValueChanged(defaultCursorWidth);
-
-        amplitudes.SetTextWithoutNotify(defaultAmplitudes);
-        OnAmplitudesValueChanged(defaultAmplitudes);
-
-        widths.SetTextWithoutNotify(defaultWidths);
-        OnWidthsValueChanged(defaultWidths);        
+        dropdown.SetValueWithoutNotify(0);
+        OnDropdownValueChanged(dropdown);
     }
 
-    void ResetDropdown(Dropdown d, int value = 0)
+    public void ResetConfigurationValuesToDefault()
     {
-        d.SetValueWithoutNotify(value);
-        OnDropdownValueChanged(d);
+        LoadValuesFromFile(FileManager.GetDefaultConfigurationFilename(), FileManager.GetInternalConfigurationFolder());
+    }
+
+    void UpdateCanvasFromCurrentValues()
+    {
+        UpdateCanvasElementWithInternalValue(experimentMode);
+        UpdateCanvasElementWithInternalValue(experimentTask);
+        UpdateCanvasElementWithInternalValue(cursorPositioningMethod);
+        UpdateCanvasElementWithInternalValue(cursorSelectionMethod);
+        UpdateCanvasElementWithInternalValue(planeOrientation);
+        UpdateCanvasElementWithInternalValue(numberOfTargets);
+        UpdateCanvasElementWithInternalValue(dwellTime);
+        UpdateCanvasElementWithInternalValue(cursorWidth);
+        UpdateCanvasElementWithInternalValue(amplitudes);
+        UpdateCanvasElementWithInternalValue(widths);
+        UpdateCanvasState();
+    }
+
+    void UpdateCanvasState()
+    {
+        switch (SharedData.currentConfiguration.experimentMode)
+        {
+            case ExperimentMode.Experiment2D:
+                // For now, only mouse can be used for 2D experiment
+                cursorPositioningMethod.value = (int)CursorPositioningMethod.Mouse;
+                cursorPositioningMethod.interactable = false;
+
+                // For now, you can only test the plane of the screen
+                planeOrientation.value = (int)PlaneOrientation.PlaneXY;
+                planeOrientation.interactable = false;
+
+                break;
+            case ExperimentMode.Experiment3DOnMeta2:
+                cursorPositioningMethod.interactable = true;
+                planeOrientation.interactable = true;
+                break;
+        }
+
+        dwellTime.interactable = SharedData.currentConfiguration.cursorSelectionMethod == CursorSelectionMethod.DwellTime;
+    }
+
+    void UpdateCanvasElementWithInternalValue(object element)
+    {
+        if (element == (object)experimentMode)
+        {
+            experimentMode.SetValueWithoutNotify((int)SharedData.currentConfiguration.experimentMode);
+        }
+        else if (element == (object)experimentTask)
+        {
+            experimentTask.SetValueWithoutNotify((int)SharedData.currentConfiguration.experimentTask);
+        }
+        else if (element == (object)cursorPositioningMethod)
+        {
+            cursorPositioningMethod.SetValueWithoutNotify((int)SharedData.currentConfiguration.cursorPositioningMethod);
+        }
+        else if (element == (object)cursorSelectionMethod)
+        {
+            cursorSelectionMethod.SetValueWithoutNotify((int)SharedData.currentConfiguration.cursorSelectionMethod);
+        }
+        else if (element == (object)planeOrientation)
+        {
+            planeOrientation.SetValueWithoutNotify((int)SharedData.currentConfiguration.planeOrientation);
+        }
+        else if (element == (object)numberOfTargets)
+        {
+            numberOfTargets.SetValueWithoutNotify((SharedData.currentConfiguration.numberOfTargets - 3) / 2);
+        }
+        else if (element == (object)dwellTime)
+        {
+            string text = FloatToCanvasString(SharedData.currentConfiguration.dwellTime, 1 / TIME_SCALE);
+            dwellTime.SetTextWithoutNotify(text);
+        }
+        else if (element == (object)cursorWidth)
+        {
+            string text = FloatToCanvasString(SharedData.currentConfiguration.cursorWidth, 1 / DIMENSIONS_SCALE);
+            cursorWidth.SetTextWithoutNotify(text);
+        }
+        else if (element == (object)amplitudes)
+        {
+            string text = FloatArrayToCanvasString(SharedData.currentConfiguration.amplitudes, 1 / DIMENSIONS_SCALE);
+            amplitudes.SetTextWithoutNotify(text);
+        }
+        else if (element == (object)widths)
+        {
+            string text = FloatArrayToCanvasString(SharedData.currentConfiguration.widths, 1 / DIMENSIONS_SCALE);
+            widths.SetTextWithoutNotify(text);
+        }
     }
 
     public void OnDropdownValueChanged(Dropdown dropdown)
@@ -81,114 +154,117 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         // follow the order in the equivalent enums
         if (dropdown == experimentMode)
         {
-            ExperimentMode newValue = (ExperimentMode)experimentMode.value;
-            CanvasExperimentConfigurationValues.experimentMode = newValue;
-
-            switch (CanvasExperimentConfigurationValues.experimentMode)
-            {
-                case ExperimentMode.Experiment2D:
-                    // For now, only mouse can be used for 2D experiment
-                    cursorPositioningMethod.value = (int)CursorPositioningMethod.Mouse;
-                    cursorPositioningMethod.interactable = false;
-
-                    // For now, you can only test the plane of the screen
-                    planeOrientation.value = (int)PlaneOrientation.PlaneXY;
-                    planeOrientation.interactable = false;
-
-                    break;
-                case ExperimentMode.Experiment3DOnMeta2:
-                    cursorPositioningMethod.interactable = true;
-                    planeOrientation.interactable = true;
-                    break;
-            }
+            SharedData.currentConfiguration.experimentMode = (ExperimentMode)experimentMode.value; ;
         }
         else if (dropdown == experimentTask)
         {
-            CanvasExperimentConfigurationValues.experimentTask = (ExperimentTask)dropdown.value;
+            SharedData.currentConfiguration.experimentTask = (ExperimentTask)dropdown.value;
         }
         else if (dropdown == cursorPositioningMethod)
         {
-            CanvasExperimentConfigurationValues.cursorPositioningMethod = (CursorPositioningMethod)dropdown.value;
+            SharedData.currentConfiguration.cursorPositioningMethod = (CursorPositioningMethod)dropdown.value;
         }
         else if (dropdown == cursorSelectionMethod)
         {
-            CanvasExperimentConfigurationValues.cursorSelectionMethod = (CursorSelectionMethod)dropdown.value;
-            dwellTime.interactable = CanvasExperimentConfigurationValues.cursorSelectionMethod == CursorSelectionMethod.DwellTime;
+            SharedData.currentConfiguration.cursorSelectionMethod = (CursorSelectionMethod)dropdown.value;
         }
         else if (dropdown == planeOrientation)
         {
-            CanvasExperimentConfigurationValues.planeOrientation = (PlaneOrientation)dropdown.value;
+            SharedData.currentConfiguration.planeOrientation = (PlaneOrientation)dropdown.value;
         }
         else if (dropdown == numberOfTargets)
         {
-            CanvasExperimentConfigurationValues.numberOfTargets = int.Parse(dropdown.options[dropdown.value].text);
+            SharedData.currentConfiguration.numberOfTargets = int.Parse(dropdown.options[dropdown.value].text);
         }
         else if (dropdown == participantCode)
         {
-            CanvasExperimentConfigurationValues.participantCode = dropdown.options[dropdown.value].text;
+            SharedData.currentConfiguration.participantCode = dropdown.options[dropdown.value].text;
         }
         else if (dropdown == conditionCode)
         {
-            CanvasExperimentConfigurationValues.conditionCode = dropdown.options[dropdown.value].text;
+            SharedData.currentConfiguration.conditionCode = dropdown.options[dropdown.value].text;
         }
         else if (dropdown == sessionCode)
         {
-            CanvasExperimentConfigurationValues.sessionCode = dropdown.options[dropdown.value].text;
+            SharedData.currentConfiguration.sessionCode = dropdown.options[dropdown.value].text;
         }
         else if (dropdown == groupCode)
         {
-            CanvasExperimentConfigurationValues.groupCode = dropdown.options[dropdown.value].text;
+            SharedData.currentConfiguration.groupCode = dropdown.options[dropdown.value].text;
         }
+        UpdateCanvasState();
     }
 
-    public void OnObservationsValueChanged(string newValue)
+    public void OnInputFieldTextChanged(InputField inputField)
     {
-        CanvasExperimentConfigurationValues.observations = newValue;
-    }
+        string newValue = inputField.text;
 
-    public void OnDwellTimeValueChanged(string newValue)
-    {
-        if (CanvasExperimentConfigurationValues.TrySetDwellTimeFromString(newValue))
+        if (inputField == observations)
         {
-            dwellTime.text = (CanvasExperimentConfigurationValues.dwellTime * 1000).ToString();
+            SharedData.currentConfiguration.observations = newValue;
         }
-        else
+        else if (inputField == dwellTime)
         {
-            dwellTime.text = "-";
+            float value;
+            if (ParseFloatOnCanvasString(newValue, out value, TIME_SCALE))
+            {
+                SharedData.currentConfiguration.dwellTime = value;
+                UpdateCanvasElementWithInternalValue(inputField);
+            }
+            else
+            {
+                SharedData.currentConfiguration.dwellTime = -1;
+                inputField.SetTextWithoutNotify("-");
+            }
         }
-    }
-
-    public void OnCursorWidthValueChanged(string newValue)
-    {
-        if (CanvasExperimentConfigurationValues.TrySetCursorWidthFromString(newValue))
+        else if (inputField == cursorWidth)
         {
-            cursorWidth.text = (CanvasExperimentConfigurationValues.cursorWidth * 1000).ToString();
+            float value;
+            if (ParseFloatOnCanvasString(newValue, out value, DIMENSIONS_SCALE))            
+            {
+                SharedData.currentConfiguration.cursorWidth = value;
+                UpdateCanvasElementWithInternalValue(inputField);
+            }
+            else
+            {
+                SharedData.currentConfiguration.cursorWidth = -1;
+                inputField.SetTextWithoutNotify("-");
+            }
         }
-        else
+        else if (inputField == amplitudes)
         {
-            cursorWidth.text = "-";
+            float[] values = ParseFloatArrayOnCanvasString(newValue, DIMENSIONS_SCALE);
+            if (values != null)
+            {
+                SharedData.currentConfiguration.amplitudes = values;
+                UpdateCanvasElementWithInternalValue(inputField);
+            }
+            else
+            {
+                SharedData.currentConfiguration.amplitudes = null;
+                inputField.SetTextWithoutNotify("-");
+            }
         }
-    }
-
-    public void OnAmplitudesValueChanged(string newValue)
-    {
-        if (!CanvasExperimentConfigurationValues.TrySetAmplitudesFromString(newValue))
+        else if (inputField == widths)
         {
-            amplitudes.text = "-";
+            float[] values = ParseFloatArrayOnCanvasString(newValue, DIMENSIONS_SCALE);
+            if (values != null)
+            {
+                SharedData.currentConfiguration.widths = values;
+                UpdateCanvasElementWithInternalValue(inputField);
+            }
+            else
+            {
+                SharedData.currentConfiguration.widths = null;
+                inputField.SetTextWithoutNotify("-");
+            }
         }
-    }
-
-    public void OnWidthsValueChanged(string newValue)
-    {
-        if (!CanvasExperimentConfigurationValues.TrySetWidthsFromString(newValue))
-        {
-            widths.text = "-";
-        }
+        UpdateCanvasState();
     }
 
     public void RunExperiment()
     {
-        switch (CanvasExperimentConfigurationValues.experimentMode)
+        switch (SharedData.currentConfiguration.experimentMode)
         {
             case ExperimentMode.Experiment2D:
                 SceneManager.LoadScene("2DMouseExperimentOnScreen");
@@ -197,7 +273,86 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
                 SceneManager.LoadScene("3DExperimentMeta2");
                 break;
         }
+    }
 
+    public void SaveCurrentValuesOnFile(string filename)
+    {
+        Dictionary<string, object> values = new Dictionary<string, object>();
+        var data = JsonConvert.SerializeObject(SharedData.currentConfiguration, Formatting.Indented, new StringEnumConverter());
+        FileManager.SaveFile(FileManager.GetUserConfigurationsFolder(), filename, data);
+    }
 
+    public void LoadValuesFromFile(string filename)
+    {
+        LoadValuesFromFile(filename, FileManager.GetUserConfigurationsFolder());
+    }
+
+    public void LoadValuesFromFile(string filename, string directory)
+    {
+        string configData = FileManager.LoadFile(directory, filename);
+
+        if (configData != null)
+        {
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.Converters.Add(new StringEnumConverter());
+            var settings = new JsonSerializerSettings();
+            settings.Converters.Add(new StringEnumConverter());
+            JsonConvert.PopulateObject(configData, SharedData.currentConfiguration, settings);
+            UpdateCanvasFromCurrentValues();
+        }
+    }
+
+    bool ParseFloatOnCanvasString(string canvasString, out float value, float scale = 1)
+    {
+        value = 0;
+        float temp;
+        if (float.TryParse(canvasString, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out temp))
+        {
+            value = temp * scale;
+            return true;
+        }
+        return false;
+    }
+
+    float[] ParseFloatArrayOnCanvasString(string stringWithValues, float scale = 1)
+    {
+        float[] values = null;
+        char[] delimiters = { ' ', ',' };
+        string[] stringValues = stringWithValues.Split(delimiters, System.StringSplitOptions.RemoveEmptyEntries);
+
+        if (stringValues.Length > 0)
+        {
+            values = new float[stringValues.Length];
+        }
+
+        for (int i = 0; i < stringValues.Length; i++)
+        {
+            if (!ParseFloatOnCanvasString(stringValues[i], out values[i], scale))
+            {
+                return null;
+            }
+        }
+            
+        return values;
+    }
+
+    string FloatArrayToCanvasString(float[] values, float scale = 1)
+    {
+        string s = "";
+        for (int i = 0; i < values.Length; i++)
+        {
+            s += FloatToCanvasString(values[i], scale); 
+
+            if (i < values.Length - 1)
+            {
+                s += ", ";
+            }
+        }
+        return s;
+    }
+
+    string FloatToCanvasString(float value, float scale = 1)
+    {
+        return String.Format("{0:###.##}", value * scale);
     }
 }

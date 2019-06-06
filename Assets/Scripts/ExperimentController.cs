@@ -68,23 +68,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
     void LoadConfigurationsFromCanvasValues()
     {
-        experimentConfig = new ExperimentConfiguration(
-            CanvasExperimentConfigurationValues.participantCode,
-            CanvasExperimentConfigurationValues.conditionCode,
-            CanvasExperimentConfigurationValues.sessionCode,
-            CanvasExperimentConfigurationValues.groupCode,
-            CanvasExperimentConfigurationValues.observations,
-            CanvasExperimentConfigurationValues.experimentMode,
-            CanvasExperimentConfigurationValues.experimentTask,
-            CanvasExperimentConfigurationValues.cursorPositioningMethod,
-            CanvasExperimentConfigurationValues.cursorSelectionMethod,
-            CanvasExperimentConfigurationValues.planeOrientation,
-            CanvasExperimentConfigurationValues.dwellTime,
-            CanvasExperimentConfigurationValues.cursorWidth,
-            CanvasExperimentConfigurationValues.numberOfTargets,
-            CanvasExperimentConfigurationValues.amplitudes,
-            CanvasExperimentConfigurationValues.widths
-            );
+        experimentConfig = SharedData.currentConfiguration;
     }
 
     private void Update()
@@ -325,17 +309,9 @@ public class ExperimentController : MonoBehaviour, ITestListener
             Formatting = Formatting.Indented
         });
         string filename = GetTestResultsFilenameForTest(results);
-        string path = GetResultsFolder() + filename;
-        Debug.Log("Saving results on file: " + path);
-        try
-        {
-            Directory.CreateDirectory(GetResultsFolder());
-            File.WriteAllText(path, jsonData);
-        }
-        catch
-        {
-            Debug.Log("Error writing results file for experiment: " + filename);
-        }
+        string directory = FileManager.GetResultsFolder(experimentConfig.participantCode);
+        FileManager.SaveFile(directory, filename, jsonData);
+
         UISetNoteText("File saved: " + filename);
 
         ExportFrameDataToFile(results);
@@ -362,33 +338,14 @@ public class ExperimentController : MonoBehaviour, ITestListener
             Formatting = Formatting.Indented
         });
         string filename = GetFrameDataResultsFilenameForTest(results);
-        string path = GetFrameDataResultsFolder() + filename;
-        Debug.Log("Saving frame data results on file: " + path);
-        try
-        {
-            Directory.CreateDirectory(GetFrameDataResultsFolder());
-            File.WriteAllText(path, jsonData);
-        }
-        catch
-        {
-            Debug.Log("Error writing results file for experiment: " + filename);
-        }
+        string directory = FileManager.GetFrameDataFolder(experimentConfig.participantCode);
+        FileManager.SaveFile(directory, filename, jsonData);
     }
 
     string GetTestResultsFilenameForTest(TestMeasurements test)
     {
         var timestamp = test.timestamp.Replace(":", "_");
         return cursor.GetDeviceName() + "_" + Enum2String.GetTaskString(test.testConfiguration.task) + test.testConfiguration.testId + "_" + timestamp + ".json";
-    }
-
-    string GetResultsFolder()
-    {
-        return "./Experiments/" + experimentConfig.participantCode +"/";
-    }
-
-    string GetFrameDataResultsFolder()
-    {
-        return GetResultsFolder() + "FrameData/";
     }
 
     string GetFrameDataResultsFilenameForTest(TestMeasurements test)
