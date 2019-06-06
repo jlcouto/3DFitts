@@ -30,6 +30,11 @@ public static class FileManager
         return "default_configuration.cfg";
     }
 
+    public static string GetConfigurationFileFormat()
+    {
+        return ".cfg";
+    }
+
     public static bool SaveFile(string directory, string filename, string data)
     {     
         string fullPath = directory + filename;
@@ -62,9 +67,9 @@ public static class FileManager
         }
     }
 
-    public static string[] GetFilenamesOnDirectory(string directory)
+    public static string[] GetFilenamesOnDirectory(string directory, string fileFormat)
     {
-        var files = Directory.GetFiles(directory, "*.cfg");
+        var files = Directory.GetFiles(directory, "*" + fileFormat);
         for (int i = 0;  i < files.Length;  i++)
         {
             int indexAfterSlash = files[i].LastIndexOf('/') + 1;

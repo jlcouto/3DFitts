@@ -30,6 +30,8 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
     public InputField amplitudes;    
     public InputField widths;
 
+    public SelectFilePanelBehaviour panelSelectFile;
+
     const float TIME_SCALE = 0.001f;
     const float DIMENSIONS_SCALE = 0.001f;
 
@@ -59,7 +61,7 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
 
     public void ResetConfigurationValuesToDefault()
     {
-        LoadValuesFromFile(FileManager.GetDefaultConfigurationFilename(), FileManager.GetInternalConfigurationFolder());
+        LoadValuesFromFile(FileManager.GetInternalConfigurationFolder(), FileManager.GetDefaultConfigurationFilename());
     }
 
     void UpdateCanvasFromCurrentValues()
@@ -275,23 +277,34 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         }
     }
 
-    public void SaveCurrentValuesOnFile(string filename)
+    public void SaveCurrentValuesOnFile()
     {
-        Dictionary<string, object> values = new Dictionary<string, object>();
-        var data = JsonConvert.SerializeObject(SharedData.currentConfiguration, Formatting.Indented, new StringEnumConverter());
-        FileManager.SaveFile(FileManager.GetUserConfigurationsFolder(), filename, data);
+        string directory = FileManager.GetUserConfigurationsFolder();
+        string fileFormat = FileManager.GetConfigurationFileFormat();
+        string[] availableFiles = FileManager.GetFilenamesOnDirectory(directory, fileFormat);
+
+        panelSelectFile.ShowSelectFilePanel("Choose an existing file to overwrite...", new List<string>(availableFiles),
+            fileFormat, "Save file",
+            (string filename) => {
+                Dictionary<string, object> values = new Dictionary<string, object>();
+                var data = JsonConvert.SerializeObject(SharedData.currentConfiguration, Formatting.Indented, new StringEnumConverter());
+                FileManager.SaveFile(directory, filename, data);
+            }, null, true, "...or create a new configuration file with name:");        
     }
 
-    public void LoadValuesFromFile(string filename)
+    public void LoadValuesFromFile()
     {
-        LoadValuesFromFile(filename, FileManager.GetUserConfigurationsFolder());
+        string directory = FileManager.GetUserConfigurationsFolder();
+        string fileFormat = FileManager.GetConfigurationFileFormat();
+        string[] availableFiles = FileManager.GetFilenamesOnDirectory(directory, fileFormat);
+
+        panelSelectFile.ShowSelectFilePanel("Choose a file to load:", new List<string>(availableFiles),
+            fileFormat, "Load file", (string filename) => { LoadValuesFromFile(directory, filename); }, null);
     }
 
-    public void LoadValuesFromFile(string filename, string directory)
+    public void LoadValuesFromFile(string directory, string filename)
     {
-        string configData = FileManager.LoadFile(directory, filename);
-
-        string[] s = FileManager.GetFilenamesOnDirectory(directory);
+        string configData = FileManager.LoadFile(directory, filename);        
 
         if (configData != null)
         {
@@ -355,6 +368,6 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
 
     string FloatToCanvasString(float value, float scale = 1)
     {
-        return String.Format("{0:###.##}", value * scale);
+        return String.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:###.##}", value * scale);
     }
 }
