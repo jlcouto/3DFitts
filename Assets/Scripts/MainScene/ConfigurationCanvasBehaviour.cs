@@ -291,6 +291,8 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
     {
         string configData = FileManager.LoadFile(directory, filename);
 
+        string[] s = FileManager.GetFilenamesOnDirectory(directory);
+
         if (configData != null)
         {
             JsonSerializer serializer = new JsonSerializer();

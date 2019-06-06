@@ -61,4 +61,18 @@ public static class FileManager
             return null;
         }
     }
+
+    public static string[] GetFilenamesOnDirectory(string directory)
+    {
+        var files = Directory.GetFiles(directory, "*.cfg");
+        for (int i = 0;  i < files.Length;  i++)
+        {
+            int indexAfterSlash = files[i].LastIndexOf('/') + 1;
+            if (indexAfterSlash < files[i].Length)
+            {
+                files[i] = files[i].Substring(indexAfterSlash);
+            }
+        }
+        return files;
+    }
 }
