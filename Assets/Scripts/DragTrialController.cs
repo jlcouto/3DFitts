@@ -10,12 +10,12 @@ public class DragTestController : TrialController
     public DragTestController(int theTrialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget, ITrialListener theListener, CursorBehaviour theCursor)
         : base(theTrialId, initialTarget, finalTarget, theListener, theCursor)
     {
-        draggableObject = GameObject.Instantiate(initialTarget.gameObject);
+        draggableObject = Object.Instantiate(initialTarget.gameObject);
 
         var targetBehaviour = draggableObject.GetComponent<TargetBehaviour>();
         targetBehaviour.UnhighlightTarget();
-        targetBehaviour.SetAsDraggableTarget();        
-        UnityEngine.GameObject.Destroy(targetBehaviour);
+        targetBehaviour.SetAsDraggableTarget();
+        Object.Destroy(targetBehaviour);
 
         draggableObject.transform.SetParent(cursor.transform);
         draggableObject.transform.localPosition = Vector3.zero;
@@ -91,7 +91,7 @@ public class DragTestController : TrialController
                 trialData.missedTarget = true;
                 cursor.PlayErrorAudio();
             }
-            UnityEngine.GameObject.Destroy(draggableObject);
+            Object.Destroy(draggableObject);
             isDraggingTarget = false;
             FinishTrial();
         }

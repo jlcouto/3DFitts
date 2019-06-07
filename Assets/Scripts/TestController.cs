@@ -33,7 +33,7 @@ public class TestController : ICursorListener, IBlockListener
     TargetBehaviour initialTarget;
 
     const int numOfTests = 1;
-    int currentTestIndex = 0;
+
     int currentBlockIndex = 0;
     BlockController currentBlock;
 

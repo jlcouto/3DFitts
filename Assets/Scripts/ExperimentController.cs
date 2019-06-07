@@ -134,6 +134,12 @@ public class ExperimentController : MonoBehaviour, ITestListener
             cursor.transform.localScale = experimentConfig.cursorWidth * Vector3.one;
             cursor.cursorPositionController.gameObject.SetActive(true);
 
+            if (experimentConfig.experimentMode == ExperimentMode.Experiment2D)
+            {
+                // Do not show the cursor when running the 2D mode
+                cursor.GetComponent<MeshRenderer>().enabled = false;
+            }
+
             currentSequence = 0;
             status = ExperimentStatus.Running;            
 

@@ -133,11 +133,6 @@ public class CursorInteractorBehaviour : CursorBehaviour
 
         if (selectionInteraction.SelectionInteractionEnded())
         {
-            if (cursorAcquireMethod == CursorAcquireMethod.ACQUIRE_TARGET_ON_UP_EVENT)
-            {
-                CursorAcquiredTarget();
-            }
-
             if (isDragging)
             {
                 CursorDragTargetEnded(currentDraggedTarget, currentHighlightedTarget);
@@ -146,7 +141,12 @@ public class CursorInteractorBehaviour : CursorBehaviour
 #endif
                 currentDraggedTarget = null;
                 isDragging = false;
-            }            
+            }
+
+            if (cursorAcquireMethod == CursorAcquireMethod.ACQUIRE_TARGET_ON_UP_EVENT)
+            {
+                CursorAcquiredTarget();
+            }
         }
         else if (selectionInteraction.SelectionInteractionMantained())
         {

@@ -37,16 +37,18 @@ public class TestConfiguration
     
     public Dictionary<string, object> SerializeToDictionary()
     {
-        Dictionary<string, object> output = new Dictionary<string, object>(9);
-        output["testId"] = testId;
-        output["task"] = Enum2String.GetTaskString(task);
-        output["numberOfTargets"] = numberOfTargets;
-        output["targetWidth"] = targetWidth;
-        output["targetDistance"] = targetDistance;
-        output["indexOfDifficulty"] = ResultsMath.IndexOfDifficulty(targetWidth, targetDistance);
-        output["numOfBlocksPerTest"] = numOfBlocksPerTest;
-        output["targetsPositions"] = targetsPositions;
-        
+        Dictionary<string, object> output = new Dictionary<string, object>(9)
+        {
+            ["testId"] = testId,
+            ["task"] = Enum2String.GetTaskString(task),
+            ["numberOfTargets"] = numberOfTargets,
+            ["targetWidth"] = targetWidth,
+            ["targetDistance"] = targetDistance,
+            ["indexOfDifficulty"] = ResultsMath.IndexOfDifficulty(targetWidth, targetDistance),
+            ["numOfBlocksPerTest"] = numOfBlocksPerTest,
+            ["targetsPositions"] = targetsPositions
+        };
+
         return output;
     }
 }
