@@ -281,9 +281,9 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
     {
         string directory = FileManager.GetUserConfigurationsFolder();
         string fileFormat = FileManager.GetConfigurationFileFormat();
-        string[] availableFiles = FileManager.GetFilenamesOnDirectory(directory, fileFormat);
+        var availableFiles = FileManager.GetFilenamesOnDirectory(directory, fileFormat);
 
-        panelSelectFile.ShowSelectFilePanel("Choose an existing file to overwrite...", new List<string>(availableFiles),
+        panelSelectFile.ShowSelectFilePanel("Choose an existing file to overwrite...", availableFiles,
             fileFormat, "Save file",
             (string filename) => {
                 Dictionary<string, object> values = new Dictionary<string, object>();
@@ -296,9 +296,9 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
     {
         string directory = FileManager.GetUserConfigurationsFolder();
         string fileFormat = FileManager.GetConfigurationFileFormat();
-        string[] availableFiles = FileManager.GetFilenamesOnDirectory(directory, fileFormat);
+        var availableFiles = FileManager.GetFilenamesOnDirectory(directory, fileFormat);
 
-        panelSelectFile.ShowSelectFilePanel("Choose a file to load:", new List<string>(availableFiles),
+        panelSelectFile.ShowSelectFilePanel("Choose a file to load:", availableFiles,
             fileFormat, "Load file", (string filename) => { LoadValuesFromFile(directory, filename); }, null);
     }
 

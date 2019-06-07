@@ -88,22 +88,25 @@ public class SelectFilePanelBehaviour : MonoBehaviour
     public void OnFileNameValueChanged(InputField inputField)
     {
         string currentText = inputField.text;
-        if (!currentText.EndsWith(_fileFormat))
+        if (!currentText.EndsWith(_fileFormat, StringComparison.InvariantCulture))
         {
             inputField.text = currentText + _fileFormat;
         }
-    }
-
-    public void OnFileNameEdited(InputField inputField)
-    {
-        string newFilename = inputField.text;
-        if (IsValidFilename(newFilename))
+        if (IsValidFilename(currentText))
         {
-            _filename = newFilename;
+            _filename = currentText;
         }
         else
         {
             _filename = "";
+        }
+        UpdatePanel();
+    }
+
+    public void OnFileNameEdited(InputField inputField)
+    {
+        if (!IsValidFilename(inputField.text))
+        {               
             inputField.SetTextWithoutNotify(_filename);
         }
         UpdatePanel();
@@ -111,7 +114,9 @@ public class SelectFilePanelBehaviour : MonoBehaviour
 
     bool IsValidFilename(string filename)
     {
-        return filename.EndsWith(_fileFormat) && filename.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) < 0;
+        return filename.EndsWith(_fileFormat, StringComparison.InvariantCulture) &&
+               filename.Length > _fileFormat.Length &&
+               filename.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) < 0;
     }
 
     void UpdatePanel()

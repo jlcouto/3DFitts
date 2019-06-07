@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Linq;
 
 public static class FileManager
 {
@@ -67,17 +68,19 @@ public static class FileManager
         }
     }
 
-    public static string[] GetFilenamesOnDirectory(string directory, string fileFormat)
+    public static List<string> GetFilenamesOnDirectory(string directory, string fileFormat)
     {
-        var files = Directory.GetFiles(directory, "*" + fileFormat);
-        for (int i = 0;  i < files.Length;  i++)
+        if (Directory.Exists(directory))
         {
-            int indexAfterSlash = files[i].LastIndexOf('/') + 1;
-            if (indexAfterSlash < files[i].Length)
-            {
-                files[i] = files[i].Substring(indexAfterSlash);
-            }
+            return new DirectoryInfo(directory).GetFiles()
+                        .Where(f => f.Extension.Equals(fileFormat))
+                        .OrderByDescending(f => f.LastAccessTime)
+                        .Select(f => f.Name)
+                        .ToList();                        
         }
-        return files;
+        else
+        {
+            return new List<string>();
+        }
     }
 }
