@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEditor;
 using Newtonsoft.Json;
 using System.IO;
+using UnityEngine.SceneManagement;
 
 public class ExperimentController : MonoBehaviour, ITestListener
 {
@@ -20,9 +21,6 @@ public class ExperimentController : MonoBehaviour, ITestListener
     ExperimentConfiguration experimentConfig;
 
     public Text statusText;
-    public Text testText;
-    public Text repetitionText;
-    public Text noteText;
 
     public AudioSource correctTargetAudio;
     public AudioSource wrongTargetAudio;
@@ -60,7 +58,6 @@ public class ExperimentController : MonoBehaviour, ITestListener
     {
         status = ExperimentStatus.Initializing;
 
-        UISetNoteText("");
         frameData = new List<FrameData>(60 * 60 * 120); // Enough capacity to record up to 2 min of data at 60 fps     
 
         LoadConfigurationsFromCanvasValues();        
@@ -120,13 +117,13 @@ public class ExperimentController : MonoBehaviour, ITestListener
     {
         if (status == ExperimentStatus.CalibrationRunning)
         {
-            Debug.Log("ExperimentController: Calibration is running. Finish Calibration process first.");
+            Debug.Log("[ExperimentController] Calibration is running. Finish Calibration process first.");
             return;
         }
         
         if (status == ExperimentStatus.Initializing || status == ExperimentStatus.Stopped)
         {
-            Debug.Log("ExperimentController: Starting experiment...");
+            Debug.Log("[ExperimentController] Starting experiment...");
 
             centerOfTestPlanesObject.SetActive(false);
 
@@ -144,14 +141,14 @@ public class ExperimentController : MonoBehaviour, ITestListener
         }
         else if (status == ExperimentStatus.Paused)
         {
-            Debug.Log("ExperimentController: Resuming experiment...");
+            Debug.Log("[ExperimentController] Resuming experiment...");
             cursor.cursorPositionController.gameObject.SetActive(true);
             status = ExperimentStatus.Running;
             RunNextTestConfiguration();
         }
         else
         {
-            Debug.Log("ExperimentController: Experiment already running!");
+            Debug.Log("[ExperimentController] Experiment already running!");
         }
     }
 
@@ -175,7 +172,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
     {
         if (currentTestController != null)
         {
-            Debug.LogWarning("ExperimentController: Tried to execute new test but the previous one still exists!");
+            Debug.LogWarning("[ExperimentController] Tried to execute new test but the previous one still exists!");
         }
         else
         {
@@ -186,7 +183,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
                     CleanTargetPlane();
                     frameData.Clear();
 
-                    currentTestController = new TestController(this, statusText, testText, repetitionText, correctTargetAudio, wrongTargetAudio,
+                    currentTestController = new TestController(this, statusText, correctTargetAudio, wrongTargetAudio,
                         cursor, baseTarget, targetPlane,
                         experimentConfig.experimentTask,
                         experimentConfig.planeOrientation,
@@ -194,21 +191,21 @@ public class ExperimentController : MonoBehaviour, ITestListener
                         experimentConfig.sequences[currentSequence].targetWidth,
                         experimentConfig.sequences[currentSequence].targetsDistance);
 
-                    Debug.Log("ExperimentController: Starting sequence " + currentSequence + ")");
+                    Debug.Log("[ExperimentController] Starting sequence " + currentSequence + ")");
                     currentTestController.InitializeTest();                        
                     currentSequence++;
                 }
                 else
                 {
                     currentSequence = 0;
-                    Debug.Log("ExperimentController: Experiment finished with success!");
+                    Debug.Log("[ExperimentController] Experiment finished with success!");
                     StopExperiment();
                     return;
                 }
             }
             else
             {
-                Debug.Log("ExperimentController: Experimented is currently paused/stopped.");
+                Debug.Log("[ExperimentController] Experimented is currently paused/stopped.");
             }
         }       
     }
@@ -217,13 +214,13 @@ public class ExperimentController : MonoBehaviour, ITestListener
     {
         if (status == ExperimentStatus.Running)
         {
-            Debug.Log("ExperimentController: Pausing experiment...");
+            Debug.Log("[ExperimentController] Pausing experiment...");
             status = ExperimentStatus.Paused;
             cursor.cursorPositionController.gameObject.SetActive(false);
         }
         else
         {
-            Debug.Log("ExperimentController: No experiment running!");
+            Debug.Log("[ExperimentController] No experiment running!");
         }
     }
 
@@ -236,11 +233,11 @@ public class ExperimentController : MonoBehaviour, ITestListener
             centerOfTestPlanesObject.SetActive(true);
             cursor.cursorPositionController.gameObject.SetActive(false);
             CleanTargetPlane();
-            Debug.Log("ExperimentController: Stopped current experiment...");
+            Debug.Log("[ExperimentController] Stopped current experiment...");
         }
         else
         {
-            Debug.Log("ExperimentController: No experiment running!");
+            Debug.Log("[ExperimentController] No experiment running!");
         }
     }
 
@@ -255,12 +252,12 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
     public void OnTestStarted()
     {
-        UISetNoteText("");
+
     }
 
     public void OnTestEnded(TestMeasurements testMeasurements)
     {
-        Debug.Log("ExperimentController: Current test finished.");
+        Debug.Log("[ExperimentController] Current test finished.");
         ExportResultsToFile(testMeasurements);
         AbortCurrentTest();
         RunNextTestConfiguration();
@@ -281,7 +278,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
     {
         if (AbortCurrentTest())
         {
-            Debug.Log("ExperimentController: Current test aborted.");
+            Debug.Log("[ExperimentController] Current test aborted.");
             RunNextTestConfiguration();
         }
     }
@@ -312,8 +309,6 @@ public class ExperimentController : MonoBehaviour, ITestListener
         string directory = FileManager.GetResultsFolder(experimentConfig.participantCode);
         FileManager.SaveFile(directory, filename, jsonData);
 
-        UISetNoteText("File saved: " + filename);
-
         ExportFrameDataToFile(results);
     }
 
@@ -323,11 +318,13 @@ public class ExperimentController : MonoBehaviour, ITestListener
         List<Dictionary<string, object>> frames = new List<Dictionary<string, object>>();
         foreach (FrameData data in frameData)
         {
-            Dictionary<string, object> aFrame = new Dictionary<string, object>();
-            aFrame["Frame"] = data.frameNumber;
-            aFrame["Time"] = data.time;
-            aFrame["CursorPosition"] = data.cursorPosition;
-            aFrame["TrackedHandID"] = data.trackingHandId;
+            Dictionary<string, object> aFrame = new Dictionary<string, object>
+            {
+                ["Frame"] = data.frameNumber,
+                ["Time"] = data.time,
+                ["CursorPosition"] = data.cursorPosition,
+                ["TrackedHandID"] = data.trackingHandId
+            };
             frames.Add(aFrame);
         }
         frameDataDictionary["frameData"] = frames;
@@ -353,11 +350,6 @@ public class ExperimentController : MonoBehaviour, ITestListener
         return "FrameData_" + GetTestResultsFilenameForTest(test);
     }
 
-    void UISetNoteText(string text)
-    {
-        noteText.text = text;
-    }
-
     bool CanStartCalibrationProcess()
     {
         if (status == ExperimentStatus.Stopped)
@@ -366,11 +358,11 @@ public class ExperimentController : MonoBehaviour, ITestListener
         }
         else if (status == ExperimentStatus.CalibrationRunning)
         {
-            Debug.Log("ExperimentController: Calibration is already running!");
+            Debug.Log("[ExperimentController] Calibration is already running!");
         }
         else
         {
-            Debug.Log("ExperimentController: Calibration can only run when experiment is stopped!");
+            Debug.Log("[ExperimentController] Calibration can only run when experiment is stopped!");
         }
         return false;
     }
@@ -454,6 +446,11 @@ public class ExperimentController : MonoBehaviour, ITestListener
             calibrationPositioningCursor.gameObject.SetActive(false);
             FinishCalibration();
         }
+    }
+
+    public void CloseSceneAndOpenMainMenu()
+    {
+        SceneManager.LoadScene("MainScene");
     }
 }
 

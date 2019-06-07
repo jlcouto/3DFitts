@@ -13,8 +13,6 @@ public interface ITestListener
 public class TestController : ICursorListener, IBlockListener
 {
     public Text statusText;
-    public Text testText;
-    public Text repetitionText;
 
     public AudioSource correctTargetAudio;
     public AudioSource wrongTargetAudio;
@@ -52,7 +50,7 @@ public class TestController : ICursorListener, IBlockListener
     }
     TestStatus currentStatus;
 
-    public TestController(ITestListener listener, Text statusText, Text testText, Text repetitionText,
+    public TestController(ITestListener listener, Text statusText,
         AudioSource correctTargetAudio, AudioSource wrongTargetAudio,
         CursorBehaviour cursor, GameObject baseTarget, Transform targetPlane, ExperimentTask task,
         PlaneOrientation orientation, int numberOfTargets, float targetWidth, float targetDistance, int numOfBlocksPerTest = 1)
@@ -60,8 +58,6 @@ public class TestController : ICursorListener, IBlockListener
         this.testListener = listener;
 
         this.statusText = statusText;
-        this.testText = testText;
-        this.repetitionText = repetitionText;
 
         this.correctTargetAudio = correctTargetAudio;
         this.wrongTargetAudio = wrongTargetAudio;
@@ -132,7 +128,6 @@ public class TestController : ICursorListener, IBlockListener
         else {
             FinishTest();
         }
-        UISetTestConfiguration();
     }
 
     void FinishTest() {
@@ -200,11 +195,5 @@ public class TestController : ICursorListener, IBlockListener
                 }
         }
 
-    }
-
-    void UISetTestConfiguration()
-    {
-        testText.text = "Test: " + currentTestIndex;
-        repetitionText.text = "Blocks: " + currentBlockIndex + "/" + numOfBlocksPerTest;
     }
 }
