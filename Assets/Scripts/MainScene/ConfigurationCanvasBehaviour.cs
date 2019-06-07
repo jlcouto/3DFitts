@@ -85,18 +85,33 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         {
             case ExperimentMode.Experiment2D:
                 // For now, only mouse can be used for 2D experiment
-                cursorPositioningMethod.value = (int)CursorPositioningMethod.Mouse;
+                SharedData.currentConfiguration.cursorPositioningMethod = CursorPositioningMethod.Mouse;
+                UpdateCanvasElementWithInternalValue(cursorPositioningMethod);
                 cursorPositioningMethod.interactable = false;
 
                 // For now, you can only test the plane of the screen
-                planeOrientation.value = (int)PlaneOrientation.PlaneXY;
+                SharedData.currentConfiguration.planeOrientation = PlaneOrientation.PlaneXY;
+                UpdateCanvasElementWithInternalValue(planeOrientation);
                 planeOrientation.interactable = false;
-
                 break;
             case ExperimentMode.Experiment3DOnMeta2:
                 cursorPositioningMethod.interactable = true;
                 planeOrientation.interactable = true;
                 break;
+        }
+
+        bool isDraggingTask = SharedData.currentConfiguration.experimentTask == ExperimentTask.ReciprocalDragging;
+
+        // Drag task do not work with dwell and automatic selection for now
+        cursorSelectionMethod.GetComponent<DropDownController>().EnableOption((int)CursorSelectionMethod.DwellTime, !isDraggingTask);
+        cursorSelectionMethod.GetComponent<DropDownController>().EnableOption((int)CursorSelectionMethod.SelectionOnContact, !isDraggingTask);
+
+        if (isDraggingTask &&
+            (SharedData.currentConfiguration.cursorSelectionMethod == CursorSelectionMethod.DwellTime ||
+             SharedData.currentConfiguration.cursorSelectionMethod == CursorSelectionMethod.SelectionOnContact))
+        {
+            SharedData.currentConfiguration.cursorSelectionMethod = CursorSelectionMethod.MouseLeftButton;
+            UpdateCanvasElementWithInternalValue(cursorSelectionMethod);
         }
 
         dwellTime.interactable = SharedData.currentConfiguration.cursorSelectionMethod == CursorSelectionMethod.DwellTime;
