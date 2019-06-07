@@ -112,7 +112,7 @@ public class ExperimentConfiguration
         set
         {
             _amplitudes = value;
-            ComputeIndexOfDifficultySequences(_amplitudes, _widths);
+            _sequecesDirtyBit = true;
         }
     }
     private float[] _amplitudes;
@@ -127,27 +127,38 @@ public class ExperimentConfiguration
         get { return _widths; }
         set {
             _widths = value;
-            ComputeIndexOfDifficultySequences(_amplitudes, _widths);
+            _sequecesDirtyBit = true;
             }
     }
     private float[] _widths;
 
-    public List<IndexOfDifficulty> sequences = new List<IndexOfDifficulty>();
-
-    List<IndexOfDifficulty> ComputeIndexOfDifficultySequences(float[] amplitudes, float[] widths)
-    {                
-        if (amplitudes != null && widths != null)
+    private bool _sequecesDirtyBit = false;
+    public List<IndexOfDifficulty> sequences
+    {
+        get
         {
-            List<IndexOfDifficulty> sequences = new List<IndexOfDifficulty>();
-            foreach (float a in amplitudes)
+            if (_sequecesDirtyBit)
             {
-                foreach (float w in widths)
+                _sequecesDirtyBit = false;
+                ComputeIndexOfDifficultySequences(amplitudes, widths, _sequences);
+            }
+            return _sequences;
+        }
+    }
+    private List<IndexOfDifficulty> _sequences = new List<IndexOfDifficulty>();
+
+    public void ComputeIndexOfDifficultySequences(float[] A, float[] W, List<IndexOfDifficulty> result)
+    {
+        result.Clear();     
+        if (A != null && W != null)
+        {
+            foreach (float a in A)
+            {
+                foreach (float w in W)
                 {
-                    sequences.Add(new IndexOfDifficulty(w, a));
+                    result.Add(new IndexOfDifficulty(w, a));
                 }
             }
-            return sequences;
         }
-        return null;
     }
 }
