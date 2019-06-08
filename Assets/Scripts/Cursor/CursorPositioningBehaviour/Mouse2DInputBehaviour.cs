@@ -9,7 +9,7 @@ public class Mouse2DInputBehaviour : CursorPositioningController
 
     public Transform targetPlane;
     public PlaneOrientation plane = PlaneOrientation.PlaneXY;
-    public Vector3 spaceSize = new Vector3(1, 1, 1);
+    public float spaceSize = 1;
 
     private void Update()
     {
@@ -18,8 +18,8 @@ public class Mouse2DInputBehaviour : CursorPositioningController
         float minScreenSize = Mathf.Min(Screen.width, Screen.height);
         //float xCoord = Mathf.Clamp((screenPos.x - 0.5f*Screen.width) / minScreenSize, -1, 1) * spaceSize.x;
         //float yCoord = Mathf.Clamp((screenPos.y - 0.5f*Screen.height) / minScreenSize, -1, 1) * spaceSize.y;
-        float xCoord = (screenPos.x - 0.5f * Screen.width) * spaceSize.x / minScreenSize;
-        float yCoord = (screenPos.y - 0.5f * Screen.height) * spaceSize.y / minScreenSize;
+        float xCoord = (screenPos.x - 0.5f * Screen.width) * spaceSize / minScreenSize;
+        float yCoord = (screenPos.y - 0.5f * Screen.height) * spaceSize / minScreenSize;
 
         Vector3 offset = targetPlane.position;
 

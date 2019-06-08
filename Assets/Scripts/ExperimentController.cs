@@ -16,14 +16,9 @@ public class ExperimentController : MonoBehaviour, ITestListener
         Stopped,
         Running,
         Paused
-    }
-
-    ExperimentConfiguration experimentConfig;
+    }    
 
     public Text statusText;
-
-    public AudioSource correctTargetAudio;
-    public AudioSource wrongTargetAudio;
 
     public CursorInteractorBehaviour cursor;
     public GameObject baseTarget;
@@ -33,17 +28,18 @@ public class ExperimentController : MonoBehaviour, ITestListener
     public Meta2CursorBehaviour calibrationPositioningCursor;
 
     public GameObject inputDevices;
+    public GameObject metaCameraObject;
 
-    int currentSequence = 0;
-    
-    bool isCalibratingCenterOfPLanes = false;
-    CursorPositioningController.CursorHandPosition originalCursorPosition;
+    public Camera computerCamera;
 
+    ExperimentConfiguration experimentConfig;
     ExperimentStatus status = ExperimentStatus.Initializing;
-    
     TestController currentTestController;
+    int currentSequence = 0;
+    ulong frameNumber = 0;
 
-    ulong frameNumber = 0;    
+    bool isCalibratingCenterOfPLanes = false;
+    CursorPositioningController.CursorHandPosition originalCursorPosition;    
 
     struct FrameData
     {
@@ -68,8 +64,18 @@ public class ExperimentController : MonoBehaviour, ITestListener
         experimentConfig = SharedData.currentConfiguration;
     }
 
+    void ActivateMetaCamera()
+    {        
+        if (!metaCameraObject.activeInHierarchy)
+        {
+            metaCameraObject.SetActive(true);
+        }
+    }
+
     private void Update()
     {
+        KeepContentsSizeConstantOn2DScreen();
+
         if (status == ExperimentStatus.CalibrationRunning && isCalibratingCenterOfPLanes)
         {
             transform.position = cursor.GetCursorPosition();
@@ -90,7 +96,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
             }
         }
         else if (status == ExperimentStatus.Running)
-        {
+        {            
             if (currentTestController != null && currentTestController.isRunning())
             {
                 LogFrameData();
@@ -98,7 +104,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
         }
         else if (status == ExperimentStatus.Initializing)
         {
-            RunExperiment();
+            status = ExperimentStatus.Stopped;            
         }
     }
 
@@ -125,6 +131,16 @@ public class ExperimentController : MonoBehaviour, ITestListener
         {
             Debug.Log("[ExperimentController] Starting experiment...");
 
+            if (experimentConfig.experimentMode == ExperimentMode.Experiment2D)
+            {
+                // Do not show the cursor when running the 2D mode
+                //cursor.GetComponent<MeshRenderer>().enabled = false;
+            }
+            else if (experimentConfig.experimentMode == ExperimentMode.Experiment3DOnMeta2)
+            {
+                ActivateMetaCamera();
+            }
+
             centerOfTestPlanesObject.SetActive(false);
 
             cursor.cursorPositionController = GetControllerForPositioningMethod(experimentConfig.cursorPositioningMethod);
@@ -133,13 +149,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
             
             cursor.transform.localScale = experimentConfig.cursorWidth * Vector3.one;
             cursor.cursorPositionController.gameObject.SetActive(true);
-
-            if (experimentConfig.experimentMode == ExperimentMode.Experiment2D)
-            {
-                // Do not show the cursor when running the 2D mode
-                cursor.GetComponent<MeshRenderer>().enabled = false;
-            }
-
+            
             currentSequence = 0;
             status = ExperimentStatus.Running;            
 
@@ -189,8 +199,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
                     CleanTargetPlane();
                     frameData.Clear();
 
-                    currentTestController = new TestController(this, statusText, correctTargetAudio, wrongTargetAudio,
-                        cursor, baseTarget, targetPlane,
+                    currentTestController = new TestController(this, statusText, cursor, baseTarget, targetPlane,
                         experimentConfig.experimentTask,
                         experimentConfig.planeOrientation,
                         experimentConfig.numberOfTargets,
@@ -388,6 +397,8 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
             cursor.selectionMethod = CursorSelectionMethod.KeyboardSpaceBar;
             cursor.transform.localScale = 0.01f * Vector3.one;
+
+            ActivateMetaCamera();
         }
     }
 
@@ -425,7 +436,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
                 status = ExperimentStatus.CalibrationRunning;
                 controller.StartLeapMotionCalibration(() => {
                     FinishCalibration();
-                    controller.gameObject.SetActive(false);
+                    ExecuteAfterTime(() => { controller.gameObject.SetActive(false); }, 1); // avoid bug when trying to disable hands group in leap motion                 
                 });
             }
             else
@@ -433,6 +444,12 @@ public class ExperimentController : MonoBehaviour, ITestListener
                 Debug.LogWarning("Could not find the LeapMotionControllerCursorBehaviour component in the children of inputMethods!");
             }
         }
+    }
+
+    IEnumerator ExecuteAfterTime(System.Action action, float timeInSeconds)
+    {
+        yield return new WaitForSeconds(timeInSeconds);
+        action?.Invoke();
     }
 
     void FinishCalibration()
@@ -454,9 +471,22 @@ public class ExperimentController : MonoBehaviour, ITestListener
         }
     }
 
-    public void CloseSceneAndOpenMainMenu()
+    void KeepContentsSizeConstantOn2DScreen()
     {
-        SceneManager.LoadScene("MainScene");
+        if (computerCamera != null)
+        {
+            float minScreenSizePixels = Mathf.Min(Screen.height, Screen.width);
+
+            float pixelsPerInch = Screen.dpi;
+            const float inchesPerMeter = 0.0254f;
+            
+            computerCamera.orthographicSize = 0.5f * inchesPerMeter * minScreenSizePixels / pixelsPerInch;
+
+            if (cursor.cursorPositionController.GetType() == typeof(Mouse2DInputBehaviour))
+            {
+                ((Mouse2DInputBehaviour)cursor.cursorPositionController).spaceSize = computerCamera.orthographicSize * 2;
+            }
+        }
     }
 }
 

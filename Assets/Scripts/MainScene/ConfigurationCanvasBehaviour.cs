@@ -10,6 +10,12 @@ using Newtonsoft.Json.Converters;
 
 public class ConfigurationCanvasBehaviour : MonoBehaviour
 {
+    public ExperimentController experimentController;    
+
+    public GameObject panelConfigurationMenu;
+    public GameObject panelBottomMenu;
+    public SelectFilePanelBehaviour panelSelectFile;    
+
     public Dropdown participantCode;
     public Dropdown conditionCode;
     public Dropdown sessionCode;
@@ -30,13 +36,16 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
     public InputField amplitudes;    
     public InputField widths;
 
-    public SelectFilePanelBehaviour panelSelectFile;
+    public Button buttonMetaPositionCalibration;
+    public Button buttonDeviceCalibration;
 
     const float TIME_SCALE = 0.001f;
     const float DIMENSIONS_SCALE = 0.001f;
 
     void Start()
     {
+        panelBottomMenu.SetActive(false);
+        panelSelectFile.HidePanel();
         InitializeValues();
     }
 
@@ -115,6 +124,46 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         }
 
         dwellTime.interactable = SharedData.currentConfiguration.cursorSelectionMethod == CursorSelectionMethod.DwellTime;
+
+        UpdateButtonsStates();
+    }
+
+    void UpdateButtonsStates()
+    {
+        bool is3DModeSelected = SharedData.currentConfiguration.experimentMode == ExperimentMode.Experiment3DOnMeta2;
+        buttonMetaPositionCalibration.gameObject.SetActive(is3DModeSelected);
+
+        bool isLeapMotionSelected = SharedData.currentConfiguration.cursorPositioningMethod == CursorPositioningMethod.LeapMotionController;
+        bool isVIVESelected = SharedData.currentConfiguration.cursorPositioningMethod == CursorPositioningMethod.VIVE;
+        buttonDeviceCalibration.interactable = isLeapMotionSelected || isVIVESelected;
+        buttonDeviceCalibration.gameObject.SetActive(buttonDeviceCalibration.interactable);
+
+        Text calibrateText = buttonDeviceCalibration.GetComponentInChildren<Text>();
+        if (isLeapMotionSelected)
+        {
+            calibrateText.text = "Calibrate Leap Motion";
+        }
+        else if (isVIVESelected)
+        {
+            calibrateText.text = "Calibrate VIVE";            
+        }
+    }
+
+    public void StartMetaSpaceCalibration()
+    {
+        experimentController.StartCalibrationOfExperimentPosition();
+    }
+
+    public void StartCalibrationOfCurrentCursorPositioning()
+    {
+        if (SharedData.currentConfiguration.cursorPositioningMethod == CursorPositioningMethod.LeapMotionController)
+        {
+            experimentController.StartCalibrationOfLeapMotionController();
+        }
+        else if (SharedData.currentConfiguration.cursorPositioningMethod == CursorPositioningMethod.VIVE)
+        {
+            experimentController.StartCalibrationOfVIVEController();
+        }
     }
 
     void UpdateCanvasElementWithInternalValue(object element)
@@ -281,15 +330,16 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
 
     public void RunExperiment()
     {
-        switch (SharedData.currentConfiguration.experimentMode)
-        {
-            case ExperimentMode.Experiment2D:
-                SceneManager.LoadScene("2DMouseExperimentOnScreen");
-                break;
-            case ExperimentMode.Experiment3DOnMeta2:
-                SceneManager.LoadScene("3DExperimentMeta2");
-                break;
-        }
+        panelConfigurationMenu.SetActive(false);
+        panelBottomMenu.SetActive(true);
+        experimentController.RunExperiment();
+    }
+
+    public void ReturnToMainMenu()
+    {
+        experimentController.StopExperiment();
+        panelBottomMenu.SetActive(false);
+        panelConfigurationMenu.SetActive(true);
     }
 
     public void SaveCurrentValuesOnFile()
