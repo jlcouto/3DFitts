@@ -1,8 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CsvHelper;
+using UnityEngine;
 
 public static class FileManager
 {
@@ -54,7 +54,7 @@ public static class FileManager
     }
 
     public static string LoadFile(string directory, string filename)
-    {
+    {     
         string fullPath = directory + filename;
         Debug.Log("[FileManager] Loading file: " + fullPath);
         try
@@ -76,11 +76,20 @@ public static class FileManager
                         .Where(f => f.Extension.Equals(fileFormat))
                         .OrderByDescending(f => f.LastAccessTime)
                         .Select(f => f.Name)
-                        .ToList();                        
+                        .ToList();
         }
         else
         {
             return new List<string>();
         }
+    }
+
+    public static void SaveRecordsToCSVFile(string path, IEnumerable<ExperimentResultRecord> records)
+    {
+        StreamWriter writer = new StreamWriter(path);
+        CsvWriter csvWriter = new CsvWriter(writer);
+        csvWriter.WriteRecords(records);
+        writer.Flush();
+        writer.Close();
     }
 }

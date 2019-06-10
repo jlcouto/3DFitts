@@ -6,6 +6,7 @@ using UnityEditor;
 using Newtonsoft.Json;
 using System.IO;
 using UnityEngine.SceneManagement;
+using CsvHelper;
 
 public class ExperimentController : MonoBehaviour, ITestListener
 {
@@ -199,12 +200,8 @@ public class ExperimentController : MonoBehaviour, ITestListener
                     CleanTargetPlane();
                     frameData.Clear();
 
-                    currentTestController = new TestController(this, statusText, cursor, baseTarget, targetPlane,
-                        experimentConfig.experimentTask,
-                        experimentConfig.planeOrientation,
-                        experimentConfig.numberOfTargets,
-                        experimentConfig.sequences[currentSequence].targetWidth,
-                        experimentConfig.sequences[currentSequence].targetsDistance);
+                    currentTestController = new TestController(this, statusText, cursor, baseTarget,
+                                                               targetPlane, experimentConfig, currentSequence);                        
 
                     Debug.Log("[ExperimentController] Starting sequence " + currentSequence + ")");
                     currentTestController.InitializeTest();                        
@@ -300,29 +297,10 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
     void ExportResultsToFile(TestMeasurements results)
     {
-        var output = results.SerializeToDictionary();
-        output["ParticipantCode"] = experimentConfig.participantCode;
-        output["ConditionCode"] = experimentConfig.conditionCode;
-        output["SessionCode"] = experimentConfig.sessionCode;
-        output["GroupCode"] = experimentConfig.groupCode;
-        output["Observations"] = experimentConfig.observations;
-
-        output["ExperimentTask"] = Enum2String.GetTaskString(results.testConfiguration.task);
-        output["PositioningMethod"] = cursor.GetDeviceName();
-        output["SelectionMethod"] = cursor.GetInteractionTechniqueName();
-        output["CursorWidth"] = experimentConfig.cursorWidth;
-        output["PlaneOrientation"] = Enum2String.GetPlaneOrientationString(experimentConfig.planeOrientation);        
-        output["CenterOfPlanePosition"] = SimpleVector3.FromVector3(transform.position);
-        output["CenterOfPlaneRotation"] = SimpleVector3.FromVector3(transform.rotation.eulerAngles);
-
-        string jsonData = JsonConvert.SerializeObject(output, new JsonSerializerSettings()
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            Formatting = Formatting.Indented
-        });
+        string directory = FileManager.GetResultsFolder(results.configuration.participantCode);
         string filename = GetTestResultsFilenameForTest(results);
-        string directory = FileManager.GetResultsFolder(experimentConfig.participantCode);
-        FileManager.SaveFile(directory, filename, jsonData);
+        var records = ExperimentResultRecord.GetRecordsFromTestMeasurements(results);
+        FileManager.SaveRecordsToCSVFile(directory + filename, records);
 
         ExportFrameDataToFile(results);
     }
@@ -357,7 +335,10 @@ public class ExperimentController : MonoBehaviour, ITestListener
     string GetTestResultsFilenameForTest(TestMeasurements test)
     {
         var timestamp = test.timestamp.Replace(":", "_");
-        return cursor.GetDeviceName() + "_" + Enum2String.GetTaskString(test.testConfiguration.task) + test.testConfiguration.testId + "_" + timestamp + ".json";
+        return System.String.Format("{0}-{1}-{2}-{3}-{4}.csv",
+                experimentConfig.participantCode, experimentConfig.conditionCode,
+                experimentConfig.sessionCode, experimentConfig.groupCode,
+                timestamp);
     }
 
     string GetFrameDataResultsFilenameForTest(TestMeasurements test)

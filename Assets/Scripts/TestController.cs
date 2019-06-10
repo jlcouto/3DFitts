@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-using Leap.Unity.Interaction;
 
 public interface ITestListener
 {
@@ -17,14 +14,9 @@ public class TestController : ICursorListener, IBlockListener
     public CursorBehaviour cursor;
     public GameObject baseTarget;
     public Transform targetPlane;
-    public PlaneOrientation orientation = PlaneOrientation.PlaneXY;
 
-    public ExperimentTask task = ExperimentTask.ReciprocalTapping;
-    public int numberOfTargets = 13;
-    public float targetWidth = 0.01f;
-    public float targetDistance = 0.15f;
-
-    public int numOfBlocksPerTest = 3;
+    public ExperimentConfiguration configuration;
+    public IndexOfDifficulty currentSequence;
 
     TargetBehaviour[] targets;
     TargetBehaviour initialTarget;
@@ -34,7 +26,6 @@ public class TestController : ICursorListener, IBlockListener
     int currentBlockIndex = 0;
     BlockController currentBlock;
 
-    TestConfiguration testConfiguration;
     TestMeasurements testData;
 
     ITestListener testListener;
@@ -48,8 +39,8 @@ public class TestController : ICursorListener, IBlockListener
     TestStatus currentStatus;
 
     public TestController(ITestListener listener, Text statusText,
-        CursorBehaviour cursor, GameObject baseTarget, Transform targetPlane, ExperimentTask task,
-        PlaneOrientation orientation, int numberOfTargets, float targetWidth, float targetDistance, int numOfBlocksPerTest = 1)
+        CursorBehaviour cursor, GameObject baseTarget, Transform targetPlane,
+        ExperimentConfiguration configuration, int currentSequence)
     {
         this.testListener = listener;
 
@@ -58,13 +49,14 @@ public class TestController : ICursorListener, IBlockListener
         this.cursor = cursor;
         this.baseTarget = baseTarget;
         this.targetPlane = targetPlane;
-        this.orientation = orientation;
 
-        this.task = task;
-        this.numberOfTargets = numberOfTargets;
-        this.targetWidth = targetWidth;
-        this.targetDistance = targetDistance;
-        this.numOfBlocksPerTest = numOfBlocksPerTest;
+        this.configuration = configuration;
+
+        if (currentSequence < 0 || currentSequence >= configuration.sequences.Count)
+        {
+            currentSequence = configuration.sequences.Count - 1;
+        }
+        this.currentSequence = configuration.sequences[currentSequence];        
     }
 
     public void InitializeTest()
@@ -76,12 +68,12 @@ public class TestController : ICursorListener, IBlockListener
         }
 
         cursor.RegisterNewListener(this);
-        TargetPlaneBuilder.Build(baseTarget, targetPlane, numberOfTargets, targetWidth, targetDistance);
+        TargetPlaneBuilder.Build(baseTarget, targetPlane, currentSequence, configuration.numberOfTargets);
         targets = targetPlane.GetComponentsInChildren<TargetBehaviour>();
         initialTarget = targets[0];
 
         Vector3 planeRotation;
-        switch (orientation)
+        switch (configuration.planeOrientation)
         {
             case PlaneOrientation.PlaneXY:
                 planeRotation = new Vector3(-90, 0, 0);
@@ -104,8 +96,7 @@ public class TestController : ICursorListener, IBlockListener
     void StartTest() {
         if (currentStatus != TestStatus.Running) {        
             SetCurrentStatus(TestStatus.Running);
-            testConfiguration = new TestConfiguration(targets, task, orientation, targetWidth, targetDistance, numOfBlocksPerTest);
-            testData = new TestMeasurements(testConfiguration);
+            testData = new TestMeasurements(configuration, currentSequence, targets);
             testData.timestamp = System.DateTime.Now.ToString("s");
             testData.initialTime = Time.realtimeSinceStartup;
             RunNextBlock();
@@ -113,8 +104,8 @@ public class TestController : ICursorListener, IBlockListener
     }
 
     void RunNextBlock() {
-        if (currentBlockIndex < numOfBlocksPerTest) {
-            currentBlock = new BlockController(task, currentBlockIndex, targets, this, cursor);
+        if (currentBlockIndex < configuration.numberOfBlocks) {
+            currentBlock = new BlockController(configuration.experimentTask, currentBlockIndex, targets, this, cursor);
             currentBlock.StartBlockOfTrials();
             currentBlockIndex++;
         }

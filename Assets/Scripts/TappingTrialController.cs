@@ -29,17 +29,18 @@ public class TappingTrialController : TrialController
     public override void CursorAcquiredTarget(TargetBehaviour target)
     {
         //Debug.Log("Tapping CursorAcquiredTarget");
+        bool missedTarget;
         if (target != null && target.targetId == finalTarget.targetId)
         {
-            trialData.missedTarget = false;
+            missedTarget = false;
             cursor.PlayCorrectAudio();
         }
         else
         {
-            trialData.missedTarget = true;
+            missedTarget = true;
             cursor.PlayErrorAudio();
         }
-        FinishTrial();
+        FinishTrial(missedTarget);
     }
 
     public override void CursorDragTargetStarted(TargetBehaviour target)

@@ -32,13 +32,13 @@ public class DragTestController : TrialController
     public override void StartTrial()
     {
         base.StartTrial();
-        trialData.initialTime = -1;
+        trialData.ForceInitialTime(-1);
     }
 
-    public override void FinishTrial()
+    public override void FinishTrial(bool missedTrial)
     {
         finalTarget.SetAsNormalTarget();
-        base.FinishTrial();
+        base.FinishTrial(missedTrial);
     }
 
     public override void CursorEnteredTarget(TargetBehaviour target)
@@ -66,7 +66,7 @@ public class DragTestController : TrialController
             draggableObject.SetActive(true);
             initialTarget.SetAsNormalTarget();
             finalTarget.SetAsNextTarget();
-            trialData.initialTime = Time.realtimeSinceStartup;
+            trialData.ForceInitialTime(Time.realtimeSinceStartup);
             cursor.PlayCorrectAudio();
         }
         else
@@ -80,20 +80,21 @@ public class DragTestController : TrialController
         Debug.Log("Drag CursorDragTargetExited");
         if (isDraggingTarget)
         {
+            bool missedTarget;
             if (draggedTarget != null && draggedTarget.targetId == initialTarget.targetId &&
                 (receivingTarget != null && receivingTarget.targetId == finalTarget.targetId))// || IsDraggableObjectTouchingFinalTarget()))
             {
-                trialData.missedTarget = false;
+                missedTarget = false;
                 cursor.PlayCorrectAudio();
             }
             else
             {
-                trialData.missedTarget = true;
+                missedTarget = true;
                 cursor.PlayErrorAudio();
             }
             Object.Destroy(draggableObject);
             isDraggingTarget = false;
-            FinishTrial();
+            FinishTrial(missedTarget);
         }
     }
 

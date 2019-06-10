@@ -1,27 +1,5 @@
-﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
-public class IndexOfDifficulty
-{
-    public float targetWidth;
-    public float targetsDistance;
-
-    public IndexOfDifficulty(float targetWidth, float targetsDistance)
-    {
-        this.targetWidth = targetWidth;
-        this.targetsDistance = targetsDistance;
-    }
-
-    float getIndexOfDifficulty()
-    {
-        return Mathf.Log((targetsDistance / targetWidth + 1), 2);
-    }
-}
-
-[JsonObject(MemberSerialization.OptIn)]
 public class ExperimentConfiguration
 {
     /// <summary>
@@ -56,56 +34,54 @@ public class ExperimentConfiguration
     /// <summary>
     /// The desired environment to run the test (2D or 3D).
     /// </summary>
-    [JsonProperty]
     public ExperimentMode experimentMode;
 
     /// <summary>
     /// The type of task to be performed during the tests.
     /// </summary>
-    [JsonProperty]
     public ExperimentTask experimentTask;
 
     /// <summary>
     /// The method to use to drive the cursor position.
     /// </summary>
-    [JsonProperty]
     public CursorPositioningMethod cursorPositioningMethod;
 
     /// <summary>
     /// The method to use for selecting the targets.
-    /// </summary>
-    [JsonProperty]
+    /// </summary>    
     public CursorSelectionMethod cursorSelectionMethod;
 
     /// <summary>
     /// The desired orientation of the plane of targets to test.
-    /// </summary>
-    [JsonProperty]
+    /// </summary>    
     public PlaneOrientation planeOrientation;
 
     /// <summary>
     /// Dwell time in seconds.
-    /// </summary>
-    [JsonProperty]
+    /// </summary>    
     public float dwellTime;
 
     /// <summary>
     /// The diameter of the cursor in meters.
-    /// </summary>
-    [JsonProperty]
+    /// </summary>    
     public float cursorWidth;
 
     /// <summary>
     /// Number of targets in the multidirectional task.
-    /// </summary>
-    [JsonProperty]
+    /// </summary>    
     public int numberOfTargets;
+
+    /// <summary>
+    /// The number of blocks to execute in a test. A block refers to the execution of a sequence, which means
+    /// interacting with all the 'numberOfTargets' once. A sequence will be repeated 'numberOfBlocks' times
+    /// before a new sequence is presented.
+    /// </summary>
+    public int numberOfBlocks = 1;
 
     /// <summary>
     /// Amplitudes of movements to test, in meters.
     /// These values will be fully crossed with the ones provided in the 'widths' array to determine the sequences to test.
     /// </summary>
-    [JsonProperty]
     public float[] amplitudes
     {
         get { return _amplitudes; }
@@ -121,7 +97,6 @@ public class ExperimentConfiguration
     /// Widths of targets to test, in meters.
     /// These values will be fully crossed with the ones provided in the 'amplitudes' array to determine the sequences to test.
     /// </summary>
-    [JsonProperty]
     public float[] widths
     { 
         get { return _widths; }

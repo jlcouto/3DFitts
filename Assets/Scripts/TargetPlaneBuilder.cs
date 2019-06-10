@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TargetPlaneBuilder : MonoBehaviour {
-	public static void Build (GameObject baseTarget, Transform targetPlane, int numberOfTargets, float targetWidth, float targetDistance) {
+public class TargetPlaneBuilder {
+	public static void Build (GameObject baseTarget, Transform targetPlane, IndexOfDifficulty sequence, int numberOfTargets) {
         if (numberOfTargets % 2 == 0) // If even number
         { 
             numberOfTargets++; // number of targets must be an odd number
@@ -22,15 +22,15 @@ public class TargetPlaneBuilder : MonoBehaviour {
                 targetPositionIndex = finalTargetIndex;
                 finalTargetIndex++;
             }
-            GameObject newTarget = Instantiate(baseTarget, targetPlane);
+            GameObject newTarget = Object.Instantiate(baseTarget, targetPlane);
             newTarget.name = "Target " + i;
 
             var targetBehaviour = newTarget.GetComponent<TargetBehaviour>();
             targetBehaviour.targetId = targetPositionIndex;
             targetBehaviour.SetAsNormalTarget();
 
-            newTarget.transform.localPosition = targetDistance/2 * (new Vector3(Mathf.Sin(targetPositionIndex * thetaStep), 0, Mathf.Cos(targetPositionIndex * thetaStep)));
-            newTarget.transform.localScale = Vector3.one * targetWidth;
+            newTarget.transform.localPosition = sequence.targetsDistance / 2 * (new Vector3(Mathf.Sin(targetPositionIndex * thetaStep), 0, Mathf.Cos(targetPositionIndex * thetaStep)));
+            newTarget.transform.localScale = Vector3.one * sequence.targetWidth;
             newTarget.SetActive(true);
         }
 	}

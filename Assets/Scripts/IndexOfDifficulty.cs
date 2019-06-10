@@ -1,17 +1,13 @@
 ﻿public class IndexOfDifficulty
 {
-    private float _targetWidth;
-    private float _targetsDistance;
-    private float _indexOfDifficulty;
-
-    public float targetWidth { get; }
-    public float targetsDistance { get; }
-    public float indexOfDifficulty { get; }
+    public float targetWidth { get; private set; }
+    public float targetsDistance { get; private set; }
+    public float indexOfDifficulty { get; private set; }
 
     public IndexOfDifficulty(float targetWidth, float targetsDistance)
     {
-        _targetWidth = targetWidth;
-        _targetsDistance = targetsDistance;
-        _indexOfDifficulty = ResultsMath.IndexOfDifficulty(targetWidth, targetsDistance);
+        this.targetWidth = targetWidth;
+        this.targetsDistance = targetsDistance;
+        this.indexOfDifficulty = ResultsMath.IndexOfDifficulty(targetWidth, targetsDistance);
     }
 }

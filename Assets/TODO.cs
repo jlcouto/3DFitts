@@ -17,5 +17,11 @@
  * GENERAL
  * - Show screens always in fullscreen mode? Maximized mode? What's best?
  * x Unify 2D and 3D scenes
+ * - Export results in .csv
+ * - Compute results considering outliers
+ * - Allow easily merging different .csv results files
  * 
+ * - Test data for normality?
+ * - Toggle cursor visibility?
+ * - Allow entering dimension units in pixels or meters?
  */

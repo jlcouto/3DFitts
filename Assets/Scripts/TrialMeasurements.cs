@@ -3,24 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TrialMeasurements {
-    public int trialId;
+    public int trialId { get; private set; }
 
-    public int initialTargetId;
-    public int finalTargetId;
+    public int initialTargetId { get; private set; }
+    public int finalTargetId { get; private set; }
 
-    public Vector3 initialTargetPosition;
-    public Vector3 finalTargetPosition;
+    public Vector3 initialTargetPosition { get; private set; }
+    public Vector3 finalTargetPosition { get; private set; }
 
-    public float initialTime;
-    public float finalTime;
-    public float trialDuration { get { return finalTime - initialTime; } }
+    public float initialTime { get; private set; }
+    public float finalTime { get; private set; }
+    public float trialDuration { get; private set; }
 
-    public SimpleVector3 initialPosition;
-    public SimpleVector3 finalPosition;
-
-    public float finalPositionProjectedCoordinate;
-
-    public bool missedTarget = false;
+    public SimpleVector3 initialPosition { get; private set; }
+    public SimpleVector3 finalPosition { get; private set; }
+    public float finalPositionProjectedOnMovementAxis { get; private set; }
+    public bool missedTarget { get; private set; }
 
     public TrialMeasurements(int trialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget) {
         this.trialId = trialId;
@@ -28,24 +26,29 @@ public class TrialMeasurements {
         this.finalTargetId = finalTarget.targetId;
         this.initialTargetPosition = initialTarget.position;
         this.finalTargetPosition = finalTarget.position;
+        this.initialTime = -1;
+        this.finalTime = -1;
+        this.trialDuration = -1;
     }
 
-    public Dictionary<string, object> SerializeToDictionary()
+    public void StartTrial(float initialTime, Vector3 initialPosition)
     {
-        Dictionary<string, object> output = new Dictionary<string, object>(8);
-        output["trialId"] = trialId;
-        output["initialTargetId"] = initialTargetId;
-        output["finalTargetId"] = finalTargetId;
-        output["initialTime"] = initialTime;
-        output["finalTime"] = finalTime;
-        output["trialDuration"] = trialDuration;
-        output["initialPosition"] = initialPosition;
-        output["finalPosition"] = finalPosition;
-        output["missedTarget"] = missedTarget;
+        this.initialTime = initialTime;
+        this.initialPosition = SimpleVector3.FromVector3(initialPosition);
+    }
 
-        finalPositionProjectedCoordinate = (float) ResultsMath.Projected3DPointCoordinate(initialTargetPosition, finalTargetPosition, SimpleVector3.ToVector3(finalPosition));
-        output["finalProjectedCoordinate"] = finalPositionProjectedCoordinate;
+    public void ForceInitialTime(float initialTime)
+    {
+        this.initialTime = initialTime;
+    }
 
-        return output;
+    public void FinishTrial(float finalTime, Vector3 finalPosition, bool missedTarget)
+    {
+        this.finalTime = finalTime;
+        this.trialDuration = this.finalTime - this.initialTime;
+
+        this.finalPosition = SimpleVector3.FromVector3(finalPosition);
+        this.finalPositionProjectedOnMovementAxis = (float)ResultsMath.Projected3DPointCoordinate(initialTargetPosition, finalTargetPosition, finalPosition);
+        this.missedTarget = missedTarget;
     }
 }
