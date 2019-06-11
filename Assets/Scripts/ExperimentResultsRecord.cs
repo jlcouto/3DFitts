@@ -63,6 +63,7 @@ public class ExperimentResultRecord
 
     public float projectionOnMovementAxis { get; set; }
     public float effectiveWidth { get; set; }
+    public int markedAsOutlier { get; set; }
 
     public string observations { get; set; }
 
@@ -78,11 +79,12 @@ public class ExperimentResultRecord
                 r.conditionCode = test.configuration.conditionCode;
                 r.sessionCode = test.configuration.sessionCode;
                 r.groupCode = test.configuration.groupCode;
-
-                //r.effectiveIndexOfDifficulty = (float)computed["effectiveIndexOfDifficulty"];
-                //r.errorRate = (float)computed["errorRate"];
-                //r.averageMovementTime = (float)computed["averageMovementTime"];
-                //r.throughput = (float)computed["throughput"];
+                
+                r.effectiveWidth = test.computedResults.effectiveWidth;
+                r.effectiveIndexOfDifficulty = test.computedResults.effectiveIndexOfDifficulty;                
+                r.averageMovementTime = test.computedResults.averageMovementTime;
+                r.throughput = test.computedResults.throughput;
+                r.errorRate = test.computedResults.errorRate;
 
                 r.task = Enum2String.GetTaskString(test.configuration.experimentTask);
                 r.cursorPositioningMethod = Enum2String.GetCursorPositioningMethodString(test.configuration.cursorPositioningMethod);
@@ -123,10 +125,9 @@ public class ExperimentResultRecord
                 r.yToMeasured = t.finalPosition.y;
                 r.zToMeasured = t.finalPosition.z;
 
+                r.projectionOnMovementAxis = t.finalPositionProjectedOnMovementAxis;
                 r.missedTarget = t.missedTarget ? 1 : 0;
-
-                //r.projectionOnMovementAxis = t.finalPositionProjectedCoordinate;
-                //r.effectiveWidth = (float)computed["effectiveWidth"];
+                r.markedAsOutlier = t.isMarkedAsOutlier ? 1 : 0;                                
 
                 r.observations = test.configuration.observations;
 

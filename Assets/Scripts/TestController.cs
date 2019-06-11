@@ -116,6 +116,7 @@ public class TestController : ICursorListener, IBlockListener
 
     void FinishTest() {
         testData.finalTime = Time.realtimeSinceStartup;
+        testData.ComputeResults();
         SetCurrentStatus(TestStatus.Finished);
         testListener.OnTestEnded(testData);
     }

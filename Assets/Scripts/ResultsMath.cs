@@ -11,6 +11,11 @@ public static class ResultsMath
         return Mathf.Log((targetsDistance / targetWidth + 1), 2);
     }
 
+    public static double EffectiveWidthForStdevValue(double stdev)
+    {
+        return Math.Sqrt(2*Math.PI*Math.Exp(1)) * stdev;
+    }
+
     public static double Projected3DPointCoordinate(Vector3 initialTargetPosition, Vector3 finalTargetPosition, Vector3 realInteractionPoint)
     {
         // Returns the realInteractionPoint projected into the line defined by initial and final target positions, considering that the origin

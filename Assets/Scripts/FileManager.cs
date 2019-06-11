@@ -84,9 +84,10 @@ public static class FileManager
         }
     }
 
-    public static void SaveRecordsToCSVFile(string path, IEnumerable<ExperimentResultRecord> records)
+    public static void SaveRecordsToCSVFile(string directory, string filename, IEnumerable<ExperimentResultRecord> records)
     {
-        StreamWriter writer = new StreamWriter(path);
+        Directory.CreateDirectory(directory);
+        StreamWriter writer = new StreamWriter(directory + filename);
         CsvWriter csvWriter = new CsvWriter(writer);
         csvWriter.WriteRecords(records);
         writer.Flush();

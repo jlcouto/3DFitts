@@ -26,20 +26,38 @@ public class Throughput
         {
             foreach (TrialMeasurements t in b.trialsData)
             {
-                totalTrials++;
-                if (t.missedTarget)
+                UpdateOutlierState(t);
+                if (!t.isMarkedAsOutlier)
                 {
-                    missedTrials++;
-                }
-                totalMovementTime += t.trialDuration;
-                projectedCoordinates.Add(t.finalPositionProjectedOnMovementAxis);
+                    totalTrials++;
+                    if (t.missedTarget)
+                    {
+                        missedTrials++;
+                    }
+                    totalMovementTime += t.trialDuration;
+                    projectedCoordinates.Add(t.finalPositionProjectedOnMovementAxis);
+                }                
             }
         }
+        double stdev = ResultsMath.ComputeStandardDeviation(projectedCoordinates);
 
         errorRate = (float)missedTrials / (float)totalTrials;
         averageMovementTime = totalMovementTime / totalTrials;
-        effectiveWidth = (float)(4.133f * ResultsMath.ComputeStandardDeviation(projectedCoordinates));
+        effectiveWidth = (float)ResultsMath.EffectiveWidthForStdevValue(stdev);
         effectiveIndexOfDifficulty = ResultsMath.IndexOfDifficulty(effectiveWidth, test.sequenceInfo.targetsDistance);
         throughput = effectiveIndexOfDifficulty / averageMovementTime;
+    }
+
+    public void UpdateOutlierState(TrialMeasurements theTrial)
+    {        
+        Vector3 initialTargetPos = theTrial.initialTargetPosition;
+        Vector3 finalTargetPos = theTrial.finalTargetPosition;
+        float expectedAmplitude = (initialTargetPos - finalTargetPos).magnitude;
+
+        Vector3 initialPos = theTrial.initialPosition;
+        Vector3 finalPos = theTrial.finalPosition;
+        float realAmplitude = (initialPos - finalPos).magnitude;
+
+        theTrial.MarkAsOutlier(realAmplitude < (expectedAmplitude / 2));
     }
 }

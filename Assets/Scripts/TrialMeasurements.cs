@@ -15,10 +15,11 @@ public class TrialMeasurements {
     public float finalTime { get; private set; }
     public float trialDuration { get; private set; }
 
-    public SimpleVector3 initialPosition { get; private set; }
-    public SimpleVector3 finalPosition { get; private set; }
+    public Vector3 initialPosition { get; private set; }
+    public Vector3 finalPosition { get; private set; }
     public float finalPositionProjectedOnMovementAxis { get; private set; }
     public bool missedTarget { get; private set; }
+    public bool isMarkedAsOutlier { get; private set; }
 
     public TrialMeasurements(int trialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget) {
         this.trialId = trialId;
@@ -34,7 +35,7 @@ public class TrialMeasurements {
     public void StartTrial(float initialTime, Vector3 initialPosition)
     {
         this.initialTime = initialTime;
-        this.initialPosition = SimpleVector3.FromVector3(initialPosition);
+        this.initialPosition = initialPosition;
     }
 
     public void ForceInitialTime(float initialTime)
@@ -47,8 +48,13 @@ public class TrialMeasurements {
         this.finalTime = finalTime;
         this.trialDuration = this.finalTime - this.initialTime;
 
-        this.finalPosition = SimpleVector3.FromVector3(finalPosition);
+        this.finalPosition = finalPosition;
         this.finalPositionProjectedOnMovementAxis = (float)ResultsMath.Projected3DPointCoordinate(initialTargetPosition, finalTargetPosition, finalPosition);
         this.missedTarget = missedTarget;
+    }
+
+    public void MarkAsOutlier(bool isOutlier)
+    {
+        this.isMarkedAsOutlier = isOutlier;
     }
 }

@@ -46,7 +46,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
     {
         public ulong frameNumber;
         public float time;
-        public SimpleVector3 cursorPosition;
+        public Vector3 cursorPosition;
         public int trackingHandId;
     }
     List<FrameData> frameData;
@@ -115,7 +115,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
         FrameData newData = new FrameData();
         newData.frameNumber = frameNumber;
         newData.time = Time.realtimeSinceStartup;
-        newData.cursorPosition = new SimpleVector3(cursor.GetCursorPosition());
+        newData.cursorPosition = cursor.GetCursorPosition();
         newData.trackingHandId = cursor.GetTrackedHandId();
         frameData.Add(newData);
     }
@@ -298,9 +298,9 @@ public class ExperimentController : MonoBehaviour, ITestListener
     void ExportResultsToFile(TestMeasurements results)
     {
         string directory = FileManager.GetResultsFolder(results.configuration.participantCode);
-        string filename = GetTestResultsFilenameForTest(results);
+        string filename = GetTestResultsFilenameForTest(results) + ".csv";
         var records = ExperimentResultRecord.GetRecordsFromTestMeasurements(results);
-        FileManager.SaveRecordsToCSVFile(directory + filename, records);
+        FileManager.SaveRecordsToCSVFile(directory, filename, records);
 
         ExportFrameDataToFile(results);
     }
@@ -335,7 +335,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
     string GetTestResultsFilenameForTest(TestMeasurements test)
     {
         var timestamp = test.timestamp.Replace(":", "_");
-        return System.String.Format("{0}-{1}-{2}-{3}-{4}.csv",
+        return System.String.Format("{0}-{1}-{2}-{3}-{4}",
                 experimentConfig.participantCode, experimentConfig.conditionCode,
                 experimentConfig.sessionCode, experimentConfig.groupCode,
                 timestamp);
@@ -343,7 +343,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
     string GetFrameDataResultsFilenameForTest(TestMeasurements test)
     {
-        return "FrameData_" + GetTestResultsFilenameForTest(test);
+        return "FrameData_" + GetTestResultsFilenameForTest(test) + ".json";
     }
 
     bool CanStartCalibrationProcess()
