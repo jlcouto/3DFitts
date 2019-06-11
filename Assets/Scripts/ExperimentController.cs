@@ -300,7 +300,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
         string directory = FileManager.GetResultsFolder(results.configuration.participantCode);
         string filename = GetTestResultsFilenameForTest(results) + ".csv";
         var records = ExperimentResultRecord.GetRecordsFromTestMeasurements(results);
-        FileManager.SaveRecordsToCSVFile(directory, filename, records);
+        FileManager.WriteRecordsToCsvFile(directory, filename, records);
 
         ExportFrameDataToFile(results);
     }

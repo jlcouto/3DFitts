@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using System.IO;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
+using SimpleFileBrowser;
 
 public class ConfigurationCanvasBehaviour : MonoBehaviour
 {
@@ -340,6 +339,15 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         experimentController.StopExperiment();
         panelBottomMenu.SetActive(false);
         panelConfigurationMenu.SetActive(true);
+    }
+
+    public void MergeFilesOnFolder()
+    {
+        FileBrowser.SetFilters(false, new FileBrowser.Filter("CSV files", ".csv"));
+        FileBrowser.ShowLoadDialog((string path) =>
+        {
+            FileManager.MergeCsvFilesInFolder(FileBrowser.Result, "MergedResults.csv");
+        }, null, false, FileManager.GetResultsFolder(), "Choose a file in the folder containing the files to merge", "Merge all .CSV");
     }
 
     public void SaveCurrentValuesOnFile()

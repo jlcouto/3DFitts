@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CsvHelper;
@@ -6,9 +7,14 @@ using UnityEngine;
 
 public static class FileManager
 {
-    public static string GetResultsFolder(string participantCode)
+    public static string GetResultsFolder(string participantCode = null)
     {
-        return "./Results/" + participantCode + "/";
+        return "./Results/";
+    }
+
+    public static string GetResultsFolderForParticipant(string participantCode)
+    {
+        return GetResultsFolder() + participantCode + "/";
     }
 
     public static string GetFrameDataFolder(string participantCode)
@@ -37,7 +43,8 @@ public static class FileManager
     }
 
     public static bool SaveFile(string directory, string filename, string data)
-    {     
+    {
+        directory = DirectoryFromPath(directory);
         string fullPath = directory + filename;
         Debug.Log("[FileManager] Saving file: " + fullPath);
         try
@@ -54,7 +61,8 @@ public static class FileManager
     }
 
     public static string LoadFile(string directory, string filename)
-    {     
+    {
+        directory = DirectoryFromPath(directory);
         string fullPath = directory + filename;
         Debug.Log("[FileManager] Loading file: " + fullPath);
         try
@@ -70,6 +78,7 @@ public static class FileManager
 
     public static List<string> GetFilenamesOnDirectory(string directory, string fileFormat)
     {
+        directory = DirectoryFromPath(directory);
         if (Directory.Exists(directory))
         {
             return new DirectoryInfo(directory).GetFiles()
@@ -84,13 +93,76 @@ public static class FileManager
         }
     }
 
-    public static void SaveRecordsToCSVFile(string directory, string filename, IEnumerable<ExperimentResultRecord> records)
+    public static void WriteRecordsToCsvFile(string directory, string filename,
+                                             IEnumerable<ExperimentResultRecord> records)
     {
+        directory = DirectoryFromPath(directory);
         Directory.CreateDirectory(directory);
-        StreamWriter writer = new StreamWriter(directory + filename);
+
+        try
+        {
+            StreamWriter writer = new StreamWriter(directory + filename);
+            CsvWriter csvWriter = new CsvWriter(writer);
+            csvWriter.WriteRecords(records);
+            writer.Flush();
+            writer.Close();
+        }
+        catch
+        {
+            Debug.LogError("[FileManager] Couldn't write to the .csv file: " + directory + filename);
+        }
+    }
+
+    public static List<ExperimentResultRecord> ReadRecordsFromCsvFile(string directory, string filename)
+    {
+        directory = DirectoryFromPath(directory);
+        try
+        {
+            StreamReader reader = new StreamReader(directory + filename);
+            CsvReader csvReader = new CsvReader(reader);
+            List<ExperimentResultRecord> records = new List<ExperimentResultRecord>(csvReader.GetRecords<ExperimentResultRecord>());
+            reader.Close();
+            return records;
+        }
+        catch
+        {
+            Debug.LogError("[FileManager] Couldn't read the .csv file: " + directory + filename);
+        }
+
+        return null;
+    }
+
+    public static void MergeCsvFilesInFolder(string directory, string outputFilename)
+    {
+        directory = DirectoryFromPath(directory);
+
+        var filesToMerge = GetFilenamesOnDirectory(directory, ".csv");
+
+        StreamWriter writer = new StreamWriter(directory + outputFilename);
         CsvWriter csvWriter = new CsvWriter(writer);
-        csvWriter.WriteRecords(records);
+
+        foreach (var file in filesToMerge)
+        {
+            var records = ReadRecordsFromCsvFile(directory, file);
+            if (records != null)
+            {
+                csvWriter.WriteRecords(records);
+            }
+        }
+
         writer.Flush();
         writer.Close();
+    }
+
+    static string DirectoryFromPath(string path)
+    {
+        if (File.Exists(path))
+        {
+            return path.Remove(path.LastIndexOf("/", StringComparison.InvariantCulture) + 1);
+        }
+        else
+        {
+            return (path.EndsWith("/", StringComparison.InvariantCulture)) ? path : path + "/";
+        }
     }
 }
