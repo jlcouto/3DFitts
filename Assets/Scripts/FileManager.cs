@@ -27,6 +27,18 @@ public static class FileManager
         return "./Configurations/";
     }
 
+    public static string GetResultsFilenameForTest(TestMeasurements test)
+    {
+        return GetResultsFilenamePrefix(test.configuration) + "-" + test.timestamp.Replace(":", "_");
+    }
+
+    public static string GetResultsFilenamePrefix(ExperimentConfiguration configuration)
+    {
+        return string.Format("{0}-{1}-{2}-{3}",
+                configuration.participantCode, configuration.conditionCode,
+                configuration.sessionCode, configuration.groupCode);
+    }
+
     public static string GetInternalConfigurationFolder()
     {
         return Application.streamingAssetsPath + "/";
@@ -164,5 +176,17 @@ public static class FileManager
         {
             return (path.EndsWith("/", StringComparison.InvariantCulture)) ? path : path + "/";
         }
+    }
+
+    public static bool CheckExistenceOfFilesWithPrefix(string prefix, string directory, string fileFormat)
+    {
+        var files = GetFilenamesOnDirectory(directory, fileFormat);
+        foreach (string f in files)
+        {
+            if (f.StartsWith(prefix, StringComparison.InvariantCulture)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -195,7 +195,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
         {
             if (status == ExperimentStatus.Running)
             {                
-                if (currentSequence < experimentConfig.sequences.Count)
+                if (currentSequence < experimentConfig.GetSequences().Count)
                 {
                     CleanTargetPlane();
                     frameData.Clear();
@@ -298,7 +298,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
     void ExportResultsToFile(TestMeasurements results)
     {
         string directory = FileManager.GetResultsFolder(results.configuration.participantCode);
-        string filename = GetTestResultsFilenameForTest(results) + ".csv";
+        string filename = FileManager.GetResultsFilenameForTest(results) + ".csv";
         var records = ExperimentResultRecord.GetRecordsFromTestMeasurements(results);
         FileManager.WriteRecordsToCsvFile(directory, filename, records);
 
@@ -332,18 +332,9 @@ public class ExperimentController : MonoBehaviour, ITestListener
         FileManager.SaveFile(directory, filename, jsonData);
     }
 
-    string GetTestResultsFilenameForTest(TestMeasurements test)
-    {
-        var timestamp = test.timestamp.Replace(":", "_");
-        return System.String.Format("{0}-{1}-{2}-{3}-{4}",
-                experimentConfig.participantCode, experimentConfig.conditionCode,
-                experimentConfig.sessionCode, experimentConfig.groupCode,
-                timestamp);
-    }
-
     string GetFrameDataResultsFilenameForTest(TestMeasurements test)
     {
-        return "FrameData_" + GetTestResultsFilenameForTest(test) + ".json";
+        return "FrameData_" + FileManager.GetResultsFilenameForTest(test) + ".json";
     }
 
     bool CanStartCalibrationProcess()

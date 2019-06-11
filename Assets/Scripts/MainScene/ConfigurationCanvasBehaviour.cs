@@ -13,7 +13,8 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
 
     public GameObject panelConfigurationMenu;
     public GameObject panelBottomMenu;
-    public SelectFilePanelBehaviour panelSelectFile;    
+    public SelectFilePanelBehaviour panelSelectFile;
+    public MessageBoxPanelBehaviour panelMessageBox;
 
     public Dropdown participantCode;
     public Dropdown conditionCode;
@@ -328,6 +329,49 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
     }
 
     public void RunExperiment()
+    {
+        string prefixOfResultFile = FileManager.GetResultsFilenamePrefix(SharedData.currentConfiguration);
+        string directory = FileManager.GetResultsFolder(SharedData.currentConfiguration.participantCode);
+        if (FileManager.CheckExistenceOfFilesWithPrefix(prefixOfResultFile, directory,".csv"))
+        {
+            panelMessageBox.ShowPanel(
+                "A result file already exists for the current configuration:\n\n" +
+                prefixOfResultFile +
+                "\n\nCollect data anyway?" +
+                "\n\n(the previous files won't be overwritten)",
+                () => { DoRunExperiment(); },
+                null, "Continue", "Cancel",
+                "Use next session code", () => {
+                    UseNextAvailableSessionCode();
+                    DoRunExperiment();                
+                });
+        }
+        else
+        {
+            DoRunExperiment();
+        }
+    }
+
+    public void UseNextAvailableSessionCode()
+    {
+        string prefixOfResultFile = FileManager.GetResultsFilenamePrefix(SharedData.currentConfiguration);
+        string directory = FileManager.GetResultsFolder(SharedData.currentConfiguration.participantCode);
+
+        while (FileManager.CheckExistenceOfFilesWithPrefix(prefixOfResultFile, directory, ".csv"))
+        {
+            IncrementSessionCode();
+            prefixOfResultFile = FileManager.GetResultsFilenamePrefix(SharedData.currentConfiguration);
+        }
+    }
+
+    public void IncrementSessionCode()
+    {
+        int newSessionCode = (sessionCode.value + 1) % sessionCode.options.Count;
+        sessionCode.SetValueWithoutNotify(newSessionCode);
+        OnDropdownValueChanged(sessionCode);
+    }
+
+    private void DoRunExperiment()
     {
         panelConfigurationMenu.SetActive(false);
         panelBottomMenu.SetActive(true);

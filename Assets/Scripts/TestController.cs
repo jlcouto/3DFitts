@@ -52,11 +52,11 @@ public class TestController : ICursorListener, IBlockListener
 
         this.configuration = configuration;
 
-        if (currentSequence < 0 || currentSequence >= configuration.sequences.Count)
+        if (currentSequence < 0 || currentSequence >= configuration.GetSequences().Count)
         {
-            currentSequence = configuration.sequences.Count - 1;
+            currentSequence = configuration.GetSequences().Count - 1;
         }
-        this.currentSequence = configuration.sequences[currentSequence];        
+        this.currentSequence = configuration.GetSequences()[currentSequence];        
     }
 
     public void InitializeTest()
