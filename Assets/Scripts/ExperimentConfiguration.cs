@@ -108,17 +108,14 @@ public class ExperimentConfiguration
     private float[] _widths;
 
     private bool _sequecesDirtyBit = false;
-    public List<IndexOfDifficulty> sequences
+    public List<IndexOfDifficulty> GetSequences()
     {
-        get
+        if (_sequecesDirtyBit)
         {
-            if (_sequecesDirtyBit)
-            {
-                _sequecesDirtyBit = false;
-                ComputeIndexOfDifficultySequences(amplitudes, widths, _sequences);
-            }
-            return _sequences;
+            _sequecesDirtyBit = false;
+            ComputeIndexOfDifficultySequences(amplitudes, widths, _sequences);
         }
+        return _sequences;
     }
     private List<IndexOfDifficulty> _sequences = new List<IndexOfDifficulty>();
 
