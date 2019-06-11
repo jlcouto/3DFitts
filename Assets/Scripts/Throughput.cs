@@ -7,19 +7,21 @@ public class Throughput
     public readonly int totalTrials;
     public readonly int missedTrials;
 
-    public readonly float errorRate;
-    public readonly float throughput;
-    public readonly float averageMovementTime;
+    public readonly double errorRate;
+    public readonly double throughput;
+    public readonly double averageMovementTime;
 
-    public readonly float effectiveWidth;
-    public readonly float effectiveIndexOfDifficulty;
+    public readonly double effectiveAmplitude;
+    public readonly double effectiveWidth;
+    public readonly double effectiveIndexOfDifficulty;
 
     public Throughput(TestMeasurements test)
     {
         totalTrials = 0;
         missedTrials = 0;
 
-        float totalMovementTime = 0;
+        double totalMovementTime = 0;
+        double totalEffectiveAmplitude = 0;
         List<double> projectedCoordinates = new List<double>();
 
         foreach (BlockMeasurements b in test.blocksData)
@@ -35,6 +37,7 @@ public class Throughput
                         missedTrials++;
                     }
                     totalMovementTime += t.trialDuration;
+                    totalEffectiveAmplitude += t.effectiveAmplitudeOfMovement;
                     projectedCoordinates.Add(t.finalPositionProjectedOnMovementAxis);
                 }                
             }
@@ -43,8 +46,9 @@ public class Throughput
 
         errorRate = (float)missedTrials / (float)totalTrials;
         averageMovementTime = totalMovementTime / totalTrials;
-        effectiveWidth = (float)ResultsMath.EffectiveWidthForStdevValue(stdev);
-        effectiveIndexOfDifficulty = ResultsMath.IndexOfDifficulty(effectiveWidth, test.sequenceInfo.targetsDistance);
+        effectiveAmplitude = totalEffectiveAmplitude / totalTrials;
+        effectiveWidth = ResultsMath.EffectiveWidthForStdevValue(stdev);
+        effectiveIndexOfDifficulty = ResultsMath.IndexOfDifficulty(effectiveWidth, effectiveAmplitude);
         throughput = effectiveIndexOfDifficulty / averageMovementTime;
     }
 

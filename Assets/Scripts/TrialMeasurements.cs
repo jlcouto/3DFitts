@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TrialMeasurements {
+    private TrialMeasurements lastTrial;
+
     public int trialId { get; private set; }
 
     public int initialTargetId { get; private set; }
@@ -17,11 +19,15 @@ public class TrialMeasurements {
 
     public Vector3 initialPosition { get; private set; }
     public Vector3 finalPosition { get; private set; }
-    public float finalPositionProjectedOnMovementAxis { get; private set; }
+    public double finalPositionProjectedOnMovementAxis { get; private set; }
+    public double effectiveAmplitudeOfMovement { get; private set; }
+    public double distanceErrorFromTarget { get; private set; }
+
     public bool missedTarget { get; private set; }
     public bool isMarkedAsOutlier { get; private set; }
 
-    public TrialMeasurements(int trialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget) {
+    public TrialMeasurements(int trialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget, TrialMeasurements lastTrial = null) {
+        this.lastTrial = lastTrial;
         this.trialId = trialId;
         this.initialTargetId = initialTarget.targetId;
         this.finalTargetId = finalTarget.targetId;
@@ -47,10 +53,15 @@ public class TrialMeasurements {
     {
         this.finalTime = finalTime;
         this.trialDuration = this.finalTime - this.initialTime;
-
         this.finalPosition = finalPosition;
-        this.finalPositionProjectedOnMovementAxis = (float)ResultsMath.Projected3DPointCoordinate(initialTargetPosition, finalTargetPosition, finalPosition);
         this.missedTarget = missedTarget;
+
+        this.finalPositionProjectedOnMovementAxis = ResultsMath.Projected3DPointCoordinate(initialTargetPosition, finalTargetPosition, finalPosition);
+
+        double lastProjection = (lastTrial == null) ? 0 : lastTrial.finalPositionProjectedOnMovementAxis;
+        this.effectiveAmplitudeOfMovement = ResultsMath.EffectiveAmplitude(
+                initialTargetPosition, finalTargetPosition, this.finalPositionProjectedOnMovementAxis, lastProjection);
+        this.distanceErrorFromTarget = (finalPosition - finalTargetPosition).magnitude;
     }
 
     public void MarkAsOutlier(bool isOutlier)

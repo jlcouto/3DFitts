@@ -6,14 +6,19 @@ using UnityEngine;
 
 public static class ResultsMath
 {
-    public static float IndexOfDifficulty(float targetWidth, float targetsDistance)
+    public static double IndexOfDifficulty(double targetWidth, double targetsDistance)
     {
-        return Mathf.Log((targetsDistance / targetWidth + 1), 2);
+        return Math.Log((targetsDistance / targetWidth + 1), 2);
     }
 
     public static double EffectiveWidthForStdevValue(double stdev)
     {
         return Math.Sqrt(2*Math.PI*Math.Exp(1)) * stdev;
+    }
+
+    public static double EffectiveAmplitude(Vector3 initialTargetPosition, Vector3 finalTargetPosition, double currentFinalProjection, double lastFinalProjection)
+    {
+        return (finalTargetPosition - initialTargetPosition).magnitude + currentFinalProjection + lastFinalProjection;
     }
 
     public static double Projected3DPointCoordinate(Vector3 initialTargetPosition, Vector3 finalTargetPosition, Vector3 realInteractionPoint)

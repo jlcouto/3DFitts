@@ -9,11 +9,6 @@ public class ExperimentResultRecord
     public string sessionCode { get; set; }
     public string groupCode { get; set; }
 
-    public float effectiveIndexOfDifficulty { get; set; }
-    public float averageMovementTime { get; set; }
-    public float throughput { get; set; }
-    public float errorRate { get; set; }
-
     public string task { get; set; }
     public string cursorPositioningMethod { get; set; }
     public string cursorSelectionMethod { get; set; }
@@ -21,16 +16,24 @@ public class ExperimentResultRecord
     public int numberOfTargets { get; set; }
     public float amplitude { get; set; }
     public float width { get; set; }
-    public float indexOfDifficulty { get; set; }
+    public double indexOfDifficulty { get; set; }
     public float cursorWidth { get; set; }
     public string planeOrientation { get; set; }
 
-    public float xPlanePosition { get; set; }
-    public float yPlanePosition { get; set; }
-    public float zPlanePosition { get; set; }
-    public float xPlaneRotation { get; set; }
-    public float yPlaneRotation { get; set; }
-    public float zPlaneRotation { get; set; }
+    public double effectiveIndexOfDifficulty { get; set; }
+    public double averageMovementTime { get; set; }
+    public double throughput { get; set; }
+    public double errorRate { get; set; }
+
+    public double effectiveWidth { get; set; }
+    public double effectiveAmplitude { get; set; }
+    public double distanceError { get; set; } // Distance between the desired 'to' point and the 'toMeasured' point
+
+    public double projectionOnMovementAxis { get; set; }
+    public double amplitudeOnMovementAxis { get; set; }
+
+    public int missedTarget { get; set; }
+    public int markedAsOutlier { get; set; }
 
     public string timestamp { get; set; }
     public float totalDuration { get; set; }
@@ -59,11 +62,12 @@ public class ExperimentResultRecord
     public float yToMeasured { get; set; }
     public float zToMeasured { get; set; }
 
-    public int missedTarget { get; set; }
-
-    public float projectionOnMovementAxis { get; set; }
-    public float effectiveWidth { get; set; }
-    public int markedAsOutlier { get; set; }
+    public float xPlanePosition { get; set; }
+    public float yPlanePosition { get; set; }
+    public float zPlanePosition { get; set; }
+    public float xPlaneRotation { get; set; }
+    public float yPlaneRotation { get; set; }
+    public float zPlaneRotation { get; set; }
 
     public string observations { get; set; }
 
@@ -79,12 +83,6 @@ public class ExperimentResultRecord
                 r.conditionCode = test.configuration.conditionCode;
                 r.sessionCode = test.configuration.sessionCode;
                 r.groupCode = test.configuration.groupCode;
-                
-                r.effectiveWidth = test.computedResults.effectiveWidth;
-                r.effectiveIndexOfDifficulty = test.computedResults.effectiveIndexOfDifficulty;                
-                r.averageMovementTime = test.computedResults.averageMovementTime;
-                r.throughput = test.computedResults.throughput;
-                r.errorRate = test.computedResults.errorRate;
 
                 r.task = Enum2String.GetTaskString(test.configuration.experimentTask);
                 r.cursorPositioningMethod = Enum2String.GetCursorPositioningMethodString(test.configuration.cursorPositioningMethod);
@@ -96,6 +94,18 @@ public class ExperimentResultRecord
                 r.indexOfDifficulty = test.sequenceInfo.indexOfDifficulty;
                 r.cursorWidth = test.configuration.cursorWidth;
                 r.planeOrientation = Enum2String.GetPlaneOrientationString(test.configuration.planeOrientation);
+
+                r.errorRate = test.computedResults.errorRate;
+                r.averageMovementTime = test.computedResults.averageMovementTime;
+                r.throughput = test.computedResults.throughput;
+
+                r.effectiveIndexOfDifficulty = test.computedResults.effectiveIndexOfDifficulty;
+                r.effectiveWidth = test.computedResults.effectiveWidth;
+                r.effectiveAmplitude = test.computedResults.effectiveAmplitude;
+
+                r.projectionOnMovementAxis = t.finalPositionProjectedOnMovementAxis;
+                r.amplitudeOnMovementAxis = t.effectiveAmplitudeOfMovement;
+                r.distanceError = t.distanceErrorFromTarget;
 
                 r.timestamp = test.timestamp;
                 r.totalDuration = test.testDuration;
@@ -125,7 +135,6 @@ public class ExperimentResultRecord
                 r.yToMeasured = t.finalPosition.y;
                 r.zToMeasured = t.finalPosition.z;
 
-                r.projectionOnMovementAxis = t.finalPositionProjectedOnMovementAxis;
                 r.missedTarget = t.missedTarget ? 1 : 0;
                 r.markedAsOutlier = t.isMarkedAsOutlier ? 1 : 0;                                
 
