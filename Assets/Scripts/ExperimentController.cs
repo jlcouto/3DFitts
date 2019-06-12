@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
-using Newtonsoft.Json;
-using System.IO;
-using UnityEngine.SceneManagement;
-using CsvHelper;
 
 public class ExperimentController : MonoBehaviour, ITestListener
 {
@@ -33,22 +29,25 @@ public class ExperimentController : MonoBehaviour, ITestListener
     public GameObject metaCameraObject;
 
     public Camera computerCamera;
+    public ResultsPanelBehaviour panelResults;
 
     ExperimentConfiguration configuration;
     ExperimentStatus status = ExperimentStatus.Initializing;
     TestController currentTestController;
     int currentSequence = 0;
-    ulong frameNumber = 0;
+    int frameNumber = 0;
 
     bool isCalibratingCenterOfPLanes = false;
     CursorPositioningController.CursorHandPosition originalCursorPosition;    
 
-    struct FrameData
+    class FrameData
     {
-        public ulong frameNumber;
-        public float time;
-        public Vector3 cursorPosition;
-        public int trackingHandId;
+        public int frameNumber { get; set; }
+        public float time { get; set; }
+        public float xCursorPosition { get; set; }
+        public float yCursorPosition { get; set; }
+        public float zCursorPosition { get; set; }
+        public int trackingHandId { get; set; }
     }
     List<FrameData> frameData;
 
@@ -121,7 +120,10 @@ public class ExperimentController : MonoBehaviour, ITestListener
         FrameData newData = new FrameData();
         newData.frameNumber = frameNumber;
         newData.time = Time.realtimeSinceStartup;
-        newData.cursorPosition = cursor.GetCursorPosition();
+        Vector3 pos = cursor.GetCursorPosition();
+        newData.xCursorPosition = pos.x;
+        newData.yCursorPosition = pos.y;
+        newData.zCursorPosition = pos.z;
         newData.trackingHandId = cursor.GetTrackedHandId();
         frameData.Add(newData);
     }
@@ -291,7 +293,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
         Debug.Log("[ExperimentController] Current test finished.");
         ExportResultsToFile(testMeasurements);
         AbortCurrentTest();
-        RunNextTestConfiguration();
+        panelResults.ShowPanel(testMeasurements, () => { RunNextTestConfiguration(); });        
     }
 
     bool AbortCurrentTest()
@@ -319,41 +321,21 @@ public class ExperimentController : MonoBehaviour, ITestListener
         string directory = FileManager.GetResultsFolder(results.configuration.participantCode);
         string filename = FileManager.GetResultsFilenameForTest(results) + ".csv";
         var records = ExperimentResultRecord.GetRecordsFromTestMeasurements(results);
-        FileManager.WriteRecordsToCsvFile(directory, filename, records);
+        FileManager.WriteToCsvFile(directory, filename, records);
 
         ExportFrameDataToFile(results);
     }
 
     void ExportFrameDataToFile(TestMeasurements results)
-    {
-        Dictionary<string, object> frameDataDictionary = new Dictionary<string, object>();
-        List<Dictionary<string, object>> frames = new List<Dictionary<string, object>>();
-        foreach (FrameData data in frameData)
-        {
-            Dictionary<string, object> aFrame = new Dictionary<string, object>
-            {
-                ["Frame"] = data.frameNumber,
-                ["Time"] = data.time,
-                ["CursorPosition"] = data.cursorPosition,
-                ["TrackedHandID"] = data.trackingHandId
-            };
-            frames.Add(aFrame);
-        }
-        frameDataDictionary["frameData"] = frames;
-
-        string jsonData = JsonConvert.SerializeObject(frameDataDictionary, new JsonSerializerSettings()
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            Formatting = Formatting.Indented
-        });
+    {    
         string filename = GetFrameDataResultsFilenameForTest(results);
         string directory = FileManager.GetFrameDataFolder(configuration.participantCode);
-        FileManager.SaveFile(directory, filename, jsonData);
+        FileManager.WriteToCsvFile(directory, filename, frameData);
     }
 
     string GetFrameDataResultsFilenameForTest(TestMeasurements test)
     {
-        return "FrameData_" + FileManager.GetResultsFilenameForTest(test) + ".json";
+        return "FrameData_" + FileManager.GetResultsFilenameForTest(test) + ".csv";
     }
 
     bool CanStartCalibrationProcess()

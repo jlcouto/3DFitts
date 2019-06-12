@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -105,8 +106,7 @@ public static class FileManager
         }
     }
 
-    public static void WriteRecordsToCsvFile(string directory, string filename,
-                                             IEnumerable<ExperimentResultRecord> records)
+    public static void WriteToCsvFile(string directory, string filename, IEnumerable records)
     {
         directory = DirectoryFromPath(directory);
         Directory.CreateDirectory(directory);
