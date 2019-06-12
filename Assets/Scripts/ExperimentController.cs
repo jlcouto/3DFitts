@@ -22,7 +22,8 @@ public class ExperimentController : MonoBehaviour, ITestListener
     public Text statusText;
 
     public CursorInteractorBehaviour cursor;
-    public GameObject baseTarget;
+    public GameObject baseTarget2D;
+    public GameObject baseTarget3D;
     public Transform targetPlane;
 
     public GameObject centerOfTestPlanesObject;    
@@ -33,7 +34,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
     public Camera computerCamera;
 
-    ExperimentConfiguration experimentConfig;
+    ExperimentConfiguration configuration;
     ExperimentStatus status = ExperimentStatus.Initializing;
     TestController currentTestController;
     int currentSequence = 0;
@@ -62,7 +63,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
     void LoadConfigurationsFromCanvasValues()
     {
-        experimentConfig = SharedData.currentConfiguration;
+        configuration = SharedData.currentConfiguration;
     }
 
     void ActivateMetaCamera()
@@ -71,6 +72,12 @@ public class ExperimentController : MonoBehaviour, ITestListener
         {
             metaCameraObject.SetActive(true);
         }
+    }
+
+    public void SetCursorActive(bool active)
+    {
+        cursor.cursorPositionController.gameObject.SetActive(active);
+        cursor.gameObject.SetActive(active);
     }
 
     private void Update()
@@ -131,27 +138,30 @@ public class ExperimentController : MonoBehaviour, ITestListener
         {
             Debug.Log("[ExperimentController] Starting experiment...");
 
-            if (experimentConfig.experimentMode == ExperimentMode.Experiment2D)
+            if (configuration.experimentMode == ExperimentMode.Experiment2D)
             {
                 // Do not show the cursor when running the 2D mode
                 //cursor.GetComponent<MeshRenderer>().enabled = false;
                 computerCamera.GetComponent<AudioListener>().enabled = true;
+                computerCamera.backgroundColor = Color.white;
             }
-            else if (experimentConfig.experimentMode == ExperimentMode.Experiment3DOnMeta2)
+            else if (configuration.experimentMode == ExperimentMode.Experiment3DOnMeta2)
             {
                 computerCamera.GetComponent<AudioListener>().enabled = false;
+                computerCamera.backgroundColor = Color.grey;
                 ActivateMetaCamera();
             }
 
             centerOfTestPlanesObject.SetActive(false);
 
-            cursor.cursorPositionController = GetControllerForPositioningMethod(experimentConfig.cursorPositioningMethod);
-            cursor.selectionMethod = experimentConfig.cursorSelectionMethod;            
-            cursor.SetDwellTime(experimentConfig.dwellTime);            
+            cursor.cursorPositionController = GetControllerForPositioningMethod(configuration.cursorPositioningMethod);
+            cursor.selectionMethod = configuration.cursorSelectionMethod;            
+            cursor.SetDwellTime(configuration.dwellTime);            
             
-            cursor.transform.localScale = experimentConfig.cursorWidth * Vector3.one;
+            cursor.transform.localScale = configuration.cursorWidth * Vector3.one;
             cursor.cursorPositionController.gameObject.SetActive(true);
-            
+            cursor.gameObject.SetActive(true);
+
             currentSequence = 0;
             status = ExperimentStatus.Running;            
 
@@ -196,13 +206,14 @@ public class ExperimentController : MonoBehaviour, ITestListener
         {
             if (status == ExperimentStatus.Running)
             {                
-                if (currentSequence < experimentConfig.GetSequences().Count)
+                if (currentSequence < configuration.GetSequences().Count)
                 {
                     CleanTargetPlane();
                     frameData.Clear();
 
+                    GameObject baseTarget = (configuration.experimentMode == ExperimentMode.Experiment2D) ? baseTarget2D : baseTarget3D;
                     currentTestController = new TestController(this, statusText, cursor, baseTarget,
-                                                               targetPlane, experimentConfig, currentSequence);                        
+                                                               targetPlane, configuration, currentSequence);                        
 
                     Debug.Log("[ExperimentController] Starting sequence " + currentSequence + ")");
                     currentTestController.InitializeTest();                        
@@ -243,8 +254,15 @@ public class ExperimentController : MonoBehaviour, ITestListener
         {
             status = ExperimentStatus.Stopped;
             AbortCurrentTest();
-            centerOfTestPlanesObject.SetActive(true);
+
+            if (configuration.experimentMode == ExperimentMode.Experiment3DOnMeta2)
+            {
+                centerOfTestPlanesObject.SetActive(true);
+            }
+
             cursor.cursorPositionController.gameObject.SetActive(false);
+            cursor.gameObject.SetActive(false);
+
             CleanTargetPlane();
             Debug.Log("[ExperimentController] Stopped current experiment...");
         }
@@ -329,7 +347,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
             Formatting = Formatting.Indented
         });
         string filename = GetFrameDataResultsFilenameForTest(results);
-        string directory = FileManager.GetFrameDataFolder(experimentConfig.participantCode);
+        string directory = FileManager.GetFrameDataFolder(configuration.participantCode);
         FileManager.SaveFile(directory, filename, jsonData);
     }
 
@@ -366,7 +384,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
             calibrationPositioningCursor.cursorPosition = CursorPositioningController.CursorHandPosition.HandTop;
 
             cursor.cursorPositionController = calibrationPositioningCursor;
-            calibrationPositioningCursor.gameObject.SetActive(true);
+            SetCursorActive(true);
 
             cursor.selectionMethod = CursorSelectionMethod.KeyboardSpaceBar;
             cursor.transform.localScale = 0.01f * Vector3.one;
@@ -384,10 +402,9 @@ public class ExperimentController : MonoBehaviour, ITestListener
             {
                 cursor.cursorPositionController = controller;
                 status = ExperimentStatus.CalibrationRunning;
-                controller.gameObject.SetActive(true);
+                SetCursorActive(true);
                 controller.StartVIVEControllerCalibration(() => {
                     FinishCalibration();
-                    controller.gameObject.SetActive(false);
                 });
             }
             else
@@ -408,8 +425,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
                 controller.gameObject.SetActive(true);
                 status = ExperimentStatus.CalibrationRunning;
                 controller.StartLeapMotionCalibration(() => {
-                    FinishCalibration();
-                    ExecuteAfterTime(() => { controller.gameObject.SetActive(false); }, 1); // avoid bug when trying to disable hands group in leap motion                 
+                    ExecuteAfterTime(() => { FinishCalibration(); }, 1); // avoid bug when trying to disable hands group in leap motion                 
                 });
             }
             else
@@ -429,6 +445,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
     {
         if (status == ExperimentStatus.CalibrationRunning)
         {
+            SetCursorActive(false);
             status = ExperimentStatus.Stopped;
         }
     }
@@ -438,8 +455,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
         if (status == ExperimentStatus.CalibrationRunning)
         {
             isCalibratingCenterOfPLanes = false;
-            calibrationPositioningCursor.cursorPosition = originalCursorPosition;            
-            calibrationPositioningCursor.gameObject.SetActive(false);
+            calibrationPositioningCursor.cursorPosition = originalCursorPosition;
             FinishCalibration();
         }
     }
@@ -449,7 +465,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
         if (computerCamera != null)
         {
             float minScreenSizePixels = Mathf.Min(Screen.height, Screen.width);
-            computerCamera.orthographicSize = 0.5f * minScreenSizePixels / (experimentConfig.screenPixelsPerMillimeter * 1000);
+            computerCamera.orthographicSize = 0.5f * minScreenSizePixels / (configuration.screenPixelsPerMillimeter * 1000);
 
             if (cursor.cursorPositionController.GetType() == typeof(Mouse2DInputBehaviour))
             {

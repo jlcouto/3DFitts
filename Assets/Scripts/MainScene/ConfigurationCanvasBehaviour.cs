@@ -13,6 +13,8 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
 
     public GameObject panelConfigurationMenu;
     public GameObject panelBottomMenu;
+    public GameObject panelBackground;
+
     public SelectFilePanelBehaviour panelSelectFile;
     public MessageBoxPanelBehaviour panelMessageBox;
 
@@ -400,6 +402,7 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
     private void DoRunExperiment()
     {
         panelConfigurationMenu.SetActive(false);
+        panelBackground.SetActive(false);
         panelBottomMenu.SetActive(true);
         experimentController.RunExperiment();
     }
@@ -409,6 +412,7 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         experimentController.StopExperiment();
         panelBottomMenu.SetActive(false);
         panelConfigurationMenu.SetActive(true);
+        panelBackground.SetActive(true);
     }
 
     public void MergeFilesOnFolder()
