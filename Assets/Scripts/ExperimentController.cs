@@ -75,8 +75,6 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
     private void Update()
     {
-        KeepContentsSizeConstantOn2DScreen();
-
         if (status == ExperimentStatus.CalibrationRunning && isCalibratingCenterOfPLanes)
         {
             transform.position = cursor.GetCursorPosition();
@@ -97,7 +95,8 @@ public class ExperimentController : MonoBehaviour, ITestListener
             }
         }
         else if (status == ExperimentStatus.Running)
-        {            
+        {
+            KeepContentsSizeConstantOn2DScreen();
             if (currentTestController != null && currentTestController.isRunning())
             {
                 LogFrameData();
@@ -136,9 +135,11 @@ public class ExperimentController : MonoBehaviour, ITestListener
             {
                 // Do not show the cursor when running the 2D mode
                 //cursor.GetComponent<MeshRenderer>().enabled = false;
+                computerCamera.GetComponent<AudioListener>().enabled = true;
             }
             else if (experimentConfig.experimentMode == ExperimentMode.Experiment3DOnMeta2)
             {
+                computerCamera.GetComponent<AudioListener>().enabled = false;
                 ActivateMetaCamera();
             }
 
@@ -448,11 +449,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
         if (computerCamera != null)
         {
             float minScreenSizePixels = Mathf.Min(Screen.height, Screen.width);
-
-            float pixelsPerInch = Screen.dpi;
-            const float inchesPerMeter = 0.0254f;
-            
-            computerCamera.orthographicSize = 0.5f * inchesPerMeter * minScreenSizePixels / pixelsPerInch;
+            computerCamera.orthographicSize = 0.5f * minScreenSizePixels / (experimentConfig.screenPixelsPerMillimeter * 1000);
 
             if (cursor.cursorPositionController.GetType() == typeof(Mouse2DInputBehaviour))
             {

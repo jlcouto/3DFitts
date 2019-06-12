@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public class ExperimentConfiguration
 {
@@ -106,6 +107,25 @@ public class ExperimentConfiguration
             }
     }
     private float[] _widths;
+
+    private float _screenPixelsPerMillimeter = -1;
+    public float screenPixelsPerMillimeter
+    {
+        get
+        {
+            if (_screenPixelsPerMillimeter > 0)
+            {
+                return _screenPixelsPerMillimeter;
+            }
+            else
+            {
+                float pixelsPerInch = Screen.dpi;
+                const float millimeterPerInch = 25.4f;
+                return pixelsPerInch / millimeterPerInch;
+            }
+        }
+        set { _screenPixelsPerMillimeter = value; }
+    }
 
     private bool _sequecesDirtyBit = false;
     public List<IndexOfDifficulty> GetSequences()

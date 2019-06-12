@@ -36,17 +36,23 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
     public InputField amplitudes;    
     public InputField widths;
 
+    public Toggle unitsUsePixels;
+    public Toggle unitsUseMillimeters;
+
     public Button buttonMetaPositionCalibration;
     public Button buttonDeviceCalibration;
 
     const float TIME_SCALE = 0.001f;
     const float DIMENSIONS_SCALE = 0.001f;
 
+    private bool _isInitialized;
+
     void Start()
     {
         panelBottomMenu.SetActive(false);
         panelSelectFile.HidePanel();
         InitializeValues();
+        _isInitialized = true;
     }
 
     void InitializeValues()
@@ -199,17 +205,17 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         }
         else if (element == (object)cursorWidth)
         {
-            string text = FloatToCanvasString(SharedData.currentConfiguration.cursorWidth, 1 / DIMENSIONS_SCALE);
+            string text = FloatToCanvasString(SharedData.currentConfiguration.cursorWidth, 1 / ScreenUnitScale(), unitsUsePixels.isOn);
             cursorWidth.SetTextWithoutNotify(text);
         }
         else if (element == (object)amplitudes)
         {
-            string text = FloatArrayToCanvasString(SharedData.currentConfiguration.amplitudes, 1 / DIMENSIONS_SCALE);
+            string text = FloatArrayToCanvasString(SharedData.currentConfiguration.amplitudes, 1 / ScreenUnitScale(), unitsUsePixels.isOn);
             amplitudes.SetTextWithoutNotify(text);
         }
         else if (element == (object)widths)
         {
-            string text = FloatArrayToCanvasString(SharedData.currentConfiguration.widths, 1 / DIMENSIONS_SCALE);
+            string text = FloatArrayToCanvasString(SharedData.currentConfiguration.widths, 1 / ScreenUnitScale(), unitsUsePixels.isOn);
             widths.SetTextWithoutNotify(text);
         }
     }
@@ -286,7 +292,7 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         else if (inputField == cursorWidth)
         {
             float value;
-            if (ParseFloatOnCanvasString(newValue, out value, DIMENSIONS_SCALE))            
+            if (ParseFloatOnCanvasString(newValue, out value, ScreenUnitScale()))            
             {
                 SharedData.currentConfiguration.cursorWidth = value;
                 UpdateCanvasElementWithInternalValue(inputField);
@@ -299,7 +305,7 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         }
         else if (inputField == amplitudes)
         {
-            float[] values = ParseFloatArrayOnCanvasString(newValue, DIMENSIONS_SCALE);
+            float[] values = ParseFloatArrayOnCanvasString(newValue, ScreenUnitScale());
             if (values != null)
             {
                 SharedData.currentConfiguration.amplitudes = values;
@@ -313,7 +319,7 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         }
         else if (inputField == widths)
         {
-            float[] values = ParseFloatArrayOnCanvasString(newValue, DIMENSIONS_SCALE);
+            float[] values = ParseFloatArrayOnCanvasString(newValue, ScreenUnitScale());
             if (values != null)
             {
                 SharedData.currentConfiguration.widths = values;
@@ -326,6 +332,26 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
             }
         }
         UpdateCanvasState();
+    }
+
+    private float ScreenUnitScale()
+    {
+        if (unitsUsePixels.isOn)
+        {
+            return ScreenDimension.ToMillimeters(1) * DIMENSIONS_SCALE;
+        }
+        else
+        {
+            return DIMENSIONS_SCALE;
+        }
+    }
+
+    public void OnToggleValueChanged()
+    {
+        if (_isInitialized)
+        {
+            UpdateCanvasFromCurrentValues();
+        }
     }
 
     public void RunExperiment()
@@ -468,23 +494,33 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         return values;
     }
 
-    string FloatArrayToCanvasString(float[] values, float scale = 1)
+    string FloatArrayToCanvasString(float[] values, float scale = 1, bool roundToInt = false)
     {
         string s = "";
-        for (int i = 0; i < values.Length; i++)
+        if (values != null)
         {
-            s += FloatToCanvasString(values[i], scale); 
-
-            if (i < values.Length - 1)
+            for (int i = 0; i < values.Length; i++)
             {
-                s += ", ";
+                s += FloatToCanvasString(values[i], scale, roundToInt);
+
+                if (i < values.Length - 1)
+                {
+                    s += ", ";
+                }
             }
         }
         return s;
     }
 
-    string FloatToCanvasString(float value, float scale = 1)
+    string FloatToCanvasString(float value, float scale = 1, bool roundToInt = false)
     {
-        return String.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:###.##}", value * scale);
+        if (roundToInt)
+        {
+            return String.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:#####}", Mathf.RoundToInt(value * scale));
+        }
+        else
+        {
+            return String.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:####.##}", value * scale);
+        }
     }
 }
