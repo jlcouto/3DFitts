@@ -55,6 +55,16 @@ public static class FileManager
         return ".cfg";
     }
 
+    public static string GetCalibrationDataFolder()
+    {
+        return "./";
+    }
+
+    public static string GetCalibrationDataFilename()
+    {
+        return "calibration.json";
+    }
+
     public static bool SaveFile(string directory, string filename, string data)
     {
         directory = DirectoryFromPath(directory);
@@ -87,7 +97,7 @@ public static class FileManager
             Debug.LogError("[FileManager] Error loading file: " + filename);
             return null;
         }
-    }
+    }              
 
     public static List<string> GetFilenamesOnDirectory(string directory, string fileFormat)
     {

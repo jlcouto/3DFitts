@@ -24,25 +24,39 @@ public class LeapMotionControllerCursorBehaviour : CursorPositioningController
     bool isTrackingHand;
     int detectedHandID;
 
+    void Start()
+    {
+        leapMotionOffset.position = SharedData.calibrationData.leapMotionOffset;
+        leapMotionOffset.rotation = SharedData.calibrationData.leapMotionRotation;
+    }
+
     private void Update()
     {
         Leap.Frame frame = leapService.CurrentFrame;
-        isTrackingHand = frame.Hands.Count > 0;
-
-        if (isTrackingHand)
+        if (frame != null)
         {
-            if (handPosition == CursorHandPosition.HandTop)
+            isTrackingHand = frame.Hands.Count > 0;
+
+            if (isTrackingHand)
             {
-                lastCursorPosition = frame.Hands[0].GetIndex().TipPosition.ToVector3();
+                if (handPosition == CursorHandPosition.HandTop)
+                {
+                    lastCursorPosition = frame.Hands[0].GetIndex().TipPosition.ToVector3();
+                }
+                else
+                {
+                    lastCursorPosition = frame.Hands[0].PalmPosition.ToVector3();
+                }
+                detectedHandID = frame.Hands[0].Id;
             }
             else
             {
-                lastCursorPosition = frame.Hands[0].PalmPosition.ToVector3();
+                detectedHandID = -1;
             }
-            detectedHandID = frame.Hands[0].Id;
         }
         else
         {
+            isTrackingHand = false;
             detectedHandID = -1;
         }
 
@@ -129,6 +143,10 @@ public class LeapMotionControllerCursorBehaviour : CursorPositioningController
 
     void FinishCalibration()
     {
+        SharedData.calibrationData.leapMotionOffset = leapMotionOffset.position;
+        SharedData.calibrationData.leapMotionRotation = leapMotionOffset.rotation;
+        SharedData.calibrationData.SaveToFile();
+
         isCalibrating = false;
         finishCalibrationCallback?.Invoke();
         finishCalibrationCallback = null;

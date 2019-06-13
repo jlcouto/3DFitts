@@ -57,7 +57,9 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
         frameData = new List<FrameData>(60 * 60 * 120); // Enough capacity to record up to 2 min of data at 60 fps     
 
-        LoadConfigurationsFromCanvasValues();        
+        LoadConfigurationsFromCanvasValues();
+
+        SharedData.calibrationData.LoadFromFile();
     }
 
     void LoadConfigurationsFromCanvasValues()
@@ -69,6 +71,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
     {        
         if (!metaCameraObject.activeInHierarchy)
         {
+            computerCamera.GetComponent<AudioListener>().enabled = false;
             metaCameraObject.SetActive(true);
         }
     }
@@ -144,12 +147,10 @@ public class ExperimentController : MonoBehaviour, ITestListener
             {
                 // Do not show the cursor when running the 2D mode
                 //cursor.GetComponent<MeshRenderer>().enabled = false;
-                computerCamera.GetComponent<AudioListener>().enabled = true;
                 computerCamera.backgroundColor = Color.white;
             }
             else if (configuration.experimentMode == ExperimentMode.Experiment3DOnMeta2)
             {
-                computerCamera.GetComponent<AudioListener>().enabled = false;
                 computerCamera.backgroundColor = Color.grey;
                 ActivateMetaCamera();
             }
@@ -278,7 +279,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
     {
         foreach (Transform child in targetPlane)
         {
-            GameObject.Destroy(child.gameObject);
+            Destroy(child.gameObject);
         }
         targetPlane.DetachChildren();
     }
