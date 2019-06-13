@@ -55,6 +55,7 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
 
     /* UDP communication to read controller data */
     Thread receiveThread;
+    private static Mutex updateTriggerMutex = new Mutex();
     UdpClient client;
     private int port = 8051;
     private bool _lastProcessedTriggerState;
@@ -105,6 +106,8 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
     
     void Update()
     {
+        updateTriggerMutex.WaitOne();
+
         lastRawCursorPosition = new Vector3((float)float_array[0], (float)float_array[1], (float)float_array[2]);
         lastRawCursorRotation = new Quaternion((float)float_array[3], (float)float_array[4], (float)float_array[5], (float)float_array[6]);
         ConvertVIVEToUnity(ref lastRawCursorPosition, ref lastRawCursorRotation);
@@ -121,6 +124,8 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
         {
             currentFrame = 0;
         }
+
+        updateTriggerMutex.ReleaseMutex();
     }
 
     public static void ConvertVIVEToUnity(ref Vector3 pos, ref Quaternion rot)
@@ -370,8 +375,10 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
 
     void UpdateTriggerState(bool isTriggerActive)
     {
+        updateTriggerMutex.WaitOne();
+
         if (_lastProcessedTriggerState && isTriggerActive)
-        {
+        {            
             OnTrigger?.Invoke();
         }
         else if (!_lastProcessedTriggerState && isTriggerActive)
@@ -381,7 +388,7 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
                 // Filter sequential trigger actions, to avoid multiple triggers in a short period of time
                 frameTriggerDown = currentFrame;
                 OnTriggerDown?.Invoke();
-            }            
+            }
         }
         else if (_lastProcessedTriggerState && !isTriggerActive)
         {            
@@ -389,21 +396,32 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
             OnTriggerUp?.Invoke();
         }
         _lastProcessedTriggerState = isTriggerActive;
+
+        updateTriggerMutex.ReleaseMutex();
     }
 
     public bool GetTriggerDown()
-    {        
-        return frameTriggerDown == currentFrame;
+    {   
+        updateTriggerMutex.WaitOne();
+        bool result = frameTriggerDown == currentFrame || frameTriggerDown == currentFrame - 1;
+        updateTriggerMutex.ReleaseMutex();
+        return result;
     }
 
     public bool GetTrigger()
     {
-        return _lastProcessedTriggerState;
+        updateTriggerMutex.WaitOne();
+        bool result = _lastProcessedTriggerState;
+        updateTriggerMutex.ReleaseMutex();
+        return result;
     }
 
     public bool GetTriggerUp()
     {
-        return frameTriggerUp == currentFrame;
+        updateTriggerMutex.WaitOne();
+        bool result = frameTriggerUp == currentFrame || frameTriggerUp == currentFrame - 1;
+        updateTriggerMutex.ReleaseMutex();
+        return result;
     }
 
     void OnApplicationQuit()
