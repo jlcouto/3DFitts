@@ -68,6 +68,7 @@ public class ExperimentResultRecord
     public float xPlaneRotation { get; set; }
     public float yPlaneRotation { get; set; }
     public float zPlaneRotation { get; set; }
+    public float screenPixelsPerMillimeter { get; set; }
 
     public string observations { get; set; }
 
@@ -117,15 +118,14 @@ public class ExperimentResultRecord
                 r.trialDuration = t.trialDuration;
 
                 r.fromTargetId = t.initialTargetId;
-                r.xFrom = t.initialPosition.x;
-                r.yFrom = t.initialPosition.y;
-                r.zFrom = t.initialPosition.z;
-
+                r.xFrom = t.initialTargetPosition.x;
+                r.yFrom = t.initialTargetPosition.y;
+                r.zFrom = t.initialTargetPosition.z;
 
                 r.toTargetId = t.finalTargetId;
-                r.xTo = t.finalPosition.x;
-                r.yTo = t.finalPosition.y;
-                r.zTo = t.finalPosition.z;
+                r.xTo = t.finalTargetPosition.x;
+                r.yTo = t.finalTargetPosition.y;
+                r.zTo = t.finalTargetPosition.z;
 
                 r.xFromMeasured = t.initialPosition.x;
                 r.yFromMeasured = t.initialPosition.y;
@@ -136,8 +136,9 @@ public class ExperimentResultRecord
                 r.zToMeasured = t.finalPosition.z;
 
                 r.missedTarget = t.missedTarget ? 1 : 0;
-                r.markedAsOutlier = t.isMarkedAsOutlier ? 1 : 0;                                
+                r.markedAsOutlier = t.isMarkedAsOutlier ? 1 : 0;
 
+                r.screenPixelsPerMillimeter = test.configuration.screenPixelsPerMillimeter;
                 r.observations = test.configuration.observations;
 
                 results.Add(r);

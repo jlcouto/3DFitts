@@ -22,7 +22,6 @@ public enum CursorSelectionMethod
 {
     MouseLeftButton,
     DwellTime,
-    SelectionOnContact,
     KeyboardSpaceBar,
     Meta2GrabInteraction,
     LeapMotionGrabInteraction,
@@ -74,8 +73,6 @@ public static class Enum2String
                 return "MouseLeftButton";
             case CursorSelectionMethod.DwellTime:
                 return "DwellTime";
-            case CursorSelectionMethod.SelectionOnContact:
-                return "OnContact";
             case CursorSelectionMethod.KeyboardSpaceBar:
                 return "KeyboardSpacebar";
             case CursorSelectionMethod.Meta2GrabInteraction:

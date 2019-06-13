@@ -26,7 +26,7 @@ public class TrialMeasurements {
     public bool missedTarget { get; private set; }
     public bool isMarkedAsOutlier { get; private set; }
 
-    public TrialMeasurements(int trialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget, TrialMeasurements lastTrial = null) {
+    public TrialMeasurements(int trialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget, TrialMeasurements lastTrial) {
         this.lastTrial = lastTrial;
         this.trialId = trialId;
         this.initialTargetId = initialTarget.targetId;

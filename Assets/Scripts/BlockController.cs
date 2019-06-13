@@ -33,17 +33,22 @@ public class BlockController : ITrialListener {
     }
 
     void RunNextTrial()
-    {
+    {        
         int currentFinalIndex = (currentInitialTargetId + 1) % targets.Length;
         if (currentInitialTargetId < targets.Length)
         {
+            TrialMeasurements lastTrial = null;
+            if (blockMeasurements.trialsData.Count > 0)
+            {
+                lastTrial = blockMeasurements.trialsData[blockMeasurements.trialsData.Count - 1];
+            }
             if (task == ExperimentTask.ReciprocalDragging)
             {
-                currentTrial = new DragTestController(currentInitialTargetId, targets[currentInitialTargetId], targets[currentFinalIndex], this, cursor);
+                currentTrial = new DragTestController(currentInitialTargetId, targets[currentInitialTargetId], targets[currentFinalIndex], this, cursor, lastTrial);
             }
             else
             {
-                currentTrial = new TappingTrialController(currentInitialTargetId, targets[currentInitialTargetId], targets[currentFinalIndex], this, cursor);
+                currentTrial = new TappingTrialController(currentInitialTargetId, targets[currentInitialTargetId], targets[currentFinalIndex], this, cursor, lastTrial);
             }            
             currentTrial.StartTrial();
         }

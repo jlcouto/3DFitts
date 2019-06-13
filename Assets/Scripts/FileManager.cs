@@ -10,12 +10,12 @@ public static class FileManager
 {
     public static string GetResultsFolder(string participantCode = null)
     {
-        return "./Results/";
-    }
-
-    public static string GetResultsFolderForParticipant(string participantCode)
-    {
-        return GetResultsFolder() + participantCode + "/";
+        string baseFolder = "./Results/";
+        if (participantCode != null)
+        {
+            baseFolder += participantCode + "/";
+        }
+        return baseFolder;
     }
 
     public static string GetFrameDataFolder(string participantCode)
@@ -115,6 +115,8 @@ public static class FileManager
         {
             StreamWriter writer = new StreamWriter(directory + filename);
             CsvWriter csvWriter = new CsvWriter(writer);
+            csvWriter.Configuration.CultureInfo = System.Globalization.CultureInfo.InvariantCulture;
+            csvWriter.Configuration.Delimiter = ",";
             csvWriter.WriteRecords(records);
             writer.Flush();
             writer.Close();
@@ -132,6 +134,8 @@ public static class FileManager
         {
             StreamReader reader = new StreamReader(directory + filename);
             CsvReader csvReader = new CsvReader(reader);
+            csvReader.Configuration.CultureInfo = System.Globalization.CultureInfo.InvariantCulture;
+            csvReader.Configuration.Delimiter = ",";
             List<ExperimentResultRecord> records = new List<ExperimentResultRecord>(csvReader.GetRecords<ExperimentResultRecord>());
             reader.Close();
             return records;
@@ -152,6 +156,8 @@ public static class FileManager
 
         StreamWriter writer = new StreamWriter(directory + outputFilename);
         CsvWriter csvWriter = new CsvWriter(writer);
+        csvWriter.Configuration.CultureInfo = System.Globalization.CultureInfo.InvariantCulture;
+        csvWriter.Configuration.Delimiter = ",";
 
         foreach (var file in filesToMerge)
         {
@@ -170,7 +176,8 @@ public static class FileManager
     {
         if (File.Exists(path))
         {
-            return path.Remove(path.LastIndexOf("/", StringComparison.InvariantCulture) + 1);
+            FileInfo f = new FileInfo(path);
+            return f.DirectoryName + "/";
         }
         else
         {

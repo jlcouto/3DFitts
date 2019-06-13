@@ -8,6 +8,8 @@ public interface ITrialListener {
 
 public abstract class TrialController : ICursorListener {
 
+    private TrialMeasurements _lastTrial;
+
     public TargetBehaviour initialTarget;
     public TargetBehaviour finalTarget;
     public CursorBehaviour cursor;
@@ -18,18 +20,19 @@ public abstract class TrialController : ICursorListener {
 
     public TrialMeasurements trialData;
 
-    public TrialController(int theTrialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget, ITrialListener theListener, CursorBehaviour theCursor) {
+    public TrialController(int theTrialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget, ITrialListener theListener, CursorBehaviour theCursor, TrialMeasurements lastTrial) {
         this.trialId = theTrialId;
         this.initialTarget = initialTarget;
         this.finalTarget = finalTarget;
         this.listener = theListener;
         this.cursor = theCursor;
+        _lastTrial = lastTrial;
         InitializeTrial();
     }
 
     public virtual void InitializeTrial()
     {
-        trialData = new TrialMeasurements(trialId, initialTarget, finalTarget);      
+        trialData = new TrialMeasurements(trialId, initialTarget, finalTarget, _lastTrial);      
         initialTarget.SetAsNormalTarget();
         finalTarget.SetAsNextTarget();
     }

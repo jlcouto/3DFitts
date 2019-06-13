@@ -119,13 +119,10 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
 
         bool isDraggingTask = SharedData.currentConfiguration.experimentTask == ExperimentTask.ReciprocalDragging;
 
-        // Drag task do not work with dwell and automatic selection for now
+        // Drag task do not work with dwell yet
         cursorSelectionMethod.GetComponent<DropDownController>().EnableOption((int)CursorSelectionMethod.DwellTime, !isDraggingTask);
-        cursorSelectionMethod.GetComponent<DropDownController>().EnableOption((int)CursorSelectionMethod.SelectionOnContact, !isDraggingTask);
 
-        if (isDraggingTask &&
-            (SharedData.currentConfiguration.cursorSelectionMethod == CursorSelectionMethod.DwellTime ||
-             SharedData.currentConfiguration.cursorSelectionMethod == CursorSelectionMethod.SelectionOnContact))
+        if (isDraggingTask && SharedData.currentConfiguration.cursorSelectionMethod == CursorSelectionMethod.DwellTime)
         {
             SharedData.currentConfiguration.cursorSelectionMethod = CursorSelectionMethod.MouseLeftButton;
             UpdateCanvasElementWithInternalValue(cursorSelectionMethod);
