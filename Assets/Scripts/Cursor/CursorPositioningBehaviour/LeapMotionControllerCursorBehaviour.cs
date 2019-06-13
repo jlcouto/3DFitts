@@ -26,8 +26,8 @@ public class LeapMotionControllerCursorBehaviour : CursorPositioningController
 
     void Start()
     {
-        leapMotionOffset.position = SharedData.calibrationData.leapMotionOffset;
-        leapMotionOffset.rotation = SharedData.calibrationData.leapMotionRotation;
+        leapMotionOffset.localPosition = SharedData.calibrationData.leapMotionOffset;
+        leapMotionOffset.localRotation = SharedData.calibrationData.leapMotionRotation;
     }
 
     private void Update()
@@ -62,8 +62,8 @@ public class LeapMotionControllerCursorBehaviour : CursorPositioningController
 
         if (isCalibrating)
         {
-            Vector3 pos = leapMotionOffset.position;
-            Vector3 rotation = leapMotionOffset.rotation.eulerAngles;
+            Vector3 pos = leapMotionOffset.localPosition;
+            Vector3 rotation = leapMotionOffset.localRotation.eulerAngles;
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
                 FinishCalibration();
@@ -94,13 +94,13 @@ public class LeapMotionControllerCursorBehaviour : CursorPositioningController
             }
             else if (Input.GetKey(KeyCode.O))
             {
-                leapMotionOffset.rotation = Quaternion.Euler(new Vector3(rotation.x - offsetAngleCalibrationStep, rotation.y, rotation.z));
+                leapMotionOffset.localRotation = Quaternion.Euler(new Vector3(rotation.x - offsetAngleCalibrationStep, rotation.y, rotation.z));
             }
             else if (Input.GetKey(KeyCode.L))
             {
-                leapMotionOffset.rotation = Quaternion.Euler(new Vector3(rotation.x + offsetAngleCalibrationStep, rotation.y, rotation.z));
+                leapMotionOffset.localRotation = Quaternion.Euler(new Vector3(rotation.x + offsetAngleCalibrationStep, rotation.y, rotation.z));
             }
-            leapMotionOffset.position = pos;
+            leapMotionOffset.localPosition = pos;
         }
     }
 
@@ -143,14 +143,23 @@ public class LeapMotionControllerCursorBehaviour : CursorPositioningController
 
     void FinishCalibration()
     {
-        SharedData.calibrationData.leapMotionOffset = leapMotionOffset.position;
-        SharedData.calibrationData.leapMotionRotation = leapMotionOffset.rotation;
+        SharedData.calibrationData.leapMotionOffset = leapMotionOffset.localPosition;
+        SharedData.calibrationData.leapMotionRotation = leapMotionOffset.localRotation;
         SharedData.calibrationData.SaveToFile();
 
         isCalibrating = false;
-        finishCalibrationCallback?.Invoke();
-        finishCalibrationCallback = null;
+
         leapHandModelManager.DisableGroup("Rigged Hands");
-        Debug.Log("LeapMotionControllerCursorBehaviour: finished calibration.");
+        StartCoroutine(ExecuteAfterTime(() => {
+            finishCalibrationCallback?.Invoke();
+            finishCalibrationCallback = null;
+            Debug.Log("LeapMotionControllerCursorBehaviour: finished calibration.");
+        }, 1)); // avoid bug when trying to disable hands group in leap motion
+    }
+
+    IEnumerator ExecuteAfterTime(System.Action action, float timeInSeconds)
+    {
+        yield return new WaitForSeconds(timeInSeconds);
+        action?.Invoke();
     }
 }

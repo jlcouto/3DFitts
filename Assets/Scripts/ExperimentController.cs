@@ -407,8 +407,8 @@ public class ExperimentController : MonoBehaviour, ITestListener
                 cursor.cursorPositionController = controller;
                 controller.gameObject.SetActive(true);
                 status = ExperimentStatus.CalibrationRunning;
-                controller.StartLeapMotionCalibration(() => {
-                    ExecuteAfterTime(() => { FinishCalibration(); }, 1); // avoid bug when trying to disable hands group in leap motion                 
+                controller.StartLeapMotionCalibration( () => {
+                    FinishCalibration();
                 });
             }
             else
@@ -416,12 +416,6 @@ public class ExperimentController : MonoBehaviour, ITestListener
                 Debug.LogWarning("Could not find the LeapMotionControllerCursorBehaviour component in the children of inputMethods!");
             }
         }
-    }
-
-    IEnumerator ExecuteAfterTime(System.Action action, float timeInSeconds)
-    {
-        yield return new WaitForSeconds(timeInSeconds);
-        action?.Invoke();
     }
 
     void FinishCalibration()

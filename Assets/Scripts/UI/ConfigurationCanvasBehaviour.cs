@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SimpleFileBrowser;
+using System.Runtime.InteropServices;
 
 public class ConfigurationCanvasBehaviour : MonoBehaviour
 {
@@ -49,8 +50,11 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
 
     private bool _isInitialized;
 
+    private IntPtr _appWindow;
+
     void Start()
     {
+        _appWindow = (IntPtr)GetActiveWindow();
         panelBottomMenu.SetActive(false);
         panelSelectFile.HidePanel();
         InitializeValues();
@@ -157,10 +161,19 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
     public void StartMetaSpaceCalibration()
     {
         experimentController.StartCalibrationOfExperimentPosition();
+        SetAsActiveWindow(0.5f);                        
+    }
+
+    private void SetAsActiveWindow(float timeInSeconds) {
+        StartCoroutine(ExecuteAfterTime(() => {
+            if (_appWindow != (IntPtr)GetActiveWindow()) {
+                SetForegroundWindow(_appWindow);
+            }
+        }, timeInSeconds));        
     }
 
     public void StartCalibrationOfCurrentCursorPositioning()
-    {
+    {        
         if (SharedData.currentConfiguration.cursorPositioningMethod == CursorPositioningMethod.LeapMotionController)
         {
             experimentController.StartCalibrationOfLeapMotionController();
@@ -402,6 +415,7 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         panelBackground.SetActive(false);
         panelBottomMenu.SetActive(true);
         experimentController.RunExperiment();
+        SetAsActiveWindow(0.5f);
     }
 
     public void ReturnToMainMenu()
@@ -524,4 +538,13 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
             return String.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:####.##}", value * scale);
         }
     }
+
+    IEnumerator ExecuteAfterTime(System.Action action, float timeInSeconds)
+    {
+        yield return new WaitForSeconds(timeInSeconds);
+        action?.Invoke();
+    }
+
+    [DllImport("user32.dll")] static extern uint GetActiveWindow();
+    [DllImport("user32.dll")] static extern bool SetForegroundWindow(IntPtr hWnd);
 }
