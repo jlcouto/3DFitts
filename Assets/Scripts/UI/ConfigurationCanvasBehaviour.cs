@@ -15,6 +15,7 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
     public GameObject panelConfigurationMenu;
     public GameObject panelBottomMenu;
     public GameObject panelBackground;
+    public CalibrationPanelBehaviour panelCalibration;
 
     public SelectFilePanelBehaviour panelSelectFile;
     public MessageBoxPanelBehaviour panelMessageBox;
@@ -160,7 +161,14 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
 
     public void StartMetaSpaceCalibration()
     {
-        experimentController.StartCalibrationOfExperimentPosition();
+        panelCalibration.ShowPanel("Calibrating the center of the tests' planes...",
+            "Using the Meta 2 headset, you should be able to see, when moving your hands in front of you, the cube that represents " +
+            "the center of the tests' planes. It will follow your hands in space.\n\n" +
+            "Moving your hands in space, position the cube where you would like the tests to take place.\n\n" +
+            "Use the left and right arrow key on the keyboard to rotate the cube over the z axis, making sure the sphere " +
+            "is facing you.\n\n" +
+            "PRESS ENTER to finish the process...");
+        experimentController.StartCalibrationOfExperimentPosition(() => { panelCalibration.HidePanel(); });
         SetAsActiveWindow(0.5f);                        
     }
 
@@ -176,11 +184,22 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
     {        
         if (SharedData.currentConfiguration.cursorPositioningMethod == CursorPositioningMethod.LeapMotionController)
         {
-            experimentController.StartCalibrationOfLeapMotionController();
+            panelCalibration.ShowPanel("Calibrating Leap Motion Controller...",
+            "Make sure the Leap Motion Controller is connected to the computer and running properly.\n\n" +
+            "Using the Meta 2 headset, you should see virtual hands tracking your own when moving them in front of the device.\n\n" +
+            "Using the keyboard arrows and letters 'w' and 'd', you can control the offset of the virtual hands in the three dimensions. " +
+            "Using the letters 'o' and 'l' you can control the rotation of the virtual hands over the x axis.\n\n" +
+            "Position the virtual hands over your own and PRESS ENTER to finish the process.");
+            experimentController.StartCalibrationOfLeapMotionController(() => { panelCalibration.HidePanel(); });
         }
         else if (SharedData.currentConfiguration.cursorPositioningMethod == CursorPositioningMethod.VIVE)
         {
-            experimentController.StartCalibrationOfVIVEController();
+            panelCalibration.ShowPanel("Calibrating HTC VIVE Controller...",
+            "Make sure the 'udp_emitter.py' script and the SteamVR application are running and that the VIVE Controller is connected to them.\n\n" +
+            "Using the Meta 2 headset, you will see a sphere in space. Position the VIVE Controller where it is and press the trigger button. " +
+            "The sphere should disappear and another one should appear near the first one. Repeat the process until you select six spheres.\n\n" +
+            "You may also cancel the calibration process pressing ESC.");
+            experimentController.StartCalibrationOfVIVEController(() => { panelCalibration.HidePanel(); });
         }
     }
 

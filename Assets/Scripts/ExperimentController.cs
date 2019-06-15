@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
+using System;
 
 public class ExperimentController : MonoBehaviour, ITestListener
 {
@@ -38,7 +39,9 @@ public class ExperimentController : MonoBehaviour, ITestListener
     int frameNumber = 0;
 
     bool isCalibratingCenterOfPLanes = false;
-    CursorPositioningController.CursorHandPosition originalCursorPosition;    
+    CursorPositioningController.CursorHandPosition originalCursorPosition;
+
+    Action OnCalibrationFinished; 
 
     class FrameData
     {
@@ -88,7 +91,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
         {
             transform.position = cursor.GetCursorPosition();
 
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
                 FinishCalibrationOfExperimentPosition();
             }
@@ -356,10 +359,12 @@ public class ExperimentController : MonoBehaviour, ITestListener
         return false;
     }
 
-    public void StartCalibrationOfExperimentPosition()
+    public void StartCalibrationOfExperimentPosition(Action onFinished = null)
     {
         if (CanStartCalibrationProcess())
         {
+            OnCalibrationFinished = onFinished;
+
             status = ExperimentStatus.CalibrationRunning;
             isCalibratingCenterOfPLanes = true;
 
@@ -376,10 +381,12 @@ public class ExperimentController : MonoBehaviour, ITestListener
         }
     }
 
-    public void StartCalibrationOfVIVEController()
+    public void StartCalibrationOfVIVEController(Action onFinished = null)
     {
         if (CanStartCalibrationProcess())
         {
+            OnCalibrationFinished = onFinished;
+
             ViveControllerPositionBehaviour controller = inputDevices.GetComponentInChildren<ViveControllerPositionBehaviour>(true);
             if (controller != null)
             {
@@ -397,10 +404,12 @@ public class ExperimentController : MonoBehaviour, ITestListener
         }
     }
 
-    public void StartCalibrationOfLeapMotionController()
+    public void StartCalibrationOfLeapMotionController(Action onFinished = null)
     {
         if (CanStartCalibrationProcess())
         {
+            OnCalibrationFinished = onFinished;
+
             LeapMotionControllerCursorBehaviour controller = inputDevices.GetComponentInChildren<LeapMotionControllerCursorBehaviour>(true);
             if (controller != null)
             {
@@ -424,6 +433,8 @@ public class ExperimentController : MonoBehaviour, ITestListener
         {
             SetCursorActive(false);
             status = ExperimentStatus.Stopped;
+            OnCalibrationFinished?.Invoke();
+            OnCalibrationFinished = null;
         }
     }
 

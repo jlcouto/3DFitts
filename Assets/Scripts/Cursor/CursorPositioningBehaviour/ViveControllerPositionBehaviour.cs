@@ -106,26 +106,33 @@ public class ViveControllerPositionBehaviour : CursorPositioningController
     
     void Update()
     {
-        updateTriggerMutex.WaitOne();
-
-        lastRawCursorPosition = new Vector3((float)float_array[0], (float)float_array[1], (float)float_array[2]);
-        lastRawCursorRotation = new Quaternion((float)float_array[3], (float)float_array[4], (float)float_array[5], (float)float_array[6]);
-        ConvertVIVEToUnity(ref lastRawCursorPosition, ref lastRawCursorRotation);
-        
-        //translationMatrix = Matrix4x4.Translate(-positionOffset);
-        //scalingMatrix = Matrix4x4.Scale(scale);
-        //rotationMatrix = Matrix4x4.Rotate(Quaternion.Euler(rotation.x, rotation.y, rotation.z));
-
-        lastCursorPosition = offset.position + scalingMatrix.MultiplyPoint(rotationMatrix.MultiplyPoint(translationMatrix.MultiplyPoint(lastRawCursorPosition)));
-        lastCursorRotation = lastRawCursorRotation;
-
-        currentFrame++;
-        if (currentFrame < 0)
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            currentFrame = 0;
+            FinishCalibration();
         }
+        else
+        {
+            updateTriggerMutex.WaitOne();
 
-        updateTriggerMutex.ReleaseMutex();
+            lastRawCursorPosition = new Vector3((float)float_array[0], (float)float_array[1], (float)float_array[2]);
+            lastRawCursorRotation = new Quaternion((float)float_array[3], (float)float_array[4], (float)float_array[5], (float)float_array[6]);
+            ConvertVIVEToUnity(ref lastRawCursorPosition, ref lastRawCursorRotation);
+
+            //translationMatrix = Matrix4x4.Translate(-positionOffset);
+            //scalingMatrix = Matrix4x4.Scale(scale);
+            //rotationMatrix = Matrix4x4.Rotate(Quaternion.Euler(rotation.x, rotation.y, rotation.z));
+
+            lastCursorPosition = offset.position + scalingMatrix.MultiplyPoint(rotationMatrix.MultiplyPoint(translationMatrix.MultiplyPoint(lastRawCursorPosition)));
+            lastCursorRotation = lastRawCursorRotation;
+
+            currentFrame++;
+            if (currentFrame < 0)
+            {
+                currentFrame = 0;
+            }
+
+            updateTriggerMutex.ReleaseMutex();
+        }
     }
 
     public static void ConvertVIVEToUnity(ref Vector3 pos, ref Quaternion rot)
