@@ -9,7 +9,7 @@ public class TargetPlaneBuilder {
             numberOfTargets++; // number of targets must be an odd number
         }
 
-        float thetaStep = 2 * Mathf.PI / numberOfTargets;
+        float thetaStep = -2 * Mathf.PI / numberOfTargets;
         int startTargetIndex = 0;
         int finalTargetIndex = (int) numberOfTargets / 2 + 1;
         for (int i = 0; i < numberOfTargets; i++) {
@@ -29,7 +29,7 @@ public class TargetPlaneBuilder {
             targetBehaviour.targetId = targetPositionIndex;
             targetBehaviour.SetAsNormalTarget();
 
-            newTarget.transform.localPosition = sequence.targetsDistance / 2 * (new Vector3(Mathf.Sin(targetPositionIndex * thetaStep), 0, Mathf.Cos(targetPositionIndex * thetaStep)));
+            newTarget.transform.localPosition = sequence.targetsDistance / 2 * (new Vector3(Mathf.Cos(targetPositionIndex * thetaStep), 0, Mathf.Sin(targetPositionIndex * thetaStep)));
             newTarget.transform.localScale = Vector3.one * sequence.targetWidth;
             newTarget.SetActive(true);
         }
