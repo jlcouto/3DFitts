@@ -8,6 +8,7 @@ public class Mouse2DInputBehaviour : CursorPositioningController
     Vector3 mousePosition;
 
     public Transform targetPlane;
+    public Transform camera;
     public PlaneOrientation plane = PlaneOrientation.PlaneXY;
     public float spaceSize = 1;
 
@@ -21,7 +22,8 @@ public class Mouse2DInputBehaviour : CursorPositioningController
         float xCoord = (screenPos.x - 0.5f * Screen.width) * spaceSize / minScreenSize;
         float yCoord = (screenPos.y - 0.5f * Screen.height) * spaceSize / minScreenSize;
 
-        Vector3 offset = targetPlane.position;
+        Vector3 offset = camera.position;
+        offset.z -= camera.localPosition.z;
 
         switch (plane)
         {
@@ -40,7 +42,33 @@ public class Mouse2DInputBehaviour : CursorPositioningController
                 mousePosition.y = xCoord + offset.y;
                 mousePosition.z = yCoord + offset.z;
                 break;
-        }        
+        }
+
+        //ManualCameraAdjustment();
+    }
+
+    void ManualCameraAdjustment() {
+        /*
+        * This code can be used to manually offset the camera using the keyboard arrows.
+        * I used this to move the targets plane so it would overlap the targets in the GoFitts software.
+        * This way, I could test both softwares with an autoclicker (that generated the same mouse inputs),
+        * allowing me to validate the algorithm implemented in this software.
+        */   
+        float c = 0.001f/SharedData.currentConfiguration.screenPixelsPerMillimeter; // 1 pixel
+        Vector3 p = camera.transform.position;
+        if (Input.GetKeyDown(KeyCode.DownArrow)) {
+            p.y += c;
+        }
+        else if (Input.GetKeyDown(KeyCode.UpArrow)) {
+            p.y -= c;
+        }   
+        else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
+            p.x += c;
+        }   
+        else if (Input.GetKeyDown(KeyCode.RightArrow)) {
+            p.x -= c;
+        }
+        camera.transform.position = p;
     }
 
     public override string GetDeviceName()
