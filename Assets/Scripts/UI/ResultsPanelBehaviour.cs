@@ -29,11 +29,11 @@ public class ResultsPanelBehaviour : MonoBehaviour
         numTrials.text = nTargets.ToString();
         numErrors.text = nErrors.ToString();
 
-        amplitude.text = DoubleToString(results.sequenceInfo.targetsDistance, aThousand);
-        effectiveAmplitude.text = DoubleToString(results.computedResults.effectiveAmplitude, aThousand);
+        amplitude.text = DoubleToString(results.sequenceInfo.targetsDistance, aThousand) + " (mm)";
+        effectiveAmplitude.text = DoubleToString(results.computedResults.effectiveAmplitude, aThousand) + " (mm)";
 
-        width.text = DoubleToString(results.sequenceInfo.targetWidth, aThousand);
-        effectiveWidth.text = DoubleToString(results.computedResults.effectiveWidth, aThousand);
+        width.text = DoubleToString(results.sequenceInfo.targetWidth, aThousand) + " (mm)";
+        effectiveWidth.text = DoubleToString(results.computedResults.effectiveWidth, aThousand) + " (mm)";
 
         indexOfDifficulty.text = DoubleToString(results.sequenceInfo.indexOfDifficulty) + " bits";
         effectiveIndexOfDifficulty.text = DoubleToString(results.computedResults.effectiveIndexOfDifficulty) + " bits";
