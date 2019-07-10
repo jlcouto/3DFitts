@@ -22,8 +22,7 @@ public class Mouse2DInputBehaviour : CursorPositioningController
         float xCoord = (screenPos.x - 0.5f * Screen.width) * spaceSize / minScreenSize;
         float yCoord = (screenPos.y - 0.5f * Screen.height) * spaceSize / minScreenSize;
 
-        Vector3 offset = camera.position;
-        offset.z -= camera.localPosition.z;
+        Vector3 offset = targetPlane.position;
 
         switch (plane)
         {
@@ -33,6 +32,8 @@ public class Mouse2DInputBehaviour : CursorPositioningController
                 mousePosition.z = yCoord + offset.z;
                 break;
             case PlaneOrientation.PlaneXY:
+                xCoord += camera.localPosition.x;
+                yCoord += camera.localPosition.y;
                 mousePosition.x = Mathf.Cos(-Mathf.PI * targetPlane.rotation.eulerAngles.y / 180) * xCoord + offset.x;
                 mousePosition.y = yCoord + offset.y;
                 mousePosition.z = Mathf.Sin(-Mathf.PI * targetPlane.rotation.eulerAngles.y / 180) * xCoord + offset.z;
