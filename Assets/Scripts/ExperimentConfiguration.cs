@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Newtonsoft.Json;
 
 public class ExperimentConfiguration
 {
@@ -7,6 +8,7 @@ public class ExperimentConfiguration
     /// The code to designate a participant, which will be included in the results of the test.
     /// Participants' personal information should be tracked separetely from the tests results.
     /// </summary>
+    [JsonIgnore]
     public string participantCode;
 
     /// <summary>
@@ -14,22 +16,26 @@ public class ExperimentConfiguration
     /// For instance, you may wish to test the same configuration in a bright and in a dark environment
     /// to see how it affects users' performance.
     /// </summary>
+    [JsonIgnore]
     public string conditionCode;
 
     /// <summary>
     /// A session denotes an execution of a test configuration.
     /// Everytime a participant repeats the same configuration, the session code should go up.
     /// </summary>
+    [JsonIgnore]
     public string sessionCode;
 
     /// <summary>
     /// The code of the test group the participant is in
     /// </summary>
+    [JsonIgnore]
     public string groupCode;
 
     /// <summary>
     /// Any relevant observations to be saved together with the results of the test.
     /// </summary>
+    [JsonIgnore]
     public string observations;
 
     /// <summary>
