@@ -253,10 +253,13 @@ public class CursorInteractorBehaviour : CursorBehaviour
 
         currentTargetsCollidingWithCursor.Remove(target);
 
+        // When a TargetBehaviour is destroyed while inside the HashSet, it will become a 'null' entry that must be removed
+        currentTargetsCollidingWithCursor.RemoveWhere((TargetBehaviour t) => { return t == null; });
+
         if (currentTargetsCollidingWithCursor.Count > 0)
-        {
+        {            
             foreach (TargetBehaviour t in currentTargetsCollidingWithCursor)
-            {
+            {                                
                 currentHighlightedTarget = t;
                 break;
             }

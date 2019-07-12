@@ -31,7 +31,7 @@ public class TappingTrialController : TrialController
         //Debug.Log("Tapping CursorAcquiredTarget");
         float distanceFinalTargetToSelectionPosition = Vector3.Distance(finalTarget.position, cursor.lastCursorSelectionPosition);
         float maxDistanceToHitTarget = 0.5f*(finalTarget.localScale.x + cursor.transform.localScale.x); // this will only work for target and cursor represented as spheres
-        bool missedTarget = (target == null) || (distanceFinalTargetToSelectionPosition > maxDistanceToHitTarget);
+        bool missedTarget = (distanceFinalTargetToSelectionPosition > maxDistanceToHitTarget);
         if (missedTarget)
         {
             cursor.PlayErrorAudio();            
