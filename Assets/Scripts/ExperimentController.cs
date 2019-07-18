@@ -38,6 +38,8 @@ public class ExperimentController : MonoBehaviour, ITestListener
     int currentSequence = 0;
     int frameNumber = 0;
 
+    float worldSpaceRatio = 1f;
+
     bool isCalibratingCenterOfPLanes = false;
     CursorPositioningController.CursorHandPosition originalCursorPosition;
 
@@ -144,32 +146,34 @@ public class ExperimentController : MonoBehaviour, ITestListener
         
         if (status == ExperimentStatus.Initializing || status == ExperimentStatus.Stopped)
         {
-            Debug.Log("[ExperimentController] Starting experiment...");
+            Debug.Log("[ExperimentController] Starting experiment...");            
+
+            centerOfTestPlanesObject.SetActive(false);
+
+            cursor.cursorPositionController = GetControllerForPositioningMethod(configuration.cursorPositioningMethod, configuration.planeOrientation);
+            cursor.selectionMethod = configuration.cursorSelectionMethod;            
+            cursor.SetDwellTime(configuration.dwellTime);            
+            
+            cursor.transform.localScale = configuration.cursorWidth * Vector3.one;
+            cursor.cursorPositionController.gameObject.SetActive(true);
+            cursor.gameObject.SetActive(true);                        
 
             if (configuration.experimentMode == ExperimentMode.Experiment2D)
             {
                 // Do not show the cursor when running the 2D mode
                 //cursor.GetComponent<MeshRenderer>().enabled = false;
                 computerCamera.backgroundColor = Color.white;
+                worldSpaceRatio = 1f;
             }
             else if (configuration.experimentMode == ExperimentMode.Experiment3DOnMeta2)
             {
+                worldSpaceRatio = configuration.screenTo3DWorldDimensionRatio;
                 computerCamera.backgroundColor = Color.grey;
                 ActivateMetaCamera();
             }
 
-            centerOfTestPlanesObject.SetActive(false);
-
-            cursor.cursorPositionController = GetControllerForPositioningMethod(configuration.cursorPositioningMethod);
-            cursor.selectionMethod = configuration.cursorSelectionMethod;            
-            cursor.SetDwellTime(configuration.dwellTime);            
-            
-            cursor.transform.localScale = configuration.cursorWidth * Vector3.one;
-            cursor.cursorPositionController.gameObject.SetActive(true);
-            cursor.gameObject.SetActive(true);
-
             currentSequence = 0;
-            status = ExperimentStatus.Running;            
+            status = ExperimentStatus.Running;
 
             RunNextTestConfiguration();
         }
@@ -186,7 +190,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
         }
     }
 
-    CursorPositioningController GetControllerForPositioningMethod(CursorPositioningMethod cursorPositioningMethod)
+    CursorPositioningController GetControllerForPositioningMethod(CursorPositioningMethod cursorPositioningMethod, PlaneOrientation plane)
     {     
         switch (cursorPositioningMethod)
         {            
@@ -198,7 +202,11 @@ public class ExperimentController : MonoBehaviour, ITestListener
                 return inputDevices.GetComponentInChildren<ViveControllerPositionBehaviour>(true);
             case CursorPositioningMethod.Mouse:
             default:
-                return inputDevices.GetComponentInChildren<Mouse2DInputBehaviour>(true);
+            {
+                Mouse2DInputBehaviour mouseController = inputDevices.GetComponentInChildren<Mouse2DInputBehaviour>(true);
+                mouseController.plane = plane;
+                return mouseController;
+            }                
         }        
     }
 
@@ -453,7 +461,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
         if (computerCamera != null)
         {
             float minScreenSizePixels = Mathf.Min(Screen.height, Screen.width);
-            computerCamera.orthographicSize = 0.5f * minScreenSizePixels / (configuration.screenPixelsPerMillimeter * 1000);
+            computerCamera.orthographicSize = worldSpaceRatio * 0.5f * minScreenSizePixels / (configuration.screenPixelsPerMillimeter * 1000);
 
             if (cursor.cursorPositionController.GetType() == typeof(Mouse2DInputBehaviour))
             {

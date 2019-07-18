@@ -187,9 +187,9 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
             panelCalibration.ShowPanel("Calibrating Leap Motion Controller...",
             "Make sure the Leap Motion Controller is connected to the computer and running properly.\n\n" +
             "Using the Meta 2 headset, you should see virtual hands tracking your own when moving them in front of the device.\n\n" +
-            "Using the keyboard arrows and letters 'w' and 'd', you can control the offset of the virtual hands in the three dimensions. " +
+            "Using the keyboard arrows and letters 'w' and 's', you can control the offset of the virtual hands in the three dimensions. " +
             "Using the letters 'o' and 'l' you can control the rotation of the virtual hands over the x axis.\n\n" +
-            "Position the virtual hands over your own and PRESS ENTER to finish the process.");
+            "Adjust the position of the virtual hands over your own hand and PRESS ENTER to finish the process.");
             experimentController.StartCalibrationOfLeapMotionController(() => { panelCalibration.HidePanel(); });
         }
         else if (SharedData.currentConfiguration.cursorPositioningMethod == CursorPositioningMethod.VIVE)

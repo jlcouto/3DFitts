@@ -133,6 +133,8 @@ public class ExperimentConfiguration
         set { _screenPixelsPerMillimeter = value; }
     }
 
+    public float screenTo3DWorldDimensionRatio = 1f;
+    
     private bool _sequecesDirtyBit = false;
     public List<IndexOfDifficulty> GetSequences()
     {

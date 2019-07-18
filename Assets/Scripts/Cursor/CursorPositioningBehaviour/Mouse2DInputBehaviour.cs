@@ -40,8 +40,8 @@ public class Mouse2DInputBehaviour : CursorPositioningController
                 break;
             case PlaneOrientation.PlaneYZ:
                 mousePosition.x = offset.x;
-                mousePosition.y = xCoord + offset.y;
-                mousePosition.z = yCoord + offset.z;
+                mousePosition.y = yCoord + offset.y;
+                mousePosition.z = xCoord + offset.z;
                 break;
         }
 
