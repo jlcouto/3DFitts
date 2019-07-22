@@ -1,9 +1,10 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 using System;
+using System.Linq;
 
 public class ExperimentController : MonoBehaviour, ITestListener
 {
@@ -167,7 +168,9 @@ public class ExperimentController : MonoBehaviour, ITestListener
             }
             else if (configuration.experimentMode == ExperimentMode.Experiment3DOnMeta2)
             {
-                worldSpaceRatio = configuration.screenTo3DWorldDimensionRatio;
+                float worldSizeMeters = 1.2f * (configuration.amplitudes.Max() + configuration.widths.Max()); // 20% greater than the minimum size required for interaction (to add margins where the user can click and miss)
+                float minScreenSizeMeters = Mathf.Min(Screen.height, Screen.width) / (configuration.screenPixelsPerMillimeter * 1000);
+                worldSpaceRatio = Mathf.Max(1f, worldSizeMeters / minScreenSizeMeters);
                 computerCamera.backgroundColor = Color.grey;
                 ActivateMetaCamera();
             }
