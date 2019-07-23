@@ -44,6 +44,7 @@ public abstract class TrialController : ICursorListener {
     }
 
     public virtual void FinishTrial(bool missedTrial) {
+        finalTarget.SetAsNormalTarget();
         cursor.RemoveListener(this);
         trialData.FinishTrial(cursor.lastCursorSelectionTime, cursor.lastCursorSelectionPosition, missedTrial);
         if (listener != null) {
