@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,7 +6,7 @@ using UnityEditor;
 using System;
 using System.Linq;
 
-public class ExperimentController : MonoBehaviour, ITestListener
+public class ExperimentController : MonoBehaviour, ITestListener, ICursorListener
 {
     enum ExperimentStatus
     {
@@ -32,6 +32,8 @@ public class ExperimentController : MonoBehaviour, ITestListener
 
     public Camera computerCamera;
     public ResultsPanelBehaviour panelResults;
+
+    public TargetBehaviour continueTestTarget;
 
     ExperimentConfiguration configuration;
     ExperimentStatus status = ExperimentStatus.Initializing;
@@ -150,6 +152,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
             Debug.Log("[ExperimentController] Starting experiment...");            
 
             centerOfTestPlanesObject.SetActive(false);
+            continueTestTarget.transform.parent.gameObject.SetActive(false);
 
             cursor.cursorPositionController = GetControllerForPositioningMethod(configuration.cursorPositioningMethod, configuration.planeOrientation);
             cursor.selectionMethod = configuration.cursorSelectionMethod;            
@@ -308,7 +311,17 @@ public class ExperimentController : MonoBehaviour, ITestListener
         Debug.Log("[ExperimentController] Current test finished.");
         ExportResultsToFile(testMeasurements);
         AbortCurrentTest();
-        panelResults.ShowPanel(testMeasurements, () => { RunNextTestConfiguration(); });        
+        cursor.RegisterNewListener(this);
+        continueTestTarget.transform.parent.gameObject.SetActive(true);
+        panelResults.ShowPanel(testMeasurements, () => { FinishCurrentTest(); });        
+    }
+
+    void FinishCurrentTest()
+    {
+        panelResults.HidePanel();
+        continueTestTarget.transform.parent.gameObject.SetActive(false);
+        cursor.RemoveListener(this);
+        RunNextTestConfiguration(); 
     }
 
     bool AbortCurrentTest()
@@ -472,6 +485,18 @@ public class ExperimentController : MonoBehaviour, ITestListener
             }
         }
     }
+
+    public void CursorEnteredTarget(TargetBehaviour target) {}
+    public void CursorExitedTarget(TargetBehaviour target) {}
+    public void CursorAcquiredTarget(TargetBehaviour target)
+    {
+        if (target != null && target.GetInstanceID() == continueTestTarget.GetInstanceID())
+        {
+            FinishCurrentTest();
+        }
+    }
+    public void CursorDragTargetStarted(TargetBehaviour target) {}
+    public void CursorDragTargetEnded(TargetBehaviour draggedTarget, TargetBehaviour receivingTarget) {}
 }
 
 

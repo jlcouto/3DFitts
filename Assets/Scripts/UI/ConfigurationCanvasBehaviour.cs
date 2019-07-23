@@ -145,7 +145,8 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
 
         bool isLeapMotionSelected = SharedData.currentConfiguration.cursorPositioningMethod == CursorPositioningMethod.LeapMotionController;
         bool isVIVESelected = SharedData.currentConfiguration.cursorPositioningMethod == CursorPositioningMethod.VIVE;
-        buttonDeviceCalibration.interactable = isLeapMotionSelected || isVIVESelected;
+        bool isScreenCalibrationAvailable = is3DModeSelected && SharedData.currentConfiguration.cursorPositioningMethod == CursorPositioningMethod.Mouse;
+        buttonDeviceCalibration.interactable = isLeapMotionSelected || isVIVESelected || isScreenCalibrationAvailable;
         buttonDeviceCalibration.gameObject.SetActive(buttonDeviceCalibration.interactable);
 
         Text calibrateText = buttonDeviceCalibration.GetComponentInChildren<Text>();
@@ -156,6 +157,9 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
         else if (isVIVESelected)
         {
             calibrateText.text = "Calibrate VIVE";            
+        }
+        else if (isScreenCalibrationAvailable) {
+            calibrateText.text = "Configure Screen Size";
         }
     }
 
@@ -200,6 +204,10 @@ public class ConfigurationCanvasBehaviour : MonoBehaviour
             "The sphere should disappear and another one should appear near the first one. Repeat the process until you select six spheres.\n\n" +
             "You may also cancel the calibration process pressing ESC.");
             experimentController.StartCalibrationOfVIVEController(() => { panelCalibration.HidePanel(); });
+        }
+        else if (SharedData.currentConfiguration.cursorPositioningMethod == CursorPositioningMethod.Mouse)
+        {
+
         }
     }
 
