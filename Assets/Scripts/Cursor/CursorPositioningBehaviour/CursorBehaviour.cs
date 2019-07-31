@@ -5,7 +5,8 @@ using UnityEngine;
 public interface ICursorListener {
     void CursorEnteredTarget(TargetBehaviour target);
     void CursorExitedTarget(TargetBehaviour target);
-    void CursorAcquiredTarget(TargetBehaviour target);
+    void CursorTargetSelectionStarted(TargetBehaviour target);
+    void CursorTargetSelectionEnded(TargetBehaviour target);
     void CursorDragTargetStarted(TargetBehaviour target);
     void CursorDragTargetEnded(TargetBehaviour draggedTarget, TargetBehaviour receivingTarget);
 }
@@ -15,9 +16,6 @@ public abstract class CursorBehaviour : MonoBehaviour {
 
     public AudioSource correctAudio;
     public AudioSource errorAudio;
-
-    public Vector3 lastCursorSelectionPosition;
-    public float lastCursorSelectionTime;
 
     protected void Start()
     {
@@ -33,10 +31,11 @@ public abstract class CursorBehaviour : MonoBehaviour {
         listeners.Remove(listener);
     }
 
-    public void RegisterSelectionInformation(float timeOfSelection, Vector3 positionOfCursor)
+    public bool IsOverTarget(TargetBehaviour target)
     {
-        this.lastCursorSelectionTime = timeOfSelection;
-        this.lastCursorSelectionPosition = positionOfCursor;
+        float distanceFinalTargetToSelectionPosition = Vector3.Distance(target.position, GetCursorPosition());
+        float maxDistanceToHitTarget = 0.5f * (target.localScale.x + this.transform.localScale.x); // this will only work for target and cursor represented as spheres
+        return (distanceFinalTargetToSelectionPosition <= maxDistanceToHitTarget);
     }
 
     protected void ExecuteForEachCursorListener(System.Action<ICursorListener> action)
@@ -51,7 +50,8 @@ public abstract class CursorBehaviour : MonoBehaviour {
 
     public abstract void EnterTarget(TargetBehaviour theTarget);
     public abstract void ExitTarget(TargetBehaviour theTarget);
-    public abstract void AcquireTarget(TargetBehaviour theTarget);
+    public abstract void CursorTargetSelectionStarted(TargetBehaviour target);
+    public abstract void CursorTargetSelectionEnded(TargetBehaviour target);
     public abstract void CursorDragTargetStarted(TargetBehaviour target);
     public abstract void CursorDragTargetEnded(TargetBehaviour draggedTarget, TargetBehaviour receivingTarget);
 

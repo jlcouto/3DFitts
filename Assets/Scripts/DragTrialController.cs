@@ -33,32 +33,31 @@ public class DragTestController : TrialController
     {
         base.StartTrial();
         trialData.ForceInitialTime(-1);
-    }
-
-    public override void FinishTrial(bool missedTrial)
-    {
-        finalTarget.SetAsNormalTarget();
-        base.FinishTrial(missedTrial);
-    }
+    }    
 
     public override void CursorEnteredTarget(TargetBehaviour target)
     {
-        Debug.Log("Drag CursorEnteredTarget");
+        //Debug.Log("Drag CursorEnteredTarget");
     }
 
     public override void CursorExitedTarget(TargetBehaviour target)
     {
-        Debug.Log("Drag CursorExitedTarget");
+        //Debug.Log("Drag CursorExitedTarget");
     }
 
-    public override void CursorAcquiredTarget(TargetBehaviour target)
+    public override void CursorTargetSelectionStarted(TargetBehaviour target)
     {
-        Debug.Log("Drag CursorAcquiredTarget");
+        //Debug.Log("Drag CursorTargetSelectionStarted");
+    }
+
+    public override void CursorTargetSelectionEnded(TargetBehaviour target)
+    {
+        //Debug.Log("Drag CursorTargetSelectionEnded");
     }
 
     public override void CursorDragTargetStarted(TargetBehaviour target)
     {
-        Debug.Log("Drag CursorDragTargetStarted");
+        //Debug.Log("Drag CursorDragTargetStarted");
         if (!isDraggingTarget &&
             target != null && target.targetId == initialTarget.targetId && target.type == TargetType.DraggableTarget)
         {
@@ -73,11 +72,12 @@ public class DragTestController : TrialController
         {
             cursor.PlayErrorAudio();
         }
+        ActionStarted();
     }
 
     public override void CursorDragTargetEnded(TargetBehaviour draggedTarget, TargetBehaviour receivingTarget)
     {
-        Debug.Log("Drag CursorDragTargetExited");
+        //Debug.Log("Drag CursorDragTargetExited");
         if (isDraggingTarget)
         {
             bool missedTarget;
@@ -94,7 +94,7 @@ public class DragTestController : TrialController
             }
             Object.Destroy(draggableObject);
             isDraggingTarget = false;
-            FinishTrial(missedTarget);
+            ActionEnded(missedTarget);
         }
     }
 

@@ -43,10 +43,14 @@ public abstract class TrialController : ICursorListener {
         trialData.StartTrial(Time.realtimeSinceStartup, cursor.GetCursorPosition());  
     }
 
-    public virtual void FinishTrial(bool missedTrial) {
+    public virtual void ActionStarted()
+    {
+        trialData.ActionStarted(Time.realtimeSinceStartup, cursor.GetCursorPosition());
+    }
+    public virtual void ActionEnded(bool missedTrial) {
         finalTarget.SetAsNormalTarget();
         cursor.RemoveListener(this);
-        trialData.FinishTrial(cursor.lastCursorSelectionTime, cursor.lastCursorSelectionPosition, missedTrial);
+        trialData.ActionEnded(Time.realtimeSinceStartup, cursor.GetCursorPosition(), missedTrial);
         if (listener != null) {
             listener.OnTrialEnded(trialData);
         }
@@ -60,7 +64,8 @@ public abstract class TrialController : ICursorListener {
 
     public abstract void CursorEnteredTarget(TargetBehaviour target);
     public abstract void CursorExitedTarget(TargetBehaviour target);
-    public abstract void CursorAcquiredTarget(TargetBehaviour target);
+    public abstract void CursorTargetSelectionStarted(TargetBehaviour target);
+    public abstract void CursorTargetSelectionEnded(TargetBehaviour target);
     public abstract void CursorDragTargetStarted(TargetBehaviour target);
     public abstract void CursorDragTargetEnded(TargetBehaviour draggedTarget, TargetBehaviour receivingTarget);
 }

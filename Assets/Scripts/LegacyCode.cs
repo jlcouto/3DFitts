@@ -85,15 +85,15 @@ public class LegacyCode
             r.yTo = (float)toPos["y"];
             r.zTo = (float)toPos["z"];
 
-            JObject toMeasured = (JObject)t["initialPosition"];
-            r.xFromMeasured = (float)toMeasured["x"];
-            r.yFromMeasured = (float)toMeasured["y"];
-            r.zFromMeasured = (float)toMeasured["z"];
+            JObject fromMeasured = (JObject)t["initialPosition"];
+            r.xTrialStarted = (float)fromMeasured["x"];
+            r.yTrialStarted = (float)fromMeasured["y"];
+            r.zTrialStarted = (float)fromMeasured["z"];
 
-            JObject fromMeasured = (JObject)t["finalPosition"];
-            r.xToMeasured = (float)fromMeasured["x"];
-            r.yToMeasured = (float)fromMeasured["y"];
-            r.zToMeasured = (float)fromMeasured["z"];
+            JObject toMeasured = (JObject)t["finalPosition"];
+            r.xActionEnded = (float)toMeasured["x"];
+            r.yActionEnded = (float)toMeasured["y"];
+            r.zActionEnded = (float)toMeasured["z"];
 
             r.missedTarget = (int)t["missedTarget"];
 

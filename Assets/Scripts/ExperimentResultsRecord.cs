@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 /// <summary>
@@ -21,6 +21,7 @@ public class ExperimentResultRecord
     public double indexOfDifficulty { get; set; }
     public float cursorWidth { get; set; }
     public string planeOrientation { get; set; }
+    public float dwellTime { get; set; }
 
     public double effectiveIndexOfDifficulty { get; set; }
     public double averageMovementTime { get; set; }
@@ -44,6 +45,9 @@ public class ExperimentResultRecord
     public float blockDuration { get; set; }
 
     public int trialId { get; set; }
+    public float timeTrialStarted { get; set; }
+    public float timeActionStarted { get; set; }
+    public float timeActionEnded { get; set; }
     public float trialDuration { get; set; }
 
     public int fromTargetId { get; set; }
@@ -56,20 +60,26 @@ public class ExperimentResultRecord
     public float yTo { get; set; }
     public float zTo { get; set; }
 
-    public float xFromMeasured { get; set; }
-    public float yFromMeasured { get; set; }
-    public float zFromMeasured { get; set; }
+    public float xTrialStarted { get; set; }
+    public float yTrialStarted { get; set; }
+    public float zTrialStarted { get; set; }
 
-    public float xToMeasured { get; set; }
-    public float yToMeasured { get; set; }
-    public float zToMeasured { get; set; }
+    public float xActionStarted { get; set; }
+    public float yActionStarted { get; set; }
+    public float zActionStarted { get; set; }
+
+    public float xActionEnded { get; set; }
+    public float yActionEnded { get; set; }
+    public float zActionEnded { get; set; }
 
     public float xPlanePosition { get; set; }
     public float yPlanePosition { get; set; }
     public float zPlanePosition { get; set; }
+
     public float xPlaneRotation { get; set; }
     public float yPlaneRotation { get; set; }
     public float zPlaneRotation { get; set; }
+
     public float screenPixelsPerMillimeter { get; set; }
 
     public string observations { get; set; }
@@ -98,6 +108,13 @@ public class ExperimentResultRecord
                 r.cursorWidth = test.configuration.cursorWidth;
                 r.planeOrientation = Enum2String.GetPlaneOrientationString(test.configuration.planeOrientation);
 
+                if (test.configuration.cursorSelectionMethod == CursorSelectionMethod.DwellTime) {
+                    r.dwellTime = test.configuration.dwellTime;
+                }                
+                else {
+                    r.dwellTime = -1;
+                }
+                
                 r.errorRate = test.computedResults.errorRate;
                 r.averageMovementTime = test.computedResults.averageMovementTime;
                 r.throughput = test.computedResults.throughput;
@@ -117,6 +134,10 @@ public class ExperimentResultRecord
                 r.blockDuration = b.blockDuration;
 
                 r.trialId = t.trialId;
+
+                r.timeTrialStarted = t.initialTime;
+                r.timeActionStarted = t.timeActionStarted;
+                r.timeActionEnded = t.timeActionEnded;
                 r.trialDuration = t.trialDuration;
 
                 r.fromTargetId = t.initialTargetId;
@@ -129,13 +150,17 @@ public class ExperimentResultRecord
                 r.yTo = t.finalTargetPosition.y;
                 r.zTo = t.finalTargetPosition.z;
 
-                r.xFromMeasured = t.initialPosition.x;
-                r.yFromMeasured = t.initialPosition.y;
-                r.zFromMeasured = t.initialPosition.z;
+                r.xTrialStarted = t.initialPosition.x;
+                r.yTrialStarted = t.initialPosition.y;
+                r.zTrialStarted = t.initialPosition.z;
 
-                r.xToMeasured = t.finalPosition.x;
-                r.yToMeasured = t.finalPosition.y;
-                r.zToMeasured = t.finalPosition.z;
+                r.xActionStarted = t.positionActionStarted.x;
+                r.yActionStarted = t.positionActionStarted.y;
+                r.zActionStarted = t.positionActionStarted.z;
+
+                r.xActionEnded = t.positionActionEnded.x;
+                r.yActionEnded = t.positionActionEnded.y;
+                r.zActionEnded = t.positionActionEnded.z;
 
                 r.missedTarget = t.missedTarget ? 1 : 0;
                 r.markedAsOutlier = t.isMarkedAsOutlier ? 1 : 0;

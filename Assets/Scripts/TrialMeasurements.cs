@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TrialMeasurements {
+public class TrialMeasurements
+{
     private TrialMeasurements lastTrial;
 
     public int trialId { get; private set; }
@@ -14,11 +15,13 @@ public class TrialMeasurements {
     public Vector3 finalTargetPosition { get; private set; }
 
     public float initialTime { get; private set; }
-    public float finalTime { get; private set; }
+    public float timeActionStarted { get; private set; }
+    public float timeActionEnded { get; private set; }
     public float trialDuration { get; private set; }
 
     public Vector3 initialPosition { get; private set; }
-    public Vector3 finalPosition { get; private set; }
+    public Vector3 positionActionStarted { get; private set; }
+    public Vector3 positionActionEnded { get; private set; }
     public double finalPositionProjectedOnMovementAxis { get; private set; }
     public double effectiveAmplitudeOfMovement { get; private set; }
     public double distanceErrorFromTarget { get; private set; }
@@ -26,7 +29,8 @@ public class TrialMeasurements {
     public bool missedTarget { get; private set; }
     public bool isMarkedAsOutlier { get; private set; }
 
-    public TrialMeasurements(int trialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget, TrialMeasurements lastTrial) {
+    public TrialMeasurements(int trialId, TargetBehaviour initialTarget, TargetBehaviour finalTarget, TrialMeasurements lastTrial)
+    {
         this.lastTrial = lastTrial;
         this.trialId = trialId;
         this.initialTargetId = initialTarget.targetId;
@@ -34,7 +38,8 @@ public class TrialMeasurements {
         this.initialTargetPosition = initialTarget.position;
         this.finalTargetPosition = finalTarget.position;
         this.initialTime = -1;
-        this.finalTime = -1;
+        this.timeActionStarted = -1;
+        this.timeActionEnded = -1;        
         this.trialDuration = -1;
     }
 
@@ -49,19 +54,30 @@ public class TrialMeasurements {
         this.initialTime = initialTime;
     }
 
-    public void FinishTrial(float finalTime, Vector3 finalPosition, bool missedTarget)
+    public void ActionStarted(float time, Vector3 position)
     {
-        this.finalTime = finalTime;
-        this.trialDuration = this.finalTime - this.initialTime;
-        this.finalPosition = finalPosition;
+        this.timeActionStarted = time;
+        this.positionActionStarted = position;
+    }
+
+    public void ActionEnded(float time, Vector3 position, bool missedTarget)
+    {
+        this.timeActionEnded = time;
+        this.trialDuration = this.timeActionEnded - this.initialTime;
+        this.positionActionEnded = position;
         this.missedTarget = missedTarget;
 
-        this.finalPositionProjectedOnMovementAxis = ResultsMath.Projected3DPointCoordinate(initialTargetPosition, finalTargetPosition, finalPosition);
+        FinishTrial();
+    }
+
+    void FinishTrial()
+    {
+        this.finalPositionProjectedOnMovementAxis = ResultsMath.Projected3DPointCoordinate(initialTargetPosition, finalTargetPosition, positionActionEnded);
 
         double lastProjection = (lastTrial == null) ? 0 : lastTrial.finalPositionProjectedOnMovementAxis;
         this.effectiveAmplitudeOfMovement = ResultsMath.EffectiveAmplitude(
                 initialTargetPosition, finalTargetPosition, this.finalPositionProjectedOnMovementAxis, lastProjection);
-        this.distanceErrorFromTarget = (finalPosition - finalTargetPosition).magnitude;
+        this.distanceErrorFromTarget = (positionActionEnded - finalTargetPosition).magnitude;
     }
 
     public void MarkAsOutlier(bool isOutlier)

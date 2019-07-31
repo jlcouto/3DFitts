@@ -26,22 +26,28 @@ public class TappingTrialController : TrialController
         //Debug.Log("Tapping CursorExitedTarget");
     }
 
-    public override void CursorAcquiredTarget(TargetBehaviour target)
+    public override void CursorTargetSelectionStarted(TargetBehaviour target)
     {
-        //Debug.Log("Tapping CursorAcquiredTarget");
-        float distanceFinalTargetToSelectionPosition = Vector3.Distance(finalTarget.position, cursor.lastCursorSelectionPosition);
-        float maxDistanceToHitTarget = 0.5f*(finalTarget.localScale.x + cursor.transform.localScale.x); // this will only work for target and cursor represented as spheres
-        bool missedTarget = (distanceFinalTargetToSelectionPosition > maxDistanceToHitTarget);
+        //Debug.Log("Tapping CursorTargetSelectionStarted");
+        ActionStarted();
+    }
+
+    public override void CursorTargetSelectionEnded(TargetBehaviour target)
+    {
+        //Debug.Log("Tapping CursorTargetSelectionEnded");
+                
+        bool missedTarget = !cursor.IsOverTarget(finalTarget);
         if (missedTarget)
         {
-            cursor.PlayErrorAudio();            
+            cursor.PlayErrorAudio();
         }
         else
         {
             cursor.PlayCorrectAudio();
         }
-        FinishTrial(missedTarget);
+        ActionEnded(missedTarget);
     }
+
 
     public override void CursorDragTargetStarted(TargetBehaviour target)
     {

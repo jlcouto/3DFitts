@@ -59,7 +59,7 @@ public class Throughput
         float expectedAmplitude = (initialTargetPos - finalTargetPos).magnitude;
 
         Vector3 initialPos = theTrial.initialPosition;
-        Vector3 finalPos = theTrial.finalPosition;
+        Vector3 finalPos = theTrial.positionActionEnded;
         float realAmplitude = (initialPos - finalPos).magnitude;
 
         theTrial.MarkAsOutlier(realAmplitude < (expectedAmplitude / 2));

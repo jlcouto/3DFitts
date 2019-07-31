@@ -6,12 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum CursorAcquireMethod
-{
-    ACQUIRE_TARGET_ON_DOWN_EVENT,
-    ACQUIRE_TARGET_ON_UP_EVENT
-}
-
 public abstract class CursorPositioningController : MonoBehaviour
 {
     public enum CursorHandPosition
@@ -60,8 +54,6 @@ public class CursorInteractorBehaviour : CursorBehaviour
         }
         get { return _selectionMethod; }
     }    
-
-    public CursorAcquireMethod cursorAcquireMethod = CursorAcquireMethod.ACQUIRE_TARGET_ON_UP_EVENT;
 
     public Meta.HandsProvider metaHandsProvider;
     public Leap.Unity.LeapServiceProvider leapMotionServiceProvider;
@@ -121,10 +113,7 @@ public class CursorInteractorBehaviour : CursorBehaviour
 #endif
             acquiredPosition = GetCursorPosition();
 
-            if (cursorAcquireMethod == CursorAcquireMethod.ACQUIRE_TARGET_ON_DOWN_EVENT)
-            {
-                CursorAcquiredTarget();
-            }                       
+            CursorTargetSelectionStarted(currentHighlightedTarget);                                   
         }
 
         if (selectionInteraction.SelectionInteractionEnded())
@@ -139,10 +128,7 @@ public class CursorInteractorBehaviour : CursorBehaviour
                 isDragging = false;
             }
 
-            if (cursorAcquireMethod == CursorAcquireMethod.ACQUIRE_TARGET_ON_UP_EVENT)
-            {
-                CursorAcquiredTarget();
-            }
+            CursorTargetSelectionEnded(currentHighlightedTarget);
         }
         else if (selectionInteraction.SelectionInteractionMantained())
         {
@@ -166,52 +152,6 @@ public class CursorInteractorBehaviour : CursorBehaviour
 #if DRAG_START_WITH_CONTINUOUS_SELECTION
             numFramesSelectionIsActive = 0;
 #endif
-        }
-    }
-
-    void CursorAcquiredTarget()
-    {
-        if (selectionMethod != CursorSelectionMethod.DwellTime)
-        {
-            RegisterSelectionInformation(Time.realtimeSinceStartup, GetCursorPosition());
-        }
-        AcquireTarget(currentHighlightedTarget);
-    }
-
-    void CheckAutomaticByContactSelection()
-    {
-        if (currentHighlightedTarget != null)
-        {
-            if (currentAcquiredTarget == null)
-            {
-                AcquireTarget(currentHighlightedTarget);
-                currentAcquiredTarget = currentHighlightedTarget;
-#if DEBUG_CURSOR
-                Debug.Log("AUTOMATIC SELECTION Acquired");
-#endif
-            }
-            if (currentHighlightedTarget != currentAcquiredTarget)
-            {            
-                AcquireTarget(currentHighlightedTarget);
-                currentAcquiredTarget = currentHighlightedTarget;
-#if DEBUG_CURSOR
-                Debug.Log("AUTOMATIC SELECTION Acquired");
-#endif
-            }  
-        }
-        else
-        {
-            if (currentAcquiredTarget != null)
-            {
-                Vector3 cursorTargetDistance = currentAcquiredTarget.position - GetCursorPosition();
-                if (cursorTargetDistance.magnitude > currentAcquiredTarget.localScale.magnitude)
-                {
-                    currentAcquiredTarget = null;
-#if DEBUG_CURSOR
-                    Debug.Log("AUTOMATIC SELECTION Released");
-#endif
-                }
-            }
         }
     }
 
@@ -276,18 +216,33 @@ public class CursorInteractorBehaviour : CursorBehaviour
         ExecuteForEachCursorListener((ICursorListener listener) => { listener.CursorExitedTarget(target); });        
     }
 
-    public override void AcquireTarget(TargetBehaviour target)
-    {        
-        ExecuteForEachCursorListener((ICursorListener listener) => { listener.CursorAcquiredTarget(target); });        
+    public override void CursorTargetSelectionStarted(TargetBehaviour target)
+    {
+        ExecuteForEachCursorListener((ICursorListener listener) => { listener.CursorTargetSelectionStarted(target); });        
 
 #if DEBUG_CURSOR
         if (target != null)
         {
-            Debug.Log("Acquired target: " + target.name);
+            Debug.Log("Target selection started: " + target.name);
         }
         else
         {
-            Debug.Log("Acquired target: none, cursor pos = " + cursorPositionController.GetCurrentCursorPosition());
+            Debug.Log("Target selection started: none, cursor pos = " + cursorPositionController.GetCurrentCursorPosition());
+        }
+#endif
+    }
+    public override void CursorTargetSelectionEnded(TargetBehaviour target)
+    {
+        ExecuteForEachCursorListener((ICursorListener listener) => { listener.CursorTargetSelectionEnded(target); });        
+
+#if DEBUG_CURSOR
+        if (target != null)
+        {
+            Debug.Log("Target selection ended: " + target.name);
+        }
+        else
+        {
+            Debug.Log("Target selection ended: none, cursor pos = " + cursorPositionController.GetCurrentCursorPosition());
         }
 #endif
     }
