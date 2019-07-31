@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+using UnityEngine;
+using System.Collections.Generic;
+
 /// <summary>
 /// This class will be used easily to export the results (represented by its properties) to a .csv file with CSVHelper.
 /// </summary>
@@ -72,7 +74,7 @@ public class ExperimentResultRecord
 
     public string observations { get; set; }
 
-    public static List<ExperimentResultRecord> GetRecordsFromTestMeasurements(TestMeasurements test)
+    public static List<ExperimentResultRecord> GetRecordsFromTestMeasurements(TestMeasurements test, Vector3 experimentPosition, Vector3 experimentRotation)
     {
         List<ExperimentResultRecord> results = new List<ExperimentResultRecord>();
         foreach (BlockMeasurements b in test.blocksData)
@@ -137,6 +139,14 @@ public class ExperimentResultRecord
 
                 r.missedTarget = t.missedTarget ? 1 : 0;
                 r.markedAsOutlier = t.isMarkedAsOutlier ? 1 : 0;
+
+                r.xPlanePosition = experimentPosition.x;
+                r.yPlanePosition = experimentPosition.y;
+                r.zPlanePosition = experimentPosition.z;
+                
+                r.xPlaneRotation = experimentRotation.x;
+                r.yPlaneRotation = experimentRotation.y;
+                r.zPlaneRotation = experimentRotation.z;
 
                 r.screenPixelsPerMillimeter = test.configuration.screenPixelsPerMillimeter;
                 r.observations = test.configuration.observations;

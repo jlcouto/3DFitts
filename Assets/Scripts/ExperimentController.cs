@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -332,7 +332,7 @@ public class ExperimentController : MonoBehaviour, ITestListener
     {
         string directory = FileManager.GetResultsFolder(results.configuration.participantCode);
         string filename = FileManager.GetResultsFilenameForTest(results) + ".csv";
-        var records = ExperimentResultRecord.GetRecordsFromTestMeasurements(results);
+        var records = ExperimentResultRecord.GetRecordsFromTestMeasurements(results, transform.position, transform.rotation.eulerAngles);
         FileManager.WriteToCsvFile(directory, filename, records);
 
         ExportFrameDataToFile(results);
